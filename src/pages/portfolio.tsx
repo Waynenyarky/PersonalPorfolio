@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './portfolio.css';
-import { Facebook, Twitter, Linkedin, Github, MessageSquare, ChevronDown, Award, CheckCircle, Users, Code, GitBranch, ArrowUp, Terminal, Package, FileCode, Figma, Paintbrush, Palette, Database, Server, Smartphone, Layout, Box, Menu, X, Zap, Shield, Star, Quote, Calendar, Phone, Mail, Send } from 'lucide-react';
+import { Facebook, Twitter, Linkedin, Github, MessageSquare, ChevronDown, Award, CheckCircle, Users, Code, GitBranch, ArrowUp, Terminal, Package, FileCode, Figma, Paintbrush, Palette, Database, Server, Smartphone, Layout, Box, Zap, Shield, Calendar, Mail } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import ProjectModal from '../components/ProjectModal';
 import ResumeModal from '../components/ResumeModal';
@@ -14,17 +14,6 @@ import myCv from '../assets/MyCV.pdf';
 import { projects } from '../data/projects';
 import type { Project } from '../types/project';
 
-type Review = {
-  id: string;
-  created_at: string;
-  name: string;
-  role: string;
-  company: string;
-  email: string | null;
-  rating: number;
-  review: string;
-};
-
 const Portfolio = () => {
   const { theme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
@@ -34,19 +23,8 @@ const Portfolio = () => {
   const [activeTab, setActiveTab] = useState<'skills' | 'tools'>('skills');
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set(['home']));
   const [activeSection, setActiveSection] = useState<string>('home');
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const averageRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : 0;
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [reviewData, setReviewData] = useState({
-    name: '',
-    role: '',
-    company: '',
-    email: '',
-    rating: 5,
-    review: ''
-  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,41 +47,6 @@ const Portfolio = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const resp = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/reviews/`);
-        if (!resp.ok) return;
-        const data = await resp.json();
-        if (Array.isArray(data)) setReviews(data as Review[]);
-      } catch {}
-    };
-    fetchReviews();
-  }, []);
-
-  // Real-time updates via BroadcastChannel for review deletions
-  useEffect(() => {
-    const bc = new BroadcastChannel('reviews');
-    bc.onmessage = (evt: MessageEvent) => {
-      const msg = evt.data as { type?: string; id?: number | string };
-      if (msg?.type === 'deleted' && msg.id !== undefined) {
-        // Remove the deleted review from the list
-        setReviews((prev) => prev.filter((r) => r.id !== String(msg.id) && r.id !== msg.id));
-      }
-    };
-    // Also refresh on window focus to stay in sync
-    const onFocus = () => {
-      fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/reviews/`)
-        .then((r) => (r.ok ? r.json() : null))
-        .then((d) => { if (Array.isArray(d)) setReviews(d as Review[]); })
-        .catch(() => {});
-    };
-    window.addEventListener('focus', onFocus);
-    return () => {
-      try { bc.close(); } catch {}
-      window.removeEventListener('focus', onFocus);
-    };
-  }, []);
 
   useEffect(() => {
     const observerOptions = {

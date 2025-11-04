@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   root: '.',
   publicDir: 'public',
+  base: process.env.GITHUB_PAGES_BASE || '/',
   server: {
     port: 5173,
     open: true,

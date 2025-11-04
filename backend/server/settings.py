@@ -92,3 +92,28 @@ CORS_ALLOW_METHODS = list(default_methods) + [
 # Email via Resend (we'll call SDK directly in view)
 RESEND_API_KEY = os.getenv('RESEND_API_KEY', '')
 
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'reviews': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+

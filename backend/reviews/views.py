@@ -1,4 +1,5 @@
 import os
+import logging
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from .models import Review, Booking
@@ -6,6 +7,8 @@ from .serializers import ReviewSerializer, BookingSerializer
 import resend
 from django.utils import timezone
 from .permissions import IsAdminApiKey
+
+logger = logging.getLogger('reviews')
 
 
 class ReviewListCreateView(generics.ListCreateAPIView):
@@ -17,22 +20,25 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         review = serializer.save()
         api_key = os.getenv('RESEND_API_KEY')
         if not api_key:
+            logger.warning(f'Resend API key not configured. Review {review.id} created but email not sent.')
             return
-        resend.api_key = api_key
-        from_sender = os.getenv('RESEND_FROM', 'Portfolio Reviews <noreply@resend.dev>')
-        subject = f'New Client Review - Rating: {review.rating}/5'
-        text = (
-            f'New review submitted\n\n'
-            f'Name: {review.name}\n'
-            f'Role: {review.role}\n'
-            f'Company: {review.company}\n'
-            f'Email: {review.email or "N/A"}\n'
-            f'Rating: {review.rating}/5\n\n'
-            f'Review:\n{review.review}'
-        )
-        timestamp = (review.created_at or timezone.now()).strftime('%Y%m%d%H%M%S')
+        
+        try:
+            resend.api_key = api_key
+            from_sender = os.getenv('RESEND_FROM', 'Portfolio Reviews <noreply@resend.dev>')
+            subject = f'New Client Review - Rating: {review.rating}/5'
+            text = (
+                f'New review submitted\n\n'
+                f'Name: {review.name}\n'
+                f'Role: {review.role}\n'
+                f'Company: {review.company}\n'
+                f'Email: {review.email or "N/A"}\n'
+                f'Rating: {review.rating}/5\n\n'
+                f'Review:\n{review.review}'
+            )
+            timestamp = (review.created_at or timezone.now()).strftime('%Y%m%d%H%M%S')
 
-        html = f"""
+            html = f"""
         <!DOCTYPE html>
         <html>
         <head>
@@ -255,13 +261,33 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         </html>
         """
 
-        resend.Emails.send({
-            'from': from_sender,
-            'to': 'joma.enrique.up@phinmaed.com',
-            'subject': subject,
-            'text': text,
-            'html': html,
-        })
+            resend.Emails.send({
+                'from': from_sender,
+                'to': 'joma.enrique.up@phinmaed.com',
+                'subject': subject,
+                'text': text,
+                'html': html,
+            })
+            logger.info(f'Email notification sent successfully for review {review.id} (REF #REV-{timestamp})')
+        
+        except resend.exceptions.ResendError as e:
+            logger.error(
+                f'Resend API error for review {review.id}: {str(e)}. '
+                f'Review was saved successfully but email notification failed.',
+                exc_info=True
+            )
+        except (ConnectionError, TimeoutError) as e:
+            logger.error(
+                f'Network error sending email for review {review.id}: {str(e)}. '
+                f'Review was saved successfully but email notification failed.',
+                exc_info=True
+            )
+        except Exception as e:
+            logger.error(
+                f'Unexpected error sending email for review {review.id}: {str(e)}. '
+                f'Review was saved successfully but email notification failed.',
+                exc_info=True
+            )
 
 
 class ReviewDestroyView(generics.DestroyAPIView):
@@ -279,63 +305,66 @@ class BookingListCreateView(generics.ListCreateAPIView):
         booking = serializer.save()
         api_key = os.getenv('RESEND_API_KEY')
         if not api_key:
+            logger.warning(f'Resend API key not configured. Booking {booking.id} created but email not sent.')
             return
-        resend.api_key = api_key
-        from_sender = os.getenv('RESEND_FROM', 'Portfolio Bookings <noreply@resend.dev>')
-        subject = f'New Client Booking: {booking.project_type}'
-        timestamp = (booking.created_at or timezone.now()).strftime('%Y%m%d%H%M%S')
         
-        # Format date and time for display
-        preferred_date_str = booking.preferred_date.strftime('%B %d, %Y') if booking.preferred_date else 'Not specified'
-        preferred_time_str = booking.preferred_time.strftime('%I:%M %p') if booking.preferred_time else 'Not specified'
-        
-        # Map project types and timelines to readable format
-        project_type_map = {
-            'web-app': 'Web Application',
-            'mobile-app': 'Mobile Application',
-            'e-commerce': 'E-Commerce Platform',
-            'landing-page': 'Landing Page',
-            'api-development': 'API Development',
-            'database-design': 'Database Design',
-            'ui-ux-design': 'UI/UX Design',
-            'full-stack': 'Full-Stack Development',
-            'maintenance': 'Maintenance & Support',
-            'consulting': 'Consulting',
-            'other': 'Other'
-        }
-        
-        timeline_map = {
-            'asap': 'ASAP / Urgent',
-            '1-month': '1 Month',
-            '2-3-months': '2-3 Months',
-            '3-6-months': '3-6 Months',
-            '6-months-plus': '6+ Months',
-            'flexible': 'Flexible'
-        }
-        
-        budget_map = {
-            'under-1k': 'Under $1,000',
-            '1k-5k': '$1,000 - $5,000',
-            '5k-10k': '$5,000 - $10,000',
-            '10k-25k': '$10,000 - $25,000',
-            '25k-50k': '$25,000 - $50,000',
-            '50k-plus': '$50,000+',
-            'discuss': 'Prefer to discuss'
-        }
-        
-        contact_map = {
-            'email': 'Email',
-            'phone': 'Phone Call',
-            'video': 'Video Call',
-            'meeting': 'In-Person Meeting'
-        }
-        
-        project_type_display = project_type_map.get(booking.project_type, booking.project_type)
-        timeline_display = timeline_map.get(booking.timeline, booking.timeline)
-        budget_display = budget_map.get(booking.budget, booking.budget) if booking.budget else 'Not specified'
-        contact_display = contact_map.get(booking.preferred_contact, booking.preferred_contact)
+        try:
+            resend.api_key = api_key
+            from_sender = os.getenv('RESEND_FROM', 'Portfolio Bookings <noreply@resend.dev>')
+            subject = f'New Client Booking: {booking.project_type}'
+            timestamp = (booking.created_at or timezone.now()).strftime('%Y%m%d%H%M%S')
+            
+            # Format date and time for display
+            preferred_date_str = booking.preferred_date.strftime('%B %d, %Y') if booking.preferred_date else 'Not specified'
+            preferred_time_str = booking.preferred_time.strftime('%I:%M %p') if booking.preferred_time else 'Not specified'
+            
+            # Map project types and timelines to readable format
+            project_type_map = {
+                'web-app': 'Web Application',
+                'mobile-app': 'Mobile Application',
+                'e-commerce': 'E-Commerce Platform',
+                'landing-page': 'Landing Page',
+                'api-development': 'API Development',
+                'database-design': 'Database Design',
+                'ui-ux-design': 'UI/UX Design',
+                'full-stack': 'Full-Stack Development',
+                'maintenance': 'Maintenance & Support',
+                'consulting': 'Consulting',
+                'other': 'Other'
+            }
+            
+            timeline_map = {
+                'asap': 'ASAP / Urgent',
+                '1-month': '1 Month',
+                '2-3-months': '2-3 Months',
+                '3-6-months': '3-6 Months',
+                '6-months-plus': '6+ Months',
+                'flexible': 'Flexible'
+            }
+            
+            budget_map = {
+                'under-1k': 'Under $1,000',
+                '1k-5k': '$1,000 - $5,000',
+                '5k-10k': '$5,000 - $10,000',
+                '10k-25k': '$10,000 - $25,000',
+                '25k-50k': '$25,000 - $50,000',
+                '50k-plus': '$50,000+',
+                'discuss': 'Prefer to discuss'
+            }
+            
+            contact_map = {
+                'email': 'Email',
+                'phone': 'Phone Call',
+                'video': 'Video Call',
+                'meeting': 'In-Person Meeting'
+            }
+            
+            project_type_display = project_type_map.get(booking.project_type, booking.project_type)
+            timeline_display = timeline_map.get(booking.timeline, booking.timeline)
+            budget_display = budget_map.get(booking.budget, booking.budget) if booking.budget else 'Not specified'
+            contact_display = contact_map.get(booking.preferred_contact, booking.preferred_contact)
 
-        html = f"""
+            html = f"""
         <!DOCTYPE html>
         <html>
         <head>
@@ -608,7 +637,7 @@ class BookingListCreateView(generics.ListCreateAPIView):
         </html>
         """
 
-        text = f"""New Client Booking Request
+            text = f"""New Client Booking Request
 
 Name: {booking.name}
 Email: {booking.email}
@@ -629,13 +658,33 @@ Preferred Time: {preferred_time_str}
 {booking.additional_notes and f'Additional Notes:\n{booking.additional_notes}' or ''}
         """
 
-        resend.Emails.send({
-            'from': from_sender,
-            'to': 'joma.enrique.up@phinmaed.com',
-            'subject': subject,
-            'text': text,
-            'html': html,
-        })
+            resend.Emails.send({
+                'from': from_sender,
+                'to': 'joma.enrique.up@phinmaed.com',
+                'subject': subject,
+                'text': text,
+                'html': html,
+            })
+            logger.info(f'Email notification sent successfully for booking {booking.id} (REF #BK-{timestamp})')
+        
+        except resend.exceptions.ResendError as e:
+            logger.error(
+                f'Resend API error for booking {booking.id}: {str(e)}. '
+                f'Booking was saved successfully but email notification failed.',
+                exc_info=True
+            )
+        except (ConnectionError, TimeoutError) as e:
+            logger.error(
+                f'Network error sending email for booking {booking.id}: {str(e)}. '
+                f'Booking was saved successfully but email notification failed.',
+                exc_info=True
+            )
+        except Exception as e:
+            logger.error(
+                f'Unexpected error sending email for booking {booking.id}: {str(e)}. '
+                f'Booking was saved successfully but email notification failed.',
+                exc_info=True
+            )
 
 
 class BookingDestroyView(generics.DestroyAPIView):

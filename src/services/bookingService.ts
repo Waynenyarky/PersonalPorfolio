@@ -16,6 +16,7 @@ export interface BookingFormData {
 export interface Status {
   type: 'success' | 'error' | '';
   message: string;
+  emailSent?: boolean;
 }
 
 export const submitBooking = async (
@@ -48,9 +49,11 @@ export const submitBooking = async (
     });
 
     if (response.ok) {
+      const data = await response.json();
       return {
         type: 'success',
         message: "Booking submitted successfully! We'll contact you soon to discuss your project.",
+        emailSent: data.email_sent !== false,
       };
     } else {
       const errorData = await response.json().catch(() => ({}));

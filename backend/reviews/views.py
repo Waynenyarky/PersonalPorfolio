@@ -18,6 +18,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         review = serializer.save()
+        email_sent = False
         api_key = os.getenv('RESEND_API_KEY')
         if not api_key:
             logger.warning(f'Resend API key not configured. Review {review.id} created but email not sent.')
@@ -268,6 +269,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
                 'text': text,
                 'html': html,
             })
+            email_sent = True
             logger.info(f'Email notification sent successfully for review {review.id} (REF #REV-{timestamp})')
         
         except resend.exceptions.ResendError as e:
@@ -288,6 +290,17 @@ class ReviewListCreateView(generics.ListCreateAPIView):
                 f'Review was saved successfully but email notification failed.',
                 exc_info=True
             )
+        finally:
+            # Store email status in the request for response
+            self.request._email_sent = email_sent
+    
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        # Add email status to response if available
+        if hasattr(request, '_email_sent'):
+            if hasattr(response, 'data') and isinstance(response.data, dict):
+                response.data['email_sent'] = request._email_sent
+        return response
 
 
 class ReviewDestroyView(generics.DestroyAPIView):
@@ -303,6 +316,7 @@ class BookingListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         booking = serializer.save()
+        email_sent = False
         api_key = os.getenv('RESEND_API_KEY')
         if not api_key:
             logger.warning(f'Resend API key not configured. Booking {booking.id} created but email not sent.')
@@ -665,6 +679,7 @@ Preferred Time: {preferred_time_str}
                 'text': text,
                 'html': html,
             })
+            email_sent = True
             logger.info(f'Email notification sent successfully for booking {booking.id} (REF #BK-{timestamp})')
         
         except resend.exceptions.ResendError as e:
@@ -685,6 +700,17 @@ Preferred Time: {preferred_time_str}
                 f'Booking was saved successfully but email notification failed.',
                 exc_info=True
             )
+        finally:
+            # Store email status in the request for response
+            self.request._email_sent = email_sent
+    
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        # Add email status to response if available
+        if hasattr(request, '_email_sent'):
+            if hasattr(response, 'data') and isinstance(response.data, dict):
+                response.data['email_sent'] = request._email_sent
+        return response
 
 
 class BookingDestroyView(generics.DestroyAPIView):

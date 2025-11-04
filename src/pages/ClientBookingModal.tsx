@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, User, Mail, Phone, Building2, Briefcase, Calendar, DollarSign, Clock, MessageSquare, FileText, CheckCircle } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
 import { submitBooking } from '../services/bookingService';
+import ResendServiceUnavailableModal from '../components/ResendServiceUnavailableModal';
 
 type Props = {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusText, setStatusText] = useState<string>('');
   const [statusType, setStatusType] = useState<'success' | 'error' | ''>('');
+  const [showEmailUnavailableModal, setShowEmailUnavailableModal] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -80,6 +82,10 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
     setIsSubmitting(false);
 
     if (result.type === 'success') {
+      // Check if email was sent successfully
+      if (result.emailSent === false) {
+        setShowEmailUnavailableModal(true);
+      }
       // Reset form after successful submission
       setTimeout(() => {
         onClose();
@@ -404,6 +410,12 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
           </form>
         </div>
       </div>
+
+      {/* Email Service Unavailable Modal */}
+      <ResendServiceUnavailableModal
+        isOpen={showEmailUnavailableModal}
+        onClose={() => setShowEmailUnavailableModal(false)}
+      />
     </div>
   );
 }

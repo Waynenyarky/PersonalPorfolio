@@ -3,6 +3,7 @@ import { Star, Quote, Send } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
 import { t, type Language } from '../i18n/translations';
 import ReviewSuccessModal from '../components/ReviewSuccessModal';
+import ResendServiceUnavailableModal from '../components/ResendServiceUnavailableModal';
 
 type Review = {
 	id: number;
@@ -26,6 +27,7 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const bcRef = useRef<BroadcastChannel | null>(null);
 	const [showSuccessModal, setShowSuccessModal] = useState(false);
+	const [showEmailUnavailableModal, setShowEmailUnavailableModal] = useState(false);
 	const [submittedReviewerName, setSubmittedReviewerName] = useState<string>('');
 	const [submittedRating, setSubmittedRating] = useState<number>(5);
 	const [reviewData, setReviewData] = useState({
@@ -159,7 +161,13 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 										setSubmittedRating(reviewData.rating);
 										setReviewData({ name: '', role: '', company: '', email: '', rating: 5, review: '' });
 										setShowReviewForm(false);
-										setShowSuccessModal(true);
+										
+										// Check if email was sent successfully
+										if (json.email_sent === false) {
+											setShowEmailUnavailableModal(true);
+										} else {
+											setShowSuccessModal(true);
+										}
 									}
 								} catch (error) {
 									alert('There was an error submitting your review. Please try again.');
@@ -251,6 +259,12 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 				language={language}
 				reviewerName={submittedReviewerName}
 				rating={submittedRating}
+			/>
+
+			{/* Email Service Unavailable Modal */}
+			<ResendServiceUnavailableModal
+				isOpen={showEmailUnavailableModal}
+				onClose={() => setShowEmailUnavailableModal(false)}
 			/>
 		</section>
 	);

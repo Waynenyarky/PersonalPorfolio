@@ -17,10 +17,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -36,7 +33,14 @@ jobs:
         run: npm ci
 
       - name: Build portfolio
-        run: npm run build:portfolio
+        run: |
+          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+          if [ "${{ github.repository_owner }}.github.io" = "$REPO_NAME" ]; then
+            export GITHUB_PAGES_BASE="/"
+          else
+            export GITHUB_PAGES_BASE="/$REPO_NAME/"
+          fi
+          npm run build:portfolio
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

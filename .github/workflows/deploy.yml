@@ -43,7 +43,14 @@ jobs:
           else
             export GITHUB_PAGES_BASE="/$REPO_NAME/"
           fi
+          echo "Building with base path: $GITHUB_PAGES_BASE"
           npm run build:portfolio
+          echo "=== Build Output Verification ==="
+          echo "Checking dist/index.html:"
+          cat dist/index.html | head -15
+          echo ""
+          echo "Checking for assets:"
+          ls -la dist/assets/ 2>/dev/null || echo "No assets folder found"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

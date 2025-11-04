@@ -17,6 +17,7 @@ export interface Status {
   type: 'success' | 'error' | '';
   message: string;
   emailSent?: boolean;
+  serverError?: boolean;
 }
 
 export const submitBooking = async (
@@ -56,13 +57,39 @@ export const submitBooking = async (
         emailSent: data.email_sent !== false,
       };
     } else {
+      // Server responded but with an error status
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || 'Failed to submit booking');
+      return {
+        type: 'error',
+        message: errorData.detail || 'Unable to submit booking. Please try again later.',
+        serverError: false,
+      };
     }
   } catch (error: any) {
+    // Check if it's a network/server error (no response from server)
+    const isNetworkError = 
+      error?.message?.toLowerCase().includes('failed to fetch') ||
+      error?.message?.toLowerCase().includes('networkerror') ||
+      error?.message?.toLowerCase().includes('network error') ||
+      error?.message?.toLowerCase().includes('load failed') ||
+      error?.name === 'TypeError' ||
+      error?.name === 'NetworkError' ||
+      error?.code === 'ERR_NETWORK' ||
+      error?.code === 'ECONNABORTED';
+    
+    if (isNetworkError) {
+      return {
+        type: 'error',
+        message: 'Service not available right now. Please try again later.',
+        serverError: true,
+      };
+    }
+    
+    // For other errors, show user-friendly message
     return {
       type: 'error',
-      message: error?.message || 'Failed to submit booking. Please try emailing us directly at joma.enrique.up@phinmaed.com',
+      message: 'Unable to submit booking at this time. Please try again later or contact us directly at joma.enrique.up@phinmaed.com',
+      serverError: false,
     };
   }
 };

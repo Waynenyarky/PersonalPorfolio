@@ -4,6 +4,7 @@ import { useTheme } from '../theme/useTheme';
 import { t, type Language } from '../i18n/translations';
 import ReviewSuccessModal from '../components/ReviewSuccessModal';
 import ResendServiceUnavailableModal from '../components/ResendServiceUnavailableModal';
+import ReviewServiceUnavailableModal from '../components/ReviewServiceUnavailableModal';
 
 type Review = {
 	id: number;
@@ -28,6 +29,7 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 	const bcRef = useRef<BroadcastChannel | null>(null);
 	const [showSuccessModal, setShowSuccessModal] = useState(false);
 	const [showEmailUnavailableModal, setShowEmailUnavailableModal] = useState(false);
+	const [showServiceUnavailableModal, setShowServiceUnavailableModal] = useState(false);
 	const [submittedReviewerName, setSubmittedReviewerName] = useState<string>('');
 	const [submittedRating, setSubmittedRating] = useState<number>(5);
 	const [reviewData, setReviewData] = useState({
@@ -170,7 +172,7 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 										}
 									}
 								} catch (error) {
-									alert('There was an error submitting your review. Please try again.');
+									setShowServiceUnavailableModal(true);
 								}
 							}}
 							className="space-y-3 sm:space-y-4"
@@ -265,6 +267,12 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 			<ResendServiceUnavailableModal
 				isOpen={showEmailUnavailableModal}
 				onClose={() => setShowEmailUnavailableModal(false)}
+			/>
+
+			{/* Review Service Unavailable Modal */}
+			<ReviewServiceUnavailableModal
+				isOpen={showServiceUnavailableModal}
+				onClose={() => setShowServiceUnavailableModal(false)}
 			/>
 		</section>
 	);

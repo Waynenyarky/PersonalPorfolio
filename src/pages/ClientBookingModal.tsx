@@ -3,6 +3,7 @@ import { X, User, Mail, Phone, Building2, Briefcase, Calendar, DollarSign, Clock
 import { useTheme } from '../theme/useTheme';
 import { submitBooking } from '../services/bookingService';
 import ResendServiceUnavailableModal from '../components/ResendServiceUnavailableModal';
+import BookingServiceUnavailableModal from '../components/BookingServiceUnavailableModal';
 
 type Props = {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
   const [statusText, setStatusText] = useState<string>('');
   const [statusType, setStatusType] = useState<'success' | 'error' | ''>('');
   const [showEmailUnavailableModal, setShowEmailUnavailableModal] = useState(false);
+  const [showServiceUnavailableModal, setShowServiceUnavailableModal] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -77,11 +79,11 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
     setStatusText('');
 
     const result = await submitBooking(formData);
-    setStatusType(result.type);
-    setStatusText(result.message);
     setIsSubmitting(false);
 
     if (result.type === 'success') {
+      setStatusType(result.type);
+      setStatusText(result.message);
       // Check if email was sent successfully
       if (result.emailSent === false) {
         setShowEmailUnavailableModal(true);
@@ -90,6 +92,15 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
       setTimeout(() => {
         onClose();
       }, 3000);
+    } else if (result.type === 'error') {
+      // If it's a server error, show the modal instead of inline error
+      if (result.serverError) {
+        setShowServiceUnavailableModal(true);
+      } else {
+        // For other errors, show inline message
+        setStatusType(result.type);
+        setStatusText(result.message);
+      }
     }
   };
 
@@ -104,7 +115,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-title"
@@ -115,45 +126,45 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
         ref={dialogRef}
         tabIndex={-1}
         role="document"
-        className={`relative max-w-4xl w-full max-h-[90vh] ${bgCard} border ${borderBase} rounded-2xl shadow-2xl overflow-hidden focus:outline-none ${focusRing}`}
+        className={`relative max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] ${bgCard} border ${borderBase} rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden focus:outline-none ${focusRing}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`sticky top-0 z-10 px-6 sm:px-8 py-4 sm:py-6 border-b ${borderBase} flex items-center justify-between bg-inherit backdrop-blur-sm`}>
-          <div>
-            <h2 id="booking-title" className={`text-xl sm:text-2xl font-bold ${textPrimary}`}>
+        <div className={`sticky top-0 z-10 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 border-b ${borderBase} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 bg-inherit backdrop-blur-sm`}>
+          <div className="min-w-0 flex-1">
+            <h2 id="booking-title" className={`text-lg sm:text-xl lg:text-2xl font-bold ${textPrimary}`}>
               Client Booking
             </h2>
-            <p className={`${textSecondary} text-sm mt-1`}>Book a development project consultation</p>
+            <p className={`${textSecondary} text-xs sm:text-sm mt-0.5 sm:mt-1`}>Book a development project consultation</p>
           </div>
           <button
             aria-label="Close modal"
-            className={`w-9 h-9 rounded-md border ${borderBase} hover:border-orange-500 flex items-center justify-center transition-colors ${textPrimary} ${focusRing}`}
+            className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-md border ${borderBase} hover:border-orange-500 flex items-center justify-center transition-colors ${textPrimary} ${focusRing}`}
             onClick={onClose}
           >
-            <X size={18} />
+            <X size={16} className="sm:w-[18px] sm:h-[18px]" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6 sm:p-8 overflow-y-auto max-h-[calc(90vh-180px)]">
-          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+        <div className="p-4 sm:p-6 lg:p-8 overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-180px)]">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 lg:space-y-6">
             {/* Personal Information */}
             <div>
-              <h3 className={`text-lg font-semibold mb-4 ${textPrimary} flex items-center gap-2`}>
-                <User size={20} className="text-orange-500" />
-                Personal Information
+              <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 ${textPrimary} flex items-center gap-2`}>
+                <User size={18} className="text-orange-500 sm:w-5 sm:h-5" />
+                <span className="text-sm sm:text-base lg:text-lg">Personal Information</span>
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className={`block text-sm font-semibold mb-2 ${textSecondary}`}>Full Name *</label>
+                  <label className={`block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 ${textSecondary}`}>Full Name *</label>
                   <div className="relative">
-                    <User className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${textSecondary}`} size={18} />
+                    <User className={`absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 ${textSecondary}`} size={16} style={{ width: 'clamp(14px, 4vw, 18px)', height: 'clamp(14px, 4vw, 18px)' }} />
                     <input
                       type="text"
                       name="name"
                       placeholder="Enter your full name"
-                      className={`w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 placeholder-gray-500 dark:placeholder-gray-400`}
+                      className={`w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-lg sm:rounded-xl pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 lg:py-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 placeholder-gray-500 dark:placeholder-gray-400`}
                       value={formData.name}
                       onChange={handleChange}
                       required
@@ -391,18 +402,18 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
             )}
 
             {/* Submit Button */}
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
               <button
                 type="button"
                 onClick={onClose}
-                className={`flex-1 px-6 py-3 border ${borderBase} hover:border-orange-500 ${textPrimary} font-semibold rounded-xl transition-colors ${focusRing}`}
+                className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border ${borderBase} hover:border-orange-500 ${textPrimary} font-semibold rounded-lg sm:rounded-xl transition-colors text-sm sm:text-base ${focusRing}`}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/50 disabled:opacity-60 disabled:cursor-not-allowed ${focusRing}`}
+                className={`flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/50 disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base ${focusRing}`}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Booking'}
               </button>
@@ -415,6 +426,12 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
       <ResendServiceUnavailableModal
         isOpen={showEmailUnavailableModal}
         onClose={() => setShowEmailUnavailableModal(false)}
+      />
+
+      {/* Booking Service Unavailable Modal */}
+      <BookingServiceUnavailableModal
+        isOpen={showServiceUnavailableModal}
+        onClose={() => setShowServiceUnavailableModal(false)}
       />
     </div>
   );

@@ -33,7 +33,7 @@ export default function ResumeModal({ isOpen, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-labelledby="resume-title"
@@ -44,45 +44,46 @@ export default function ResumeModal({ isOpen, onClose }: Props) {
         ref={dialogRef}
         tabIndex={-1}
         role="document"
-        className={`relative max-w-5xl w-full max-h-[90vh] ${bgCard} border ${borderBase} rounded-xl shadow-2xl overflow-hidden focus:outline-none ${focusRing}`}
+        className={`relative max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] ${bgCard} border ${borderBase} rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden focus:outline-none ${focusRing}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`sticky top-0 z-10 px-6 sm:px-8 py-4 sm:py-6 border-b ${borderBase} flex items-center justify-between bg-inherit`}>
-          <div>
-            <h2 id="resume-title" className={`text-xl sm:text-2xl font-bold ${textPrimary}`}>
+        <div className={`sticky top-0 z-10 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 border-b ${borderBase} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 bg-inherit backdrop-blur-sm`}>
+          <div className="min-w-0 flex-1">
+            <h2 id="resume-title" className={`text-lg sm:text-xl lg:text-2xl font-bold ${textPrimary}`}>
               Resume
             </h2>
-            <p className={`${textSecondary} text-sm mt-1`}>John Wayne Enrique</p>
+            <p className={`${textSecondary} text-xs sm:text-sm mt-0.5 sm:mt-1`}>John Wayne Enrique</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <a
               href={myCv}
               download="MyCV.pdf"
-              className={`px-4 py-2 rounded-lg border ${borderBase} hover:border-orange-500 transition-all duration-200 font-medium ${textPrimary} hover:bg-orange-500/10 flex items-center gap-2 ${focusRing}`}
+              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg border ${borderBase} hover:border-orange-500 transition-all duration-200 font-medium ${textPrimary} hover:bg-orange-500/10 flex items-center justify-center gap-2 ${focusRing} text-sm sm:text-base`}
               onClick={(e) => e.stopPropagation()}
             >
-              <Download size={18} />
+              <Download size={16} className="sm:w-[18px] sm:h-[18px]" />
               <span className="hidden sm:inline">Download</span>
+              <span className="sm:hidden">Download CV</span>
             </a>
             <button
               aria-label="Close modal"
-              className={`w-9 h-9 rounded-md border ${borderBase} hover:border-orange-500 flex items-center justify-center transition-colors ${textPrimary} ${focusRing}`}
+              className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-md border ${borderBase} hover:border-orange-500 flex items-center justify-center transition-colors ${textPrimary} ${focusRing}`}
               onClick={onClose}
             >
-              <X size={18} />
+              <X size={16} className="sm:w-[18px] sm:h-[18px]" />
             </button>
           </div>
         </div>
 
         {/* PDF Viewer */}
-        <div className="p-4 sm:p-6">
-          <div className={`w-full h-[calc(90vh-140px)] border ${borderBase} rounded-lg overflow-hidden`}>
+        <div className="p-3 sm:p-4 lg:p-6">
+          <div className={`w-full h-[calc(95vh-120px)] sm:h-[calc(90vh-140px)] border ${borderBase} rounded-lg overflow-hidden`}>
             <iframe
               src={`${myCv}#toolbar=1&navpanes=0&scrollbar=1`}
               className="w-full h-full"
               title="Resume PDF"
-              style={{ minHeight: '600px' }}
+              style={{ minHeight: '400px' }}
             />
           </div>
         </div>

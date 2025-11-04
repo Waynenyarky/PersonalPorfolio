@@ -1,73 +1,397 @@
-# React + TypeScript + Vite
+# Personal Portfolio - John Wayne Enrique
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, full-stack portfolio website with client reviews, booking system, and admin panel. Built with React, TypeScript, Vite, Django, and PostgreSQL.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Portfolio Website**: Showcase projects, skills, and services
+- **Client Reviews System**: Allow clients to submit reviews with ratings
+- **Booking System**: Clients can book consultation appointments
+- **Admin Panel**: Manage reviews and appointments (separate frontend)
+- **Real-time Updates**: BroadcastChannel API for instant updates across tabs
+- **Multi-language Support**: English and Filipino
+- **Dark/Light Theme**: Theme toggle with persistence
+- **Email Notifications**: Automatic email alerts for new reviews and bookings
 
-## React Compiler
+## 📋 Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Before you begin, ensure you have the following installed:
 
-## Expanding the ESLint configuration
+- **Node.js** (v18 or higher)
+- **npm** or **pnpm**
+- **Python** (v3.10 or higher)
+- **PostgreSQL** (v12 or higher)
+- **pgAdmin4** (optional, for database management)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Setup Instructions
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 1. Clone the Repository
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone <repository-url>
+cd PersonalPorfolio
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Frontend Setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+#### Install Dependencies
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+# or
+pnpm install
 ```
+
+#### Create Environment File
+
+Create a `.env` file in the project root:
+
+```env
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+#### Start Development Servers
+
+**Portfolio (Main Website):**
+```bash
+npm run dev
+# or
+npm run dev:portfolio
+```
+Opens at `http://localhost:5173`
+
+**Admin Panel:**
+```bash
+npm run dev:admin
+```
+Opens at `http://localhost:5174/admin.html`
+
+### 3. Backend Setup
+
+#### Navigate to Backend Directory
+
+```bash
+cd backend
+```
+
+#### Create Virtual Environment (Recommended)
+
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/Mac
+python3 -m venv venv
+source venv/bin/activate
+```
+
+#### Install Python Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+#### Create Environment File
+
+Create a `.env` file in the `backend/` directory:
+
+```env
+DJANGO_SECRET_KEY=your-secret-key-here
+DJANGO_DEBUG=1
+FRONTEND_ORIGIN=http://localhost:5173
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=personal_portfolio
+PGUSER=postgres
+PGPASSWORD=your-postgres-password
+RESEND_API_KEY=your-resend-api-key
+ADMIN_API_KEY=Pass_123
+```
+
+**Environment Variables Explanation:**
+- `DJANGO_SECRET_KEY`: Django secret key (generate a secure random string)
+- `DJANGO_DEBUG`: Set to `1` for development, `0` for production
+- `FRONTEND_ORIGIN`: Frontend URL (for CORS)
+- `PGHOST`: PostgreSQL host
+- `PGPORT`: PostgreSQL port (default: 5432)
+- `PGDATABASE`: Database name
+- `PGUSER`: PostgreSQL username
+- `PGPASSWORD`: PostgreSQL password
+- `RESEND_API_KEY`: API key from Resend.com for email notifications
+- `ADMIN_API_KEY`: Admin authentication key (use in admin panel)
+
+#### Database Setup
+
+1. **Create PostgreSQL Database**
+
+   Using pgAdmin4:
+   - Open pgAdmin4
+   - Right-click on "Databases" → Create → Database
+   - Name: `personal_portfolio`
+   - Click Save
+
+   Or using psql:
+   ```sql
+   CREATE DATABASE personal_portfolio;
+   ```
+
+2. **Run Database Schema**
+
+   Using pgAdmin4:
+   - Open Query Tool
+   - Open `backend/db/create_reviews.sql`
+   - Execute the script (F5)
+
+   Or using psql:
+   ```bash
+   psql -U postgres -d personal_portfolio -f backend/db/create_reviews.sql
+   ```
+
+3. **Run Django Migrations**
+
+   ```bash
+   cd backend
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+
+#### Start Django Server
+
+```bash
+cd backend
+python manage.py runserver
+```
+
+The API will be available at `http://localhost:8000`
+
+## 🚀 Quick Start Commands
+
+### Starting Both Frontend and Backend
+
+You'll need **3 terminal windows** to run everything:
+
+#### Terminal 1: Portfolio Frontend
+```bash
+npm run dev
+# or
+npm run dev:portfolio
+```
+➜ Portfolio: `http://localhost:5173`
+
+#### Terminal 2: Admin Panel Frontend
+```bash
+npm run dev:admin
+```
+➜ Admin Panel: `http://localhost:5174/admin.html`
+
+#### Terminal 3: Django Backend
+```bash
+cd backend
+python manage.py runserver
+```
+➜ API: `http://localhost:8000`
+
+### Starting Everything (Alternative: Using Multiple Terminals)
+
+**Windows PowerShell:**
+```powershell
+# Terminal 1 - Portfolio
+npm run dev
+
+# Terminal 2 - Admin Panel  
+npm run dev:admin
+
+# Terminal 3 - Backend
+cd backend; python manage.py runserver
+```
+
+**Linux/Mac:**
+```bash
+# Terminal 1 - Portfolio
+npm run dev
+
+# Terminal 2 - Admin Panel
+npm run dev:admin
+
+# Terminal 3 - Backend
+cd backend && python manage.py runserver
+```
+
+### Verification
+
+Once all servers are running, verify:
+- ✅ Portfolio: http://localhost:5173
+- ✅ Admin Panel: http://localhost:5174/admin.html
+- ✅ API: http://localhost:8000/api/reviews/
+
+## 📜 Available Commands
+
+### Frontend Commands
+
+```bash
+# Development
+npm run dev              # Start portfolio dev server (port 5173)
+npm run dev:portfolio    # Start portfolio dev server (port 5173)
+npm run dev:admin        # Start admin panel dev server (port 5174)
+
+# Build
+npm run build            # Build portfolio for production
+npm run build:portfolio  # Build portfolio for production
+npm run build:admin      # Build admin panel for production
+
+# Preview
+npm run preview          # Preview production build
+npm run preview:portfolio # Preview portfolio production build
+npm run preview:admin    # Preview admin panel production build
+
+# Linting
+npm run lint             # Run ESLint
+```
+
+### Backend Commands
+
+```bash
+# Navigate to backend directory first
+cd backend
+
+# Database
+python manage.py makemigrations  # Create migration files
+python manage.py migrate          # Apply migrations
+python manage.py migrate --plan   # Show migration plan
+
+# Server
+python manage.py runserver        # Start development server (port 8000)
+python manage.py runserver 8001   # Start on custom port
+
+# Django Shell
+python manage.py shell            # Open Django shell
+python manage.py createsuperuser # Create admin superuser
+
+# Other
+python manage.py collectstatic    # Collect static files (production)
+python manage.py check            # Check for common problems
+```
+
+## 🗂️ Project Structure
+
+```
+PersonalPorfolio/
+├── backend/                 # Django backend
+│   ├── db/                  # Database SQL scripts
+│   ├── reviews/             # Reviews and bookings app
+│   │   ├── models.py        # Database models
+│   │   ├── views.py         # API views
+│   │   ├── serializers.py  # DRF serializers
+│   │   └── urls.py          # URL routing
+│   ├── server/              # Django project settings
+│   ├── manage.py            # Django management script
+│   ├── requirements.txt     # Python dependencies
+│   └── .env                 # Backend environment variables
+├── src/
+│   ├── components/          # React components
+│   │   ├── ProjectModal.tsx
+│   │   ├── ResumeModal.tsx
+│   │   ├── ReviewSuccessModal.tsx
+│   │   └── ThemeToggle.tsx
+│   ├── pages/               # Page components
+│   │   ├── portfolio.tsx    # Main portfolio page
+│   │   ├── ClientReviews.tsx
+│   │   ├── AdminReviews.tsx
+│   │   ├── ClientBookingModal.tsx
+│   │   └── ContactSupport.tsx
+│   ├── services/            # API services
+│   ├── theme/               # Theme provider
+│   └── i18n/                # Internationalization
+├── admin.html               # Admin panel entry point
+├── index.html               # Portfolio entry point
+├── vite.config.portfolio.ts # Portfolio Vite config
+├── vite.config.admin.ts     # Admin panel Vite config
+└── .env                     # Frontend environment variables
+```
+
+## 🔐 Admin Panel Access
+
+1. Start the admin dev server: `npm run dev:admin`
+2. Navigate to `http://localhost:5174/admin.html`
+3. Enter the admin key (set in `backend/.env` as `ADMIN_API_KEY`)
+4. Default key: `Pass_123` (change in production!)
+
+## 📧 Email Configuration
+
+The application uses Resend for email notifications. To set up:
+
+1. Sign up at [Resend.com](https://resend.com)
+2. Get your API key
+3. Add it to `backend/.env` as `RESEND_API_KEY`
+4. Emails are sent to: `joma.enrique.up@phinmaed.com`
+
+## 🌐 API Endpoints
+
+### Reviews
+- `GET /api/reviews/` - List all reviews
+- `POST /api/reviews/` - Create a new review
+- `DELETE /api/reviews/{id}/` - Delete a review (requires admin key)
+
+### Bookings
+- `GET /api/bookings/` - List all bookings
+- `POST /api/bookings/` - Create a new booking
+- `DELETE /api/bookings/{id}/` - Delete a booking (requires admin key)
+
+## 🐛 Troubleshooting
+
+### Port Already in Use
+
+If port 5173 or 5174 is already in use:
+- Kill the process using the port
+- Or modify the port in `vite.config.portfolio.ts` / `vite.config.admin.ts`
+
+### Database Connection Error
+
+- Verify PostgreSQL is running
+- Check credentials in `backend/.env`
+- Ensure database `personal_portfolio` exists
+
+### CORS Errors
+
+- Verify `FRONTEND_ORIGIN` in `backend/.env` matches your frontend URL
+- Check `backend/server/settings.py` CORS configuration
+
+### Admin Panel Not Showing
+
+- Access directly: `http://localhost:5174/admin.html`
+- Check browser console for errors
+- Clear Vite cache: `Remove-Item -Recurse -Force node_modules\.vite` (Windows)
+
+## 🚀 Deployment
+
+### Frontend
+
+```bash
+npm run build:portfolio  # Build portfolio
+npm run build:admin      # Build admin panel
+```
+
+Deploy the `dist/portfolio` and `dist-admin` directories to your hosting service.
+
+### Backend
+
+1. Set `DJANGO_DEBUG=0` in production
+2. Set a secure `DJANGO_SECRET_KEY`
+3. Configure production database
+4. Run `python manage.py collectstatic`
+5. Use a production WSGI server (e.g., Gunicorn)
+
+## 📝 License
+
+This project is private and proprietary.
+
+## 👤 Author
+
+**John Wayne Enrique**
+- Email: joma.enrique.up@phinmaed.com
+- GitHub: [@Waynenyarky](https://github.com/Waynenyarky)
+
+---
+
+For issues or questions, please contact the author.

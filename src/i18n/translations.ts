@@ -80,6 +80,13 @@ const translations: LocaleMap = {
   'reviewForm.placeholder': { en: 'Write your review here...', fil: 'Isulat ang iyong review dito...' },
   'reviewForm.submit': { en: 'Submit Review', fil: 'Ipasa ang Review' },
 
+  // Review Success Modal
+  'reviewSuccess.title': { en: 'Thank You!', fil: 'Salamat!' },
+  'reviewSuccess.message': { en: 'your review has been submitted successfully!', fil: 'naisumite nang matagumpay ang iyong review!' },
+  'reviewSuccess.ratingLabel': { en: 'Your Rating', fil: 'Iyong Rating' },
+  'reviewSuccess.additional': { en: 'Your feedback helps us improve and serve you better.', fil: 'Ang iyong feedback ay tumutulong sa amin na mapabuti at mas makapagsilbi nang mas mabuti.' },
+  'reviewSuccess.close': { en: 'Close', fil: 'Isara' },
+
   // CTA
   'cta.big.title': { en: 'Ready to Build Something Amazing?', fil: 'Handa ka na bang Lumikha ng Kamangha-mangha?' },
   'cta.big.subtitle': { en: "Let's discuss your project and turn your ideas into reality with innovative solutions.", fil: 'Talakayin natin ang iyong proyekto at gawing realidad ang iyong mga ideya gamit ang makabagong solusyon.' },

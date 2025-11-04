@@ -1,16 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Facebook, Twitter, Linkedin, MessageSquare, ChevronDown, Award, CheckCircle, Users, Code, GitBranch, ArrowUp, Terminal, Package, FileCode, Figma, Paintbrush, Palette, Database, Server, Smartphone, Layout, Box, Menu, X, Zap, Shield, Star, Quote, Calendar, Phone, Mail, Send } from 'lucide-react';
+import './portfolio.css';
+import { Facebook, Twitter, Linkedin, Github, MessageSquare, ChevronDown, Award, CheckCircle, Users, Code, GitBranch, ArrowUp, Terminal, Package, FileCode, Figma, Paintbrush, Palette, Database, Server, Smartphone, Layout, Box, Menu, X, Zap, Shield, Star, Quote, Calendar, Phone, Mail, Send } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import ProjectModal from '../components/ProjectModal';
 import ResumeModal from '../components/ResumeModal';
 import { useTheme } from '../theme/useTheme';
+import ClientReviews from './ClientReviews';
 import { t, type Language } from '../i18n/translations';
 import ContactSupport from './ContactSupport';
+import ClientBookingModal from './ClientBookingModal';
 import formalImg from '../assets/formal.png';
 import myCv from '../assets/MyCV.pdf';
 import { projects } from '../data/projects';
 import type { Project } from '../types/project';
-import { sendContactMessage } from '../services/contactService';
+
+type Review = {
+  id: string;
+  created_at: string;
+  name: string;
+  role: string;
+  company: string;
+  email: string | null;
+  rating: number;
+  review: string;
+};
 
 const Portfolio = () => {
   const { theme } = useTheme();
@@ -22,7 +35,10 @@ const Portfolio = () => {
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set(['home']));
   const [activeSection, setActiveSection] = useState<string>('home');
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const averageRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : 0;
   const [showResumeModal, setShowResumeModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
   const [reviewData, setReviewData] = useState({
     name: '',
     role: '',
@@ -54,6 +70,42 @@ const Portfolio = () => {
   }, []);
 
   useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const resp = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/reviews/`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (Array.isArray(data)) setReviews(data as Review[]);
+      } catch {}
+    };
+    fetchReviews();
+  }, []);
+
+  // Real-time updates via BroadcastChannel for review deletions
+  useEffect(() => {
+    const bc = new BroadcastChannel('reviews');
+    bc.onmessage = (evt: MessageEvent) => {
+      const msg = evt.data as { type?: string; id?: number | string };
+      if (msg?.type === 'deleted' && msg.id !== undefined) {
+        // Remove the deleted review from the list
+        setReviews((prev) => prev.filter((r) => r.id !== String(msg.id) && r.id !== msg.id));
+      }
+    };
+    // Also refresh on window focus to stay in sync
+    const onFocus = () => {
+      fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/reviews/`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (Array.isArray(d)) setReviews(d as Review[]); })
+        .catch(() => {});
+    };
+    window.addEventListener('focus', onFocus);
+    return () => {
+      try { bc.close(); } catch {}
+      window.removeEventListener('focus', onFocus);
+    };
+  }, []);
+
+  useEffect(() => {
     const observerOptions = {
       root: null,
       rootMargin: '-10% 0px',
@@ -70,7 +122,7 @@ const Portfolio = () => {
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-    const sections = ['about', 'skills', 'portfolio', 'services', 'engagement', 'reviews', 'contact'];
+    const sections = ['about', 'skills', 'portfolio', 'services', 'engagement', 'reviews', 'contact', 'cta'];
     sections.forEach((id) => {
       const element = document.getElementById(id);
       if (element) observer.observe(element);
@@ -127,6 +179,7 @@ const Portfolio = () => {
   const borderBase = theme === 'dark' ? 'border-gray-800' : 'border-gray-200';
   const navBg = scrolled ? (theme === 'dark' ? 'bg-gray-900/95' : 'bg-white/80') : 'bg-transparent';
   const inputBg = theme === 'dark' ? 'bg-gray-900/50' : 'bg-white';
+  
 
   const navItems: { labelKey: string; id: string }[] = [
     { labelKey: 'nav.home', id: 'home' },
@@ -141,25 +194,27 @@ const Portfolio = () => {
   return (
     <div className={`min-h-screen ${bgPage} transition-colors duration-300`}>
       {/* Navigation */}
-       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${navBg} ${scrolled ? 'backdrop-blur-md shadow-md border-b ' + borderBase : ''}`}>
+       <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${navBg} ${scrolled ? 'backdrop-blur-lg shadow-lg border-b ' + borderBase : 'backdrop-blur-sm'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <button
-              className={`${navText} text-xl sm:text-2xl font-bold tracking-tight`}
+              className={`group ${navText} text-xl sm:text-2xl font-bold tracking-tight transition-all duration-300 hover:scale-105`}
               aria-label="Go to Home"
               onClick={() => scrollToSection('home')}
             >
-              Wayne<span className="text-orange-500">.</span>
+              <span className="relative">
+                Wayne<span className="text-orange-500 transition-all duration-300 group-hover:scale-110 inline-block">.</span>
+              </span>
             </button>
             
-            <div className="hidden md:flex space-x-8">
+            <div className="hidden md:flex space-x-6 lg:space-x-8">
               {navItems.map(({ labelKey, id }) => {
                 const isActive = activeSection === id;
                 return (
                   <a
                     key={labelKey}
                     href={`#${id}`}
-                    className={`relative text-sm font-medium transition-colors duration-200 ${
+                    className={`group relative text-sm font-semibold transition-all duration-300 ${
                       isActive ? 'text-orange-500' : navText + ' hover:text-orange-500'
                     }`}
                     onClick={(e) => {
@@ -171,9 +226,12 @@ const Portfolio = () => {
                     aria-label={`Go to ${t(language, labelKey)}`}
                   >
                     {t(language, labelKey)}
-                    <span className={`absolute -bottom-1 left-0 h-0.5 bg-orange-500 transition-all duration-200 ${
-                      isActive ? 'w-full' : 'w-0 hover:w-full'
+                    <span className={`absolute -bottom-1.5 left-0 h-0.5 bg-orange-500 transition-all duration-300 ${
+                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
                     }`}></span>
+                    {isActive && (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-orange-500/30 blur-sm"></span>
+                    )}
                   </a>
                 );
               })}
@@ -184,38 +242,42 @@ const Portfolio = () => {
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as Language)}
-                className={`${inputBg} border ${borderBase} ${textPrimary} rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer transition-colors`}
+                className={`${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer transition-all duration-300 hover:border-orange-500/50`}
                 aria-label={t(language, 'lang.select')}
               >
                 <option value="en">{t(language, 'lang.english')}</option>
                 <option value="fil">{t(language, 'lang.filipino')}</option>
               </select>
-              <ThemeToggle className="w-9 h-9 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200" size={18} />
+              <ThemeToggle className="w-9 h-9 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-110" size={18} />
             </div>
 
             {/* Mobile menu button */}
             <button
-              className={`md:hidden w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-300 ${navText} ${scrolled ? 'bg-transparent' : ''}`}
+              className={`md:hidden group w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800`}
               aria-label="Toggle navigation menu"
               onClick={() => setMobileOpen((v) => !v)}
             >
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+              <div className="relative w-5 h-5">
+                <span className={`absolute top-0 left-0 w-5 h-0.5 ${theme === 'dark' ? 'bg-white' : 'bg-black'} transition-all duration-300 ${mobileOpen ? 'rotate-45 top-2' : ''}`}></span>
+                <span className={`absolute top-2 left-0 w-5 h-0.5 ${theme === 'dark' ? 'bg-white' : 'bg-black'} transition-all duration-300 ${mobileOpen ? 'opacity-0' : ''}`}></span>
+                <span className={`absolute top-4 left-0 w-5 h-0.5 ${theme === 'dark' ? 'bg-white' : 'bg-black'} transition-all duration-300 ${mobileOpen ? '-rotate-45 top-2' : ''}`}></span>
+              </div>
             </button>
           </div>
         </div>
         {/* Mobile menu panel */}
-            {mobileOpen && (
-          <div className={`md:hidden ${bgCard} border-t ${borderBase}`}>
+        {mobileOpen && (
+          <div className={`md:hidden ${bgCard} border-t ${borderBase} animate-fade-in-up`}>
             <div className="px-6 pb-6 space-y-4">
               <div className="pt-2 grid grid-cols-1 gap-2">
-                {navItems.map(({ labelKey, id }) => {
+                {navItems.map(({ labelKey, id }, index) => {
                   const isActive = activeSection === id;
                   return (
                     <a
                       key={labelKey}
                       href={`#${id}`}
-                      className={`relative block py-2 text-sm font-medium tracking-wide transition-colors duration-200 ${
-                        isActive ? 'text-orange-500' : navText
+                      className={`relative block py-2.5 px-3 text-sm font-semibold tracking-wide transition-all duration-300 rounded-lg ${
+                        isActive ? 'text-orange-500 bg-orange-500/10' : navText + ' hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-orange-500'
                       }`}
                       onClick={(e) => {
                         e.preventDefault();
@@ -224,18 +286,21 @@ const Portfolio = () => {
                       }}
                       aria-current={isActive ? 'page' : undefined}
                       aria-label={`Go to ${t(language, labelKey)}`}
+                      style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       {t(language, labelKey)}
-                      {isActive && <span className="absolute left-0 top-1/2 w-1 h-4 bg-orange-500 rounded-r"></span>}
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-orange-500 rounded-r"></span>
+                      )}
                     </a>
                   );
                 })}
               </div>
-              <div className="flex items-center justify-between">
+              <div className={`flex items-center justify-between pt-4 border-t ${borderBase}`}>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as Language)}
-                  className={`${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer`}
+                  className={`${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer transition-all duration-300 hover:border-orange-500/50`}
                   aria-label={t(language, 'lang.select')}
                 >
                   <option value="en">{t(language, 'lang.english')}</option>
@@ -250,53 +315,101 @@ const Portfolio = () => {
 
       {/* Hero Section */}
       <section id="home" className={`min-h-screen flex items-center justify-center relative pt-20 sm:pt-24 overflow-hidden ${bgSection}`}>
+        {/* Subtle Background Effects with Animation */}
         <div className="absolute inset-0 bg-gradient-to-b from-orange-500/5 to-transparent pointer-events-none"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
         
-        <div className="absolute left-4 sm:left-8 top-1/2 transform -translate-y-1/2 hidden lg:flex flex-col items-center space-y-5 z-10 animate-fade-in-left">
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`}>
-            <Facebook size={20} />
+        {/* Professional Social Media Links with Staggered Animations */}
+        <div className="absolute left-4 sm:left-8 top-1/2 transform -translate-y-1/2 hidden lg:flex flex-col items-center space-y-3 z-10">
+          <a 
+            href="https://web.facebook.com/jowne.enrique.11" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            aria-label="Facebook" 
+            className={`group ${bgCard} border ${borderBase} rounded-lg p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 opacity-0 animate-fade-in-left`}
+            style={{ animationDelay: '0.1s' }}
+          >
+            <Facebook size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300`} />
           </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`}>
-            <Twitter size={20} />
+          <a 
+            href="https://twitter.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            aria-label="Twitter" 
+            className={`group ${bgCard} border ${borderBase} rounded-lg p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 opacity-0 animate-fade-in-left`}
+            style={{ animationDelay: '0.2s' }}
+          >
+            <Twitter size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300`} />
           </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`}>
-            <Linkedin size={20} />
+          <a 
+            href="https://linkedin.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            aria-label="LinkedIn" 
+            className={`group ${bgCard} border ${borderBase} rounded-lg p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 opacity-0 animate-fade-in-left`}
+            style={{ animationDelay: '0.3s' }}
+          >
+            <Linkedin size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300`} />
           </a>
-          <div className="w-px h-24 bg-gray-300 dark:bg-gray-700"></div>
+          <a 
+            href="https://github.com/Waynenyarky" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            aria-label="GitHub" 
+            className={`group ${bgCard} border ${borderBase} rounded-lg p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 opacity-0 animate-fade-in-left`}
+            style={{ animationDelay: '0.4s' }}
+          >
+            <Github size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300`} />
+          </a>
+          <div className="w-px h-16 bg-gray-300 dark:bg-gray-700 opacity-0 animate-fade-in-left" style={{ animationDelay: '0.5s' }}></div>
         </div>
 
-        <div className="text-center px-4 sm:px-6 z-10 max-w-4xl mx-auto animate-fade-in-up">
-          <div className="mb-3 sm:mb-4 inline-block animate-float">
-            <span className={`${textSecondary} text-xs sm:text-sm font-medium tracking-wider uppercase`}>{t(language, 'hero.role')}</span>
+        {/* Hero Content with Staggered Animations */}
+        <div className="text-center px-4 sm:px-6 z-10 max-w-4xl mx-auto">
+          <div className="mb-4 sm:mb-5 inline-block opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${borderBase} bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm transition-all duration-300 hover:shadow-md`}>
+              <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+              <span className={`${textSecondary} text-xs sm:text-sm font-semibold tracking-wider uppercase`}>{t(language, 'hero.role')}</span>
+            </div>
           </div>
-          <h1 className={`text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-3 sm:mb-4 tracking-tight leading-tight ${textPrimary}`}>
-            John Wayne
+          
+          <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-5 tracking-tight leading-tight ${textPrimary} opacity-0 animate-fade-in-up`} style={{ animationDelay: '0.4s' }}>
+            <span className="inline-block transition-all duration-300 hover:scale-105">John Wayne</span>
             <br />
-            <span className="text-orange-500 animate-pulse-slow">Enrique</span>
+            <span className="text-orange-500 inline-block relative transition-all duration-300 hover:scale-105">
+              Enrique
+              <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
+            </span>
           </h1>
-          <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal mb-2 sm:mb-3 ${textSecondary}`}>
+          
+          <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal mb-2 sm:mb-3 ${textSecondary} opacity-0 animate-fade-in-up`} style={{ animationDelay: '0.6s' }}>
             {t(language, 'hero.title.line1')}
           </h2>
-          <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal mb-8 sm:mb-10 ${textSecondary}`}>
+          <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal mb-8 sm:mb-10 ${textSecondary} opacity-0 animate-fade-in-up`} style={{ animationDelay: '0.7s' }}>
             {t(language, 'hero.title.line2')}
           </h2>
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+          
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <button 
               onClick={() => scrollToSection('contact')}
-              className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
+              className="group relative px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-orange-500/50 hover:scale-105 overflow-hidden"
             >
-              {t(language, 'cta.getInTouch')}
+              <span className="relative z-10">{t(language, 'cta.getInTouch')}</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
             <button
               onClick={() => setShowResumeModal(true)}
-              className={`px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base border-2 ${borderBase} hover:border-orange-500 ${textPrimary} font-semibold rounded-lg transition-all duration-300 hover:scale-105`}
+              className={`group relative px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base border-2 ${borderBase} hover:border-orange-500 ${textPrimary} font-semibold rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm`}
             >
-              {t(language, 'cta.viewResume')}
+              <span className="relative z-10">{t(language, 'cta.viewResume')}</span>
+              <ArrowUp className="inline-block ml-2 rotate-45 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 relative z-10" size={14} />
             </button>
           </div>
         </div>
 
-        <div className="absolute right-4 sm:right-8 top-1/2 transform -translate-y-1/2 hidden lg:flex flex-col items-center animate-fade-in-right">
+        {/* Scroll Indicator with Animation */}
+        <div className="absolute right-4 sm:right-8 top-1/2 transform -translate-y-1/2 hidden lg:flex flex-col items-center opacity-0 animate-fade-in-right" style={{ animationDelay: '0.6s' }}>
           <div className={`writing-vertical text-xs tracking-wider ${textSecondary} font-medium mb-4`}>
             SCROLL
           </div>
@@ -306,14 +419,14 @@ const Portfolio = () => {
       </section>
 
       {/* About Section */}
-       <section id="about" className={`min-h-screen flex items-center py-16 sm:py-24 lg:py-32 ${bgSection} ${visibleSections.has('about') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+       <section id="about" className={`py-16 sm:py-24 lg:py-32 ${bgSection} ${visibleSections.has('about') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16 lg:mb-24">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-10 sm:mb-12 lg:mb-16">
             {stats.map((stat, index) => (
                <div
                  key={index}
-                 className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${visibleSections.has('about') ? `animate-fade-in-up` : 'opacity-0'}`}
+                 className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 ${visibleSections.has('about') ? `animate-fade-in-up` : 'opacity-0'}`}
                  style={{ animationDelay: `${index * 0.1}s` }}
                >
                 <div className="flex items-center space-x-4">
@@ -374,7 +487,7 @@ const Portfolio = () => {
       </section>
 
       {/* Skills Section */}
-       <section id="skills" className={`min-h-screen py-16 sm:py-24 lg:py-32 ${bgSkillsSection} ${visibleSections.has('skills') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+       <section id="skills" className={`py-16 sm:py-24 lg:py-32 ${bgSkillsSection} ${visibleSections.has('skills') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12 items-start">
             <div className={`lg:col-span-2 mb-8 lg:mb-0 ${visibleSections.has('skills') ? 'animate-fade-in-left' : 'opacity-0'}`}>
@@ -434,7 +547,7 @@ const Portfolio = () => {
       {/* Portfolio Section */}
       <section id="portfolio" className={`py-16 sm:py-24 lg:py-32 ${bgSection} ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className={`text-center mb-8 sm:mb-12 ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+          <div className={`text-center mb-10 sm:mb-12 lg:mb-16 ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'}`}>
             <div className="inline-block mb-4">
               <span className={`text-xs font-semibold tracking-wider uppercase ${textSecondary}`}>{t(language, 'portfolio.section')}</span>
               <div className="h-0.5 w-10 bg-orange-500 mt-2 mx-auto"></div>
@@ -452,16 +565,66 @@ const Portfolio = () => {
               <div
                 key={project.id}
                 onClick={() => setSelectedProject(project)}
-                className={`group ${bgCard} rounded-lg overflow-hidden border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-xl hover:-translate-y-2 cursor-pointer ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'}`}
+                className={`group ${bgCard} rounded-lg overflow-hidden border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-xl hover:-translate-y-1 cursor-pointer ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'} relative`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className={`aspect-[4/3] bg-gradient-to-br ${project.gradient} flex items-center justify-center relative overflow-hidden transition-transform duration-500 group-hover:scale-110`}>
-                  <Code className="text-white opacity-80 transition-opacity duration-300 group-hover:opacity-100" size={48} />
+                {/* Image Header */}
+                <div className={`aspect-[16/10] bg-gradient-to-br ${project.gradient} flex items-center justify-center relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300"></div>
+                  <Code className="text-white/80 group-hover:text-white transition-all duration-300 group-hover:scale-110" size={48} />
+                  
+                  {/* Category Badge - Top Left */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold tracking-wider uppercase bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-orange-600 dark:text-orange-400 shadow-lg`}>
+                      {project.category}
+                    </span>
+                  </div>
+                  
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                    <div className="w-full p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-white text-base font-bold mb-1 truncate">{project.title}</h4>
+                          <p className="text-white/70 text-xs line-clamp-1">{project.tech.split(',').slice(0, 3).join(', ')}</p>
+                        </div>
+                        <div className="flex-shrink-0 bg-white/20 backdrop-blur-sm rounded-lg p-2">
+                          <ArrowUp className="text-white rotate-45" size={16} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-5">
-                  <div className="text-xs text-orange-500 font-semibold mb-2 uppercase tracking-wider">{project.category}</div>
-                  <h3 className={`text-lg font-bold mb-1 transition-colors duration-300 group-hover:text-orange-500 ${textPrimary}`}>{project.title}</h3>
-                  <p className={`${textSecondary} text-sm`}>{project.tech}</p>
+
+                {/* Content Section */}
+                <div className="p-6">
+                  <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 group-hover:text-orange-500 ${textPrimary} leading-tight`}>
+                    {project.title}
+                  </h3>
+                  
+                  {/* Tech Stack - Professional Tags */}
+                  <div className="mb-4">
+                    <div className="flex flex-wrap gap-2">
+                      {project.tech.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 5).map((tag, i) => (
+                        <span 
+                          key={i} 
+                          className={`px-3 py-1 rounded-lg text-[11px] font-medium tracking-wide border ${borderBase} ${textSecondary} bg-gray-50 dark:bg-gray-800/50 hover:border-orange-500/50 transition-colors`}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Action Footer */}
+                  <div className={`pt-4 border-t ${borderBase} flex items-center justify-between`}>
+                    <span className={`text-xs font-medium ${textSecondary} group-hover:text-orange-500 transition-colors`}>
+                      View Project
+                    </span>
+                    <div className="flex items-center gap-2 text-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <ArrowUp className="rotate-45" size={14} />
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -486,7 +649,7 @@ const Portfolio = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {[
+            {[ 
               {
                 icon: Code,
                 title: 'Web Development',
@@ -548,190 +711,10 @@ const Portfolio = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="reviews" data-section="reviews" className={`py-16 sm:py-24 lg:py-32 ${bgSection}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className={`text-center mb-10 sm:mb-12 lg:mb-16 ${visibleSections.has('reviews') ? 'animate-fade-in-up' : 'opacity-0'}`}>
-            <div className="inline-block mb-4">
-              <span className={`text-xs font-semibold tracking-wider uppercase ${textSecondary}`}>{t(language, 'reviews.section')}</span>
-              <div className="h-0.5 w-10 bg-orange-500 mt-2 mx-auto"></div>
-            </div>
-            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 ${textPrimary}`}>
-              {t(language, 'reviews.heading1')} <span className="text-orange-500">{t(language, 'reviews.heading2')}</span>
-            </h2>
-            <p className={`${textSecondary} text-sm sm:text-base max-w-2xl mx-auto px-4 sm:px-0 mb-4 sm:mb-6`}>
-              {t(language, 'reviews.subtitle')}
-            </p>
-            <div className={`mt-4 sm:mt-6 max-w-3xl mx-auto ${bgCard} border ${borderBase} rounded-lg p-4 sm:p-5 text-left`}>
-              <h3 className={`text-sm font-semibold mb-2 ${textPrimary}`}>{t(language, 'reviews.howItWorks')}</h3>
-              <ul className={`text-sm list-disc pl-5 space-y-1 ${textSecondary}`}>
-                <li>{t(language, 'reviews.point1')}</li>
-                <li>{t(language, 'reviews.point2')}</li>
-                <li>{t(language, 'reviews.point3')}</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-            {[
-              {
-                name: 'Sarah Johnson',
-                role: 'Product Manager',
-                company: 'Tech Solutions Inc.',
-                content: 'Wayne delivered exceptional work that exceeded our expectations. The project was completed on time with attention to detail and professionalism.',
-                rating: 5
-              },
-              {
-                name: 'Michael Chen',
-                role: 'CEO',
-                company: 'StartupHub',
-                content: 'Outstanding developer with deep technical knowledge. Wayne transformed our vision into a polished, user-friendly application.',
-                rating: 5
-              },
-              {
-                name: 'Emily Rodriguez',
-                role: 'Design Director',
-                company: 'Creative Agency',
-                content: 'Working with Wayne was a pleasure. His expertise in both frontend and backend development made our collaboration seamless.',
-                rating: 5
-              }
-            ].map((testimonial, index) => (
-              <div
-                key={index}
-                className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${visibleSections.has('reviews') ? 'animate-fade-in-up' : 'opacity-0'}`}
-                style={{ animationDelay: `${index * 0.15}s` }}
-              >
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="text-orange-500 fill-orange-500" size={16} />
-                  ))}
-                </div>
-                <Quote className={`${textSecondary} mb-4 opacity-50`} size={24} />
-                <p className={`${textSecondary} mb-4 leading-relaxed text-sm`}>{testimonial.content}</p>
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
-                  <p className={`font-semibold ${textPrimary} text-sm`}>{testimonial.name}</p>
-                  <p className={`${textSecondary} text-xs`}>{testimonial.role} at {testimonial.company}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Review Submission Form */}
-          <div className={`max-w-2xl mx-auto ${bgCard} border ${borderBase} rounded-lg p-4 sm:p-6 ${visibleSections.has('reviews') ? 'animate-fade-in-up' : 'opacity-0'}`}>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4">
-              <h3 className={`text-lg sm:text-xl font-bold ${textPrimary}`}>{t(language, 'reviewForm.title')}</h3>
-              <button
-                onClick={() => setShowReviewForm(!showReviewForm)}
-                className={`w-full sm:w-auto px-4 py-2 ${showReviewForm ? 'bg-gray-200 dark:bg-gray-700' : 'bg-orange-500 hover:bg-orange-600'} text-white rounded-lg transition-colors duration-200 text-sm font-semibold`}
-              >
-                {showReviewForm ? t(language, 'reviewForm.cancel') : t(language, 'reviewForm.leave')}
-              </button>
-            </div>
-            {showReviewForm && (
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  try {
-                    const result = await sendContactMessage({
-                      full_name: reviewData.name,
-                      email: reviewData.email || 'review@portfolio.com', // Use provided email or placeholder
-                      subject: `Client Review - Rating: ${reviewData.rating}/5`,
-                      message: `Review from ${reviewData.name} (${reviewData.role} at ${reviewData.company}):\n\nRating: ${reviewData.rating}/5\n\nReview:\n${reviewData.review}`,
-                      phone: ''
-                    });
-                    if (result.type === 'success') {
-                      alert('Thank you for your review! It will be reviewed and may be published.');
-                      setReviewData({ name: '', role: '', company: '', email: '', rating: 5, review: '' });
-                      setShowReviewForm(false);
-                    } else {
-                      alert(result.message || 'There was an error submitting your review. Please try again.');
-                    }
-                  } catch (error) {
-                    alert('There was an error submitting your review. Please try again or contact directly.');
-                  }
-                }}
-                className="space-y-3 sm:space-y-4"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                  <input
-                    type="text"
-                    placeholder={t(language, 'reviewForm.name')}
-                    value={reviewData.name}
-                    onChange={(e) => setReviewData({ ...reviewData, name: e.target.value })}
-                    required
-                    className={`${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500`}
-                  />
-                  <input
-                    type="text"
-                    placeholder={t(language, 'reviewForm.role')}
-                    value={reviewData.role}
-                    onChange={(e) => setReviewData({ ...reviewData, role: e.target.value })}
-                    required
-                    className={`${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500`}
-                  />
-                  <input
-                    type="text"
-                    placeholder={t(language, 'reviewForm.company')}
-                    value={reviewData.company}
-                    onChange={(e) => setReviewData({ ...reviewData, company: e.target.value })}
-                    required
-                    className={`${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500`}
-                  />
-                </div>
-                <div>
-                  <input
-                    type="email"
-                    placeholder={t(language, 'reviewForm.email')}
-                    value={reviewData.email}
-                    onChange={(e) => setReviewData({ ...reviewData, email: e.target.value })}
-                    className={`w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500`}
-                  />
-                </div>
-                <div>
-                  <label className={`block mb-2 text-sm font-semibold ${textPrimary}`}>{t(language, 'reviewForm.rating')}</label>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map((rating) => (
-                      <button
-                        key={rating}
-                        type="button"
-                        onClick={() => setReviewData({ ...reviewData, rating })}
-                        className="transition-transform duration-200 hover:scale-110"
-                        aria-label={`Set rating ${rating}`}
-                      >
-                        <Star
-                          className={reviewData.rating >= rating ? 'text-orange-500 fill-orange-500' : 'text-gray-300 dark:text-gray-600'}
-                          size={24}
-                          aria-hidden="true"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <textarea
-                    placeholder={t(language, 'reviewForm.placeholder')}
-                    value={reviewData.review}
-                    onChange={(e) => setReviewData({ ...reviewData, review: e.target.value })}
-                    required
-                    rows={4}
-                    className={`w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none`}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
-                >
-                  <Send size={18} />
-                  {t(language, 'reviewForm.submit')}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      </section>
+      <ClientReviews language={language} visibleSections={visibleSections} />
 
       {/* CTA Section */}
-      <section className={`py-12 sm:py-16 lg:py-24 ${bgSection} relative overflow-hidden`}>
+      <section id="cta" className={`py-12 sm:py-16 lg:py-20 ${bgSection} relative overflow-hidden ${visibleSections.has('cta') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-orange-600/10"></div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 ${textPrimary}`}>
@@ -759,7 +742,7 @@ const Portfolio = () => {
       </section>
 
       {/* Engagement Section */}
-      <section id="engagement" className={`py-16 sm:py-24 lg:py-32 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="engagement" className={`py-16 sm:py-20 lg:py-24 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 items-start">
             {/* How We Work */}
@@ -830,7 +813,7 @@ const Portfolio = () => {
       </section>
 
       {/* Interactive Engagement Section */}
-      <section className={`py-16 sm:py-24 lg:py-32 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section className={`py-16 sm:py-20 lg:py-24 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className={`text-center mb-8 sm:mb-10 lg:mb-12 ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
             <div className="inline-block mb-4">
@@ -864,42 +847,46 @@ const Portfolio = () => {
                 color: 'from-blue-500 to-blue-600'
               },
               {
-                icon: Phone,
-                title: t(language, 'contact.scheduleCall'),
-                description: 'Book a discovery call to discuss your project requirements and timeline.',
+                icon: Calendar,
+                title: 'Client Booking',
+                description: 'Book a session to discuss your project timeline, scope, and goals.',
                 action: () => {
-                  // You can integrate with Calendly or similar booking service
-                  alert('Booking link: Schedule your call via email or contact form');
-                  scrollToSection('contact');
+                  setShowBookingModal(true);
                 },
-                buttonText: t(language, 'contact.bookNow'),
+                buttonText: 'Book Now',
                 color: 'from-green-500 to-green-600'
               },
               {
-                icon: Calendar,
-                title: t(language, 'contact.quickConsult'),
-                description: 'Request a 15-minute consultation to explore how I can help your project.',
-                action: () => scrollToSection('contact'),
-                buttonText: t(language, 'contact.request'),
-                color: 'from-purple-500 to-purple-600'
+                icon: Github,
+                title: 'GitHub',
+                description: 'Browse my repositories, projects, and code samples.',
+                action: () => window.open('https://github.com/Waynenyarky', '_blank'),
+                buttonText: 'View Profile',
+                color: 'from-gray-800 to-gray-900'
               }
             ].map((method, index) => (
               <div
                 key={index}
-                className={`${bgCard} border ${borderBase} rounded-lg p-4 sm:p-6 transition-all duration-300 hover:border-orange-500 hover:shadow-xl hover:-translate-y-1 ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}
+                className={`${bgCard} border ${borderBase} rounded-xl p-5 sm:p-6 transition-all duration-300 hover:border-orange-500 hover:shadow-xl hover:-translate-y-1 ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'} h-full flex flex-col`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className={`w-12 h-12 bg-gradient-to-br ${method.color} rounded-lg flex items-center justify-center mb-4 transition-transform duration-300 hover:scale-110`}>
-                  <method.icon className="text-white" size={24} />
+                <div className="flex items-start gap-3 mb-3">
+                  <div className={`w-12 h-12 shrink-0 bg-gradient-to-br ${method.color} rounded-lg flex items-center justify-center`}> 
+                    <method.icon className="text-white" size={22} />
+                  </div>
+                  <div>
+                    <h3 className={`text-base sm:text-lg font-bold ${textPrimary}`}>{method.title}</h3>
+                    <p className={`${textSecondary} text-xs sm:text-sm mt-1 leading-relaxed`}>{method.description}</p>
+                  </div>
                 </div>
-                <h3 className={`text-lg font-bold mb-2 ${textPrimary}`}>{method.title}</h3>
-                <p className={`${textSecondary} text-sm mb-4 leading-relaxed`}>{method.description}</p>
-                <button
-                  onClick={method.action}
-                  className="w-full px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105 text-sm"
-                >
-                  {method.buttonText}
-                </button>
+                <div className="mt-auto pt-3">
+                  <button
+                    onClick={method.action}
+                    className="w-full px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors duration-200 text-sm"
+                  >
+                    {method.buttonText}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -942,6 +929,17 @@ const Portfolio = () => {
                 <span className="text-xs font-medium">LinkedIn</span>
               </a>
               <a
+                href="https://github.com/your-github"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}
+              >
+                <div className="w-14 h-14 bg-neutral-800/10 rounded-full flex items-center justify-center group-hover:bg-neutral-800/20 transition-colors">
+                  <Github className="text-neutral-800 dark:text-white" size={24} />
+                </div>
+                <span className="text-xs font-medium">GitHub</span>
+              </a>
+              <a
                 href="mailto:joma.enrique.up@phinmaed.com"
                 className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}
               >
@@ -965,7 +963,12 @@ const Portfolio = () => {
         onClose={() => setShowResumeModal(false)}
       />
 
-      <ContactSupport />
+      <ClientBookingModal
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+      />
+
+      <ContactSupport visibleSections={visibleSections} />
 
       {/* Footer */}
       <footer className={`${bgSection} py-8 sm:py-12 border-t ${borderBase}`}>
@@ -1054,11 +1057,20 @@ const Portfolio = () => {
                 >
                   <Linkedin size={20} />
                 </a>
+              <a
+                href="https://github.com/Waynenyarky"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`}
+                aria-label="GitHub"
+              >
+                <Github size={20} />
+              </a>
               </div>
             </div>
           </div>
           <div className={`pt-6 sm:pt-8 border-t ${borderBase} text-center ${textSecondary} text-xs sm:text-sm`}>
-            © 2024 <span className="text-orange-500 font-semibold">Wayne Enrique</span>. All rights reserved
+            © 2025 <span className="text-orange-500 font-semibold">Wayne Enrique</span>. All rights reserved
           </div>
         </div>
       </footer>
@@ -1072,96 +1084,7 @@ const Portfolio = () => {
         <ArrowUp className="text-white" size={16} />
       </button>
 
-      <style>{`
-        .writing-vertical {
-          writing-mode: vertical-rl;
-          text-orientation: mixed;
-        }
-        
-        @keyframes bounce {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-        
-        .animate-bounce {
-          animation: bounce 2s infinite;
-        }
-
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fadeInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes fadeInRight {
-          from {
-            opacity: 0;
-            transform: translateX(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-
-        @keyframes pulse-slow {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.7;
-          }
-        }
-
-        .animate-fade-in-up {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-
-        .animate-fade-in-left {
-          animation: fadeInLeft 0.8s ease-out forwards;
-        }
-
-        .animate-fade-in-right {
-          animation: fadeInRight 0.8s ease-out forwards;
-        }
-
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-
-        .animate-pulse-slow {
-          animation: pulse-slow 3s ease-in-out infinite;
-        }
-      `}</style>
+      
     </div>
   );
 };

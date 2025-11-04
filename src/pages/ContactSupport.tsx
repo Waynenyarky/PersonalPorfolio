@@ -3,7 +3,11 @@ import { useTheme } from '../theme/useTheme';
 import { useState } from 'react';
 import { sendContactMessage } from '../services/contactService';
 
-export default function ContactSupport() {
+type Props = {
+	visibleSections: Set<string>;
+};
+
+export default function ContactSupport({ visibleSections }: Props) {
   const { theme } = useTheme();
   const textPrimary = theme === 'dark' ? 'text-white' : 'text-black';
   const textSecondary = theme === 'dark' ? 'text-gray-300' : 'text-gray-600';
@@ -46,10 +50,10 @@ export default function ContactSupport() {
   };
 
   return (
-    <section id="contact" className={`min-h-screen py-16 sm:py-24 lg:py-32 ${bgSection}`}>
+    <section id="contact" className={`py-16 sm:py-24 lg:py-32 ${bgSection} ${visibleSections.has('contact') ? 'animate-fade-in-up' : 'opacity-0'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
-          <div>
+          <div className={visibleSections.has('contact') ? 'animate-fade-in-left' : 'opacity-0'}>
             <div className="inline-block mb-3 sm:mb-4">
               <span className={`text-xs sm:text-sm font-semibold tracking-wider uppercase ${theme === 'dark' ? 'text-white' : 'text-gray-700'}`}>Contact</span>
               <div className="h-0.5 w-10 sm:w-12 bg-orange-500 mt-2"></div>
@@ -59,12 +63,12 @@ export default function ContactSupport() {
               <br />
               <span className="text-orange-500">Together</span>
             </h2>
-            <p className={`${textSecondary} mb-8 sm:mb-12 leading-relaxed text-base sm:text-lg`}>
+            <p className={`${textSecondary} mb-6 sm:mb-8 leading-relaxed text-base sm:text-lg`}>
               Have a project in mind? Let's discuss how I can help bring your ideas to life with clean, efficient code and exceptional design.
             </p>
 
-            <div className="space-y-6 sm:space-y-8 mb-8 sm:mb-12">
-              <div className="flex items-start space-x-4 sm:space-x-5 group">
+            <div className="space-y-4 sm:space-y-6 mb-6 sm:mb-8">
+              <div className={`flex items-start space-x-4 sm:space-x-5 group transition-all duration-300 hover:translate-x-2 ${visibleSections.has('contact') ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.1s' }}>
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                   <MapPin size={18} />
                 </div>
@@ -74,7 +78,7 @@ export default function ContactSupport() {
                 </div>
               </div>
 
-              <div className="flex items-start space-x-4 sm:space-x-5 group">
+              <div className={`flex items-start space-x-4 sm:space-x-5 group transition-all duration-300 hover:translate-x-2 ${visibleSections.has('contact') ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                   <Phone size={18} />
                 </div>
@@ -85,7 +89,7 @@ export default function ContactSupport() {
                 </div>
               </div>
 
-              <div className="flex items-start space-x-4 sm:space-x-5 group">
+              <div className={`flex items-start space-x-4 sm:space-x-5 group transition-all duration-300 hover:translate-x-2 ${visibleSections.has('contact') ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                   <Mail size={18} />
                 </div>
@@ -97,7 +101,7 @@ export default function ContactSupport() {
               </div>
             </div>
 
-            <div className="flex gap-3 sm:gap-4">
+            <div className={`flex gap-3 sm:gap-4 ${visibleSections.has('contact') ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s' }}>
               <a href="#" className={`w-10 h-10 sm:w-12 sm:h-12 ${bgCard} border ${borderBase} rounded-xl flex items-center justify-center hover:scale-110 transition-all duration-300`}>
                 <Facebook size={18} className={`${textPrimary}`} />
               </a>
@@ -113,7 +117,7 @@ export default function ContactSupport() {
             </div>
           </div>
 
-          <div className={`${bgCard} rounded-2xl p-4 sm:p-6 lg:p-8 border ${borderBase}`}>
+          <div className={`${bgCard} rounded-2xl p-4 sm:p-6 lg:p-8 border ${borderBase} transition-all duration-300 hover:shadow-lg ${visibleSections.has('contact') ? 'animate-fade-in-right' : 'opacity-0'}`}>
             <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label className={`block text-sm font-semibold mb-2 sm:mb-3 ${textSecondary}`}>Full Name</label>

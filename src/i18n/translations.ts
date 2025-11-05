@@ -51,6 +51,10 @@ const translations: LocaleMap = {
   'portfolio.heading1': { en: 'Featured', fil: 'Tampok' },
   'portfolio.heading2': { en: 'Projects', fil: 'Mga Proyekto' },
   'portfolio.subtitle': { en: 'Delivering high-quality, scalable solutions with clean architecture and exceptional user experiences.', fil: 'Nagbibigay ng de-kalidad at nasusukat na solusyon na may malinis na arkitektura at mahusay na karanasan ng gumagamit.' },
+  'portfolio.filter.category': { en: 'Category', fil: 'Kategorya' },
+  'portfolio.filter.tech': { en: 'Tech', fil: 'Teknolohiya' },
+  'portfolio.filter.all': { en: 'All', fil: 'Lahat' },
+  'portfolio.filter.placeholder': { en: 'e.g. React, Node', fil: 'hal. React, Node' },
 
   // Services
   'services.section': { en: 'What I Offer', fil: 'Ano ang Aking Inaalok' },

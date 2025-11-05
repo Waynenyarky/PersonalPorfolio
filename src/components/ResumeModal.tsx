@@ -66,6 +66,15 @@ export default function ResumeModal({ isOpen, onClose }: Props) {
               <span className="hidden sm:inline">Download</span>
               <span className="sm:hidden">Download CV</span>
             </a>
+            <a
+              href={myCv}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg border ${borderBase} hover:border-orange-500 transition-all duration-200 font-medium ${textPrimary} hover:bg-orange-500/10 flex items-center justify-center gap-2 ${focusRing} text-sm sm:text-base`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span>Open in new tab</span>
+            </a>
             <button
               aria-label="Close modal"
               className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-md border ${borderBase} hover:border-orange-500 flex items-center justify-center transition-colors ${textPrimary} ${focusRing}`}
@@ -76,15 +85,27 @@ export default function ResumeModal({ isOpen, onClose }: Props) {
           </div>
         </div>
 
-        {/* PDF Viewer */}
+        {/* PDF Viewer */
+        }
         <div className="p-3 sm:p-4 lg:p-6">
           <div className={`w-full h-[calc(95vh-120px)] sm:h-[calc(90vh-140px)] border ${borderBase} rounded-lg overflow-hidden`}>
             <iframe
               src={`${myCv}#toolbar=1&navpanes=0&scrollbar=1`}
+              loading="lazy"
               className="w-full h-full"
               title="Resume PDF"
               style={{ minHeight: '400px' }}
             />
+          </div>
+          <div className="mt-3 sm:hidden">
+            <a
+              href={myCv}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`inline-block px-4 py-2 rounded-lg border ${borderBase} ${textPrimary} hover:border-orange-500 transition-colors`}
+            >
+              Open in new tab
+            </a>
           </div>
         </div>
       </div>

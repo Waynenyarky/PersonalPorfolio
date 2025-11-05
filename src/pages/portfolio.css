@@ -189,3 +189,237 @@
 .rating-star:hover .lucide {
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
 }
+
+/* Professional scrollbar styling */
+.projects-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(229, 231, 235, 0.3);
+}
+
+.dark .projects-scrollable {
+  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(17, 24, 39, 0.5);
+}
+
+.projects-scrollable::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.projects-scrollable::-webkit-scrollbar-track {
+  background: rgba(229, 231, 235, 0.3);
+  border-radius: 4px;
+}
+
+.dark .projects-scrollable::-webkit-scrollbar-track {
+  background: rgba(17, 24, 39, 0.5);
+}
+
+.projects-scrollable::-webkit-scrollbar-thumb {
+  background: rgba(249, 115, 22, 0.4);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.projects-scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(249, 115, 22, 0.6);
+}
+
+/* Responsive max-height for scrollable projects */
+@media (max-width: 639px) {
+  .projects-scrollable {
+    max-height: calc(2 * (280px + 2rem)) !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .projects-scrollable {
+    max-height: calc(2 * (350px + 2rem)) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .projects-scrollable {
+    max-height: calc(2 * (420px + 2rem)) !important;
+  }
+}
+
+/* Professional dropdown styling */
+.professional-dropdown {
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+}
+
+.professional-dropdown[style*="z-index"] {
+  position: relative;
+}
+
+.professional-dropdown select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+  cursor: pointer;
+  padding-right: 2.75rem;
+}
+
+.professional-dropdown .dropdown-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: all 0.2s ease;
+  color: currentColor;
+  opacity: 0.6;
+  z-index: 5;
+}
+
+.dark .professional-dropdown .dropdown-icon {
+  opacity: 0.7;
+}
+
+.professional-dropdown:hover .dropdown-icon,
+.professional-dropdown:focus-within .dropdown-icon {
+  color: rgb(249, 115, 22);
+  opacity: 1;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.professional-dropdown select:focus ~ .dropdown-icon {
+  color: rgb(249, 115, 22);
+  opacity: 1;
+}
+
+/* Dropdown option animations */
+.dropdown-option {
+  animation: fadeInUp 0.3s ease-out forwards;
+  opacity: 0;
+}
+
+.dropdown-option[data-index="0"] {
+  animation-delay: 0s;
+}
+
+.dropdown-option[data-index="1"] {
+  animation-delay: 0.02s;
+}
+
+.dropdown-option[data-index="2"] {
+  animation-delay: 0.04s;
+}
+
+.dropdown-option[data-index="3"] {
+  animation-delay: 0.06s;
+}
+
+.dropdown-option[data-index="4"] {
+  animation-delay: 0.08s;
+}
+
+.dropdown-option[data-index="5"] {
+  animation-delay: 0.1s;
+}
+
+.dropdown-option[data-index="6"] {
+  animation-delay: 0.12s;
+}
+
+.dropdown-option[data-index="7"] {
+  animation-delay: 0.14s;
+}
+
+.dropdown-option[data-index="8"] {
+  animation-delay: 0.16s;
+}
+
+.dropdown-option[data-index="9"] {
+  animation-delay: 0.18s;
+}
+
+.dropdown-option[data-index] {
+  opacity: 1;
+}
+
+/* Smooth dropdown container animation */
+@keyframes dropdownSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-container-enter {
+  animation: dropdownSlideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.dropdown-container-enter-active {
+  animation: dropdownSlideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Dropdown options container - max 5 items visible, scrollable if more */
+.dropdown-options-container {
+  /* Each item: py-3.5 (28px) + text height (~20px) + border (1px) ≈ 49px per item */
+  /* 5 items = ~245px, rounded to 240px for safety */
+  max-height: 240px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  /* Hide scrollbar initially */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera initially */
+.dropdown-options-container::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+
+.dropdown-options-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown-options-container::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+/* Show scrollbar on hover or when scrolling */
+.dropdown-options-container.has-scroll:hover::-webkit-scrollbar-thumb,
+.dropdown-options-container.has-scroll:active::-webkit-scrollbar-thumb,
+.dropdown-options-container.has-scroll:focus::-webkit-scrollbar-thumb,
+.dropdown-options-container.has-scroll.is-scrolling::-webkit-scrollbar-thumb {
+  background: rgba(249, 115, 22, 0.4);
+}
+
+.dropdown-options-container.has-scroll:hover::-webkit-scrollbar-thumb:hover {
+  background: rgba(249, 115, 22, 0.6);
+}
+
+/* Show scrollbar in Firefox when scrolling */
+.dropdown-options-container.has-scroll:hover,
+.dropdown-options-container.has-scroll.is-scrolling {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-options-container.has-scroll:active {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode scrollbar */
+.dark .dropdown-options-container.has-scroll:hover,
+.dark .dropdown-options-container.has-scroll.is-scrolling {
+  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(17, 24, 39, 0.5);
+}
+
+.dark .dropdown-options-container.has-scroll:active {
+  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(17, 24, 39, 0.5);
+}

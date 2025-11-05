@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import './portfolio.css';
 import { Facebook, Twitter, Linkedin, Github, MessageSquare, ChevronDown, Award, CheckCircle, Users, Code, GitBranch, ArrowUp, Terminal, Package, FileCode, Figma, Paintbrush, Palette, Database, Server, Smartphone, Layout, Box, Zap, Shield, Calendar, Mail, Menu, X } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
-import ProjectModal from '../components/ProjectModal';
-import ResumeModal from '../components/ResumeModal';
+const ProjectModal = lazy(() => import('../components/ProjectModal'));
+const ResumeModal = lazy(() => import('../components/ResumeModal'));
 import { useTheme } from '../theme/useTheme';
-import ClientReviews from './ClientReviews';
+import SectionHeader from '../components/SectionHeader';
+import ProjectCard from '../components/ProjectCard';
+import CTAButtons from '../components/CTAButtons';
+const ClientReviews = lazy(() => import('./ClientReviews'));
 import { t, type Language } from '../i18n/translations';
 import ContactSupport from './ContactSupport';
 import ClientBookingModal from './ClientBookingModal';
+import ProfessionalDropdown from '../components/ProfessionalDropdown';
 import formalImg from '../assets/formal.png';
 import myCv from '../assets/MyCV.pdf';
 import { projects } from '../data/projects';
@@ -25,6 +29,8 @@ const Portfolio = () => {
   const [activeSection, setActiveSection] = useState<string>('home');
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [filterCategory, setFilterCategory] = useState<string>('');
+  const [filterTech, setFilterTech] = useState<string>('');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,6 +52,23 @@ const Portfolio = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Sync filters with URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('category') || '';
+    const tech = params.get('tech') || '';
+    setFilterCategory(cat);
+    setFilterTech(tech);
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (filterCategory) params.set('category', filterCategory); else params.delete('category');
+    if (filterTech) params.set('tech', filterTech); else params.delete('tech');
+    const next = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, '', next);
+  }, [filterCategory, filterTech]);
 
 
   useEffect(() => {
@@ -100,8 +123,8 @@ const Portfolio = () => {
    ];
 
   const stats = [
-    { icon: Award, value: '1+', label: 'Years of Experience', color: 'text-orange-500' },
-    { icon: CheckCircle, value: '4+', label: 'Completed Projects', color: 'text-green-500' },
+    { icon: Award, value: '3+', label: 'Years of Experience', color: 'text-orange-500' },
+    { icon: CheckCircle, value: '6+', label: 'Completed Projects', color: 'text-green-500' },
     { icon: Users, value: '2+', label: 'Happy Clients', color: 'text-blue-500' },
   ];
 
@@ -182,15 +205,20 @@ const Portfolio = () => {
 
             {/* Desktop utilities */}
             <div className="hidden md:flex items-center space-x-3">
-              <select
+              <ProfessionalDropdown
                 value={language}
-                onChange={(e) => setLanguage(e.target.value as Language)}
-                className={`${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer transition-all duration-300 hover:border-orange-500/50`}
+                onChange={(val) => setLanguage(val as Language)}
+                options={[
+                  { value: 'en', label: t(language, 'lang.english') },
+                  { value: 'fil', label: t(language, 'lang.filipino') },
+                ]}
+                className="min-w-[120px]"
+                inputBg={inputBg}
+                borderBase={borderBase}
+                textPrimary={textPrimary}
+                textSecondary={textSecondary}
                 aria-label={t(language, 'lang.select')}
-              >
-                <option value="en">{t(language, 'lang.english')}</option>
-                <option value="fil">{t(language, 'lang.filipino')}</option>
-              </select>
+              />
               <ThemeToggle className="w-9 h-9 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-110" size={18} />
             </div>
 
@@ -240,15 +268,20 @@ const Portfolio = () => {
                 })}
               </div>
               <div className={`flex items-center justify-between pt-4 border-t ${borderBase}`}>
-                <select
+                <ProfessionalDropdown
                   value={language}
-                  onChange={(e) => setLanguage(e.target.value as Language)}
-                  className={`${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer transition-all duration-300 hover:border-orange-500/50`}
+                  onChange={(val) => setLanguage(val as Language)}
+                  options={[
+                    { value: 'en', label: t(language, 'lang.english') },
+                    { value: 'fil', label: t(language, 'lang.filipino') },
+                  ]}
+                  className="flex-1"
+                  inputBg={inputBg}
+                  borderBase={borderBase}
+                  textPrimary={textPrimary}
+                  textSecondary={textSecondary}
                   aria-label={t(language, 'lang.select')}
-                >
-                  <option value="en">{t(language, 'lang.english')}</option>
-                  <option value="fil">{t(language, 'lang.filipino')}</option>
-                </select>
+                />
                 <ThemeToggle size={20} />
               </div>
             </div>
@@ -257,7 +290,7 @@ const Portfolio = () => {
       </nav>
 
       {/* Hero Section */}
-      <section id="home" className={`min-h-screen flex items-center justify-center relative pt-20 sm:pt-24 overflow-hidden ${bgSection}`}>
+      <section id="home" className={`min-h-screen flex items-center justify-center relative pt-16 sm:pt-20 overflow-hidden ${bgSection}`}>
         {/* Subtle Background Effects with Animation */}
         <div className="absolute inset-0 bg-linear-to-b from-orange-500/5 to-transparent pointer-events-none"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
@@ -331,21 +364,15 @@ const Portfolio = () => {
             {t(language, 'hero.title.line2')}
           </h2>
           
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
-            <button 
-              onClick={() => scrollToSection('contact')}
-              className="group relative px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-orange-500/50 hover:scale-105 overflow-hidden"
-            >
-              <span className="relative z-10">{t(language, 'cta.getInTouch')}</span>
-              <div className="absolute inset-0 bg-linear-to-r from-orange-600 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </button>
-            <button
-              onClick={() => setShowResumeModal(true)}
-              className={`group relative px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base border-2 ${borderBase} hover:border-orange-500 ${textPrimary} font-semibold rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-md bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm`}
-            >
-              <span className="relative z-10">{t(language, 'cta.viewResume')}</span>
-              <ArrowUp className="inline-block ml-2 rotate-45 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 relative z-10" size={14} />
-            </button>
+          <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+            <CTAButtons
+              onPrimary={() => scrollToSection('contact')}
+              onSecondary={() => setShowResumeModal(true)}
+              primaryText={t(language, 'cta.getInTouch')}
+              secondaryText={t(language, 'cta.viewResume')}
+              borderBaseClass={borderBase}
+              textPrimaryClass={textPrimary}
+            />
           </div>
         </div>
 
@@ -364,16 +391,16 @@ const Portfolio = () => {
       </section>
 
       {/* About Section */}
-       <section id="about" className={`py-16 sm:py-24 lg:py-32 ${bgSection} ${visibleSections.has('about') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="about" className={`py-12 sm:py-16 lg:py-20 ${bgSection} ${visibleSections.has('about') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-10 sm:mb-12 lg:mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10 lg:mb-12">
             {stats.map((stat, index) => (
-               <div
-                 key={index}
-                 className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 ${visibleSections.has('about') ? `animate-fade-in-up` : 'opacity-0'}`}
-                 style={{ animationDelay: `${index * 0.1}s` }}
-               >
+              <div
+                key={index}
+                className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 ${visibleSections.has('about') ? 'animate-fade-in-up' : 'opacity-0'}`}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
                 <div className="flex items-center space-x-4">
                   <div className={`w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center transition-transform duration-300 hover:scale-110`}>
                     <stat.icon size={24} className="text-orange-500" />
@@ -432,12 +459,12 @@ const Portfolio = () => {
       </section>
 
       {/* Skills Section */}
-       <section id="skills" className={`py-16 sm:py-24 lg:py-32 ${bgSkillsSection} ${visibleSections.has('skills') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="skills" className={`py-12 sm:py-16 lg:py-20 ${bgSkillsSection} ${visibleSections.has('skills') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12 items-start">
             <div className={`lg:col-span-2 mb-8 lg:mb-0 ${visibleSections.has('skills') ? 'animate-fade-in-left' : 'opacity-0'}`}>
-               <div className="mb-3 sm:mb-4">
-                 <span className={`text-xs font-semibold tracking-wider uppercase ${textSecondary}`}>{t(language, 'skills.section')}</span>
+              <div className="mb-3 sm:mb-4">
+                <span className={`text-xs font-semibold tracking-wider uppercase ${textSecondary}`}>{t(language, 'skills.section')}</span>
                 <div className="h-0.5 w-10 bg-orange-500 mt-2"></div>
               </div>
               <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight ${textPrimary}`}>
@@ -472,17 +499,17 @@ const Portfolio = () => {
               </div>
             </div>
 
-             <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+            <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
               {(activeTab === 'skills' ? skills : tools).map((item, index) => (
-               <div
+                <div
                   key={index}
-                   className={`${bgCard} rounded-lg p-4 border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 aspect-square flex flex-col items-center justify-center ${visibleSections.has('skills') ? 'animate-fade-in-up' : 'opacity-0'}`}
-                   style={{ animationDelay: `${index * 0.05}s` }}
+                  className={`${bgCard} rounded-lg p-4 border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 aspect-square flex flex-col items-center justify-center ${visibleSections.has('skills') ? 'animate-fade-in-up' : 'opacity-0'}`}
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <item.icon className={`${textPrimary} mb-2 transition-transform duration-300 group-hover:scale-110`} size={28} />
                   <span className={`text-xs font-medium ${textPrimary} text-center leading-tight`}>{item.name}</span>
                 </div>
-               ))}
+              ))}
             </div>
           </div>
 
@@ -490,95 +517,121 @@ const Portfolio = () => {
       </section>
 
       {/* Portfolio Section */}
-      <section id="portfolio" className={`py-16 sm:py-24 lg:py-32 ${bgSection} ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className={`text-center mb-10 sm:mb-12 lg:mb-16 ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'}`}>
-            <div className="inline-block mb-4">
-              <span className={`text-xs font-semibold tracking-wider uppercase ${textSecondary}`}>{t(language, 'portfolio.section')}</span>
-              <div className="h-0.5 w-10 bg-orange-500 mt-2 mx-auto"></div>
-            </div>
-            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 ${textPrimary}`}>
-              {t(language, 'portfolio.heading1')} <span className="text-orange-500">{t(language, 'portfolio.heading2')}</span>
-            </h2>
-            <p className={`${textSecondary} text-sm sm:text-base max-w-2xl mx-auto px-4 sm:px-0`}>
-              {t(language, 'portfolio.subtitle')}
-            </p>
+      <section id="portfolio" className={`py-12 sm:py-16 lg:py-20 ${bgSection} ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'} overflow-visible`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 overflow-visible">
+          <div className={`${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+            <SectionHeader
+              label={t(language, 'portfolio.section')}
+              title={<><span className={`${textPrimary}`}>{t(language, 'portfolio.heading1')} </span><span className="text-orange-500">{t(language, 'portfolio.heading2')}</span></>}
+              subtitle={t(language, 'portfolio.subtitle')}
+              align="center"
+              textPrimaryClass={textPrimary}
+              textSecondaryClass={textSecondary}
+            />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {projects.map((project, index) => (
-              <div
-                key={project.id}
-                onClick={() => setSelectedProject(project)}
-                className={`group ${bgCard} rounded-lg overflow-hidden border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-xl hover:-translate-y-1 cursor-pointer ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'} relative`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                {/* Image Header */}
-                <div className={`aspect-16/10 bg-linear-to-br ${project.gradient} flex items-center justify-center relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300"></div>
-                  <Code className="text-white/80 group-hover:text-white transition-all duration-300 group-hover:scale-110" size={48} />
-                  
-                  {/* Category Badge - Top Left */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold tracking-wider uppercase bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-orange-600 dark:text-orange-400 shadow-lg`}>
-                      {project.category}
-                    </span>
-                  </div>
-                  
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                    <div className="w-full p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-white text-base font-bold mb-1 truncate">{project.title}</h4>
-                          <p className="text-white/70 text-xs line-clamp-1">{project.tech.split(',').slice(0, 3).join(', ')}</p>
-                        </div>
-                        <div className="shrink-0 bg-white/20 backdrop-blur-sm rounded-lg p-2">
-                          <ArrowUp className="text-white rotate-45" size={16} />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          {/* Filters */}
+          <div className={`mb-6 ${bgCard} border ${borderBase} rounded-lg p-3 sm:p-4 transition-all duration-300 ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'} overflow-visible`}>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-2 relative">
+                <label className={`text-xs ${textSecondary}`}>{t(language, 'portfolio.filter.category')}</label>
+                <ProfessionalDropdown
+                  value={filterCategory}
+                  onChange={setFilterCategory}
+                  options={[
+                    { value: '', label: t(language, 'portfolio.filter.all') },
+                    ...Array.from(new Set(projects.map(p => p.category))).map((cat) => ({
+                      value: cat,
+                      label: cat,
+                    })),
+                  ]}
+                  className="min-w-[160px] max-w-[160px]"
+                  inputBg={inputBg}
+                  borderBase={borderBase}
+                  textPrimary={textPrimary}
+                  textSecondary={textSecondary}
+                  aria-label="Filter projects by category"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className={`text-xs ${textSecondary}`}>{t(language, 'portfolio.filter.tech')}</label>
+                <input
+                  type="text"
+                  value={filterTech}
+                  onChange={(e) => setFilterTech(e.target.value)}
+                  placeholder={t(language, 'portfolio.filter.placeholder')}
+                  className={`w-full sm:w-[220px] ${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200 hover:border-orange-500/60`}
+                />
+                {(filterCategory || filterTech) && (
+                  <button
+                    onClick={() => { setFilterCategory(''); setFilterTech(''); }}
+                    className="px-3 py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-800 hover:border-orange-500 transition-all duration-200 hover:scale-[1.02]"
+                    aria-label="Clear filters"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+            {(filterCategory || filterTech) && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {filterCategory && (
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-orange-500/10 text-orange-600 border border-orange-300/40 transition-all duration-200 hover:scale-[1.02]">
+                    Category: {filterCategory}
+                    <button className="ml-1" aria-label="Remove category filter" onClick={() => setFilterCategory('')}>×</button>
+                  </span>
+                )}
+                {filterTech && (
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-blue-500/10 text-blue-600 border border-blue-300/40 transition-all duration-200 hover:scale-[1.02]">
+                    Tech: {filterTech}
+                    <button className="ml-1" aria-label="Remove tech filter" onClick={() => setFilterTech('')}>×</button>
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
 
-                {/* Content Section */}
-                <div className="p-6">
-                  <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 group-hover:text-orange-500 ${textPrimary} leading-tight`}>
-                    {project.title}
-                  </h3>
-                  
-                  {/* Tech Stack - Professional Tags */}
-                  <div className="mb-4">
-                    <div className="flex flex-wrap gap-2">
-                      {project.tech.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 5).map((tag, i) => (
-                        <span 
-                          key={i} 
-                          className={`px-3 py-1 rounded-lg text-[11px] font-medium tracking-wide border ${borderBase} ${textSecondary} bg-gray-50 dark:bg-gray-800/50 hover:border-orange-500/50 transition-colors`}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Action Footer */}
-                  <div className={`pt-4 border-t ${borderBase} flex items-center justify-between`}>
-                    <span className={`text-xs font-medium ${textSecondary} group-hover:text-orange-500 transition-colors`}>
-                      View Project
-                    </span>
-                    <div className="flex items-center gap-2 text-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <ArrowUp className="rotate-45" size={14} />
-                    </div>
-                  </div>
+          {(() => {
+            const filteredProjects = projects
+              .filter((p) => !filterCategory || p.category === filterCategory)
+              .filter((p) => {
+                if (!filterTech) return true;
+                const q = filterTech.toLowerCase();
+                return p.tech.toLowerCase().includes(q) || p.title.toLowerCase().includes(q);
+              });
+            const hasMoreThanSix = filteredProjects.length > 6;
+            
+            return (
+              <div className="relative">
+                <div
+                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 ${
+                    hasMoreThanSix
+                      ? 'projects-scrollable overflow-y-auto pb-4'
+                      : ''
+                  }`}
+                >
+                  {filteredProjects.map((project, index) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      index={index}
+                      bgCardClass={bgCard}
+                      borderBaseClass={borderBase}
+                      textPrimaryClass={textPrimary}
+                      textSecondaryClass={textSecondary}
+                      visible={visibleSections.has('portfolio')}
+                      onSelect={setSelectedProject}
+                    />
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })()}
         </div>
       </section>
 
       {/* Services Section */}
-      <section id="services" className={`py-16 sm:py-24 lg:py-32 ${bgSkillsSection} ${visibleSections.has('services') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="services" className={`py-12 sm:py-16 lg:py-20 ${bgSkillsSection} ${visibleSections.has('services') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className={`text-center mb-10 sm:mb-12 lg:mb-16 ${visibleSections.has('services') ? 'animate-fade-in-up' : 'opacity-0'}`}>
             <div className="inline-block mb-4">
@@ -656,10 +709,12 @@ const Portfolio = () => {
         </div>
       </section>
 
-      <ClientReviews language={language} visibleSections={visibleSections} />
+      <Suspense fallback={<div className={`py-12 sm:py-16 lg:py-20 ${bgSection}`}><div className="max-w-7xl mx-auto px-4 sm:px-6 text-center"><p className={textSecondary}>Loading reviews...</p></div></div>}>
+        <ClientReviews language={language} visibleSections={visibleSections} />
+      </Suspense>
 
       {/* CTA Section */}
-      <section id="cta" className={`py-12 sm:py-16 lg:py-20 ${bgSection} relative overflow-hidden ${visibleSections.has('cta') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="cta" className={`py-10 sm:py-12 lg:py-16 ${bgSection} relative overflow-hidden ${visibleSections.has('cta') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="absolute inset-0 bg-linear-to-r from-orange-500/10 to-orange-600/10"></div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 ${textPrimary}`}>
@@ -687,7 +742,7 @@ const Portfolio = () => {
       </section>
 
       {/* Engagement Section */}
-      <section id="engagement" className={`py-16 sm:py-20 lg:py-24 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="engagement" className={`py-12 sm:py-16 lg:py-20 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 items-start">
             {/* How We Work */}
@@ -758,7 +813,7 @@ const Portfolio = () => {
       </section>
 
       {/* Interactive Engagement Section */}
-      <section className={`py-16 sm:py-20 lg:py-24 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section className={`py-12 sm:py-16 lg:py-20 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className={`text-center mb-8 sm:mb-10 lg:mb-12 ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
             <div className="inline-block mb-4">
@@ -898,15 +953,19 @@ const Portfolio = () => {
         </div>
       </section>
 
-      <ProjectModal
-        project={selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
+      <Suspense fallback={null}>
+        <ProjectModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      </Suspense>
 
-      <ResumeModal
-        isOpen={showResumeModal}
-        onClose={() => setShowResumeModal(false)}
-      />
+      <Suspense fallback={null}>
+        <ResumeModal
+          isOpen={showResumeModal}
+          onClose={() => setShowResumeModal(false)}
+        />
+      </Suspense>
 
       <ClientBookingModal
         isOpen={showBookingModal}
@@ -1021,13 +1080,19 @@ const Portfolio = () => {
       </footer>
 
       {/* Scroll to Top Button */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors duration-200 shadow-lg z-50"
-        aria-label="Scroll to top"
+      <div
+        className={`fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 transition-all duration-300 ${
+          activeSection !== 'home' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
+        }`}
       >
-        <ArrowUp className="text-white" size={16} />
-      </button>
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors duration-200 shadow-lg"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="text-white" size={16} />
+        </button>
+      </div>
 
       
     </div>

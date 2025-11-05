@@ -30,6 +30,13 @@ export default function ContactSupport({ visibleSections }: Props) {
     setIsSubmitting(true);
     setStatusType('');
     setStatusText('');
+    // Validate PH mobile format: exactly 11 digits starting with 09
+    if (!/^09\d{9}$/.test(phone)) {
+      setStatusType('error');
+      setStatusText('Please enter a valid PH mobile number (11 digits, starts with 09).');
+      setIsSubmitting(false);
+      return;
+    }
     const result = await sendContactMessage({
       full_name: fullName,
       email,
@@ -155,10 +162,23 @@ export default function ContactSupport({ visibleSections }: Props) {
                   <Phone className={`absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 ${textSecondary}`} size={18} />
                   <input
                     type="tel"
+                    inputMode="numeric"
+                    pattern="^09\\d{9}$"
+                    maxLength={11}
                     placeholder="Enter your phone number"
                     className={`w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-xl pl-10 sm:pl-12 pr-4 py-3 sm:py-4 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 placeholder-gray-500 dark:placeholder-gray-400`}
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+                      setPhone(digits);
+                    }}
+                    onKeyDown={(e) => {
+                      const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+                      if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    required
                   />
                 </div>
               </div>
@@ -194,7 +214,11 @@ export default function ContactSupport({ visibleSections }: Props) {
               </div>
 
               {statusText && (
-                <div className={`${statusType === 'success' ? 'text-green-500' : 'text-red-500'} text-sm font-medium`}>
+                <div
+                  className={`${statusType === 'success' ? 'text-green-500' : 'text-red-500'} text-sm font-medium`}
+                  role="status"
+                  aria-live="polite"
+                >
                   {statusText}
                 </div>
               )}

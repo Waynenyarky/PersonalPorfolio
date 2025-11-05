@@ -32,6 +32,7 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 	const [showEmailUnavailableModal, setShowEmailUnavailableModal] = useState(false);
 	const [showServiceUnavailableModal, setShowServiceUnavailableModal] = useState(false);
 	const [showReviewSentModal, setShowReviewSentModal] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [submittedReviewerName, setSubmittedReviewerName] = useState<string>('');
 	const [submittedRating, setSubmittedRating] = useState<number>(5);
 	const [reviewData, setReviewData] = useState({
@@ -144,6 +145,7 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 						<form
 							onSubmit={async (e) => {
 								e.preventDefault();
+								setIsSubmitting(true);
 								try {
 									const resp = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/reviews/`, {
 										method: 'POST',
@@ -192,6 +194,8 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 										// Other error - show service unavailable
 										setShowServiceUnavailableModal(true);
 									}
+								} finally {
+									setIsSubmitting(false);
 								}
 							}}
 							className="space-y-3 sm:space-y-4"
@@ -263,10 +267,11 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 							</div>
 							<button
 								type="submit"
-								className="w-full px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
+								disabled={isSubmitting}
+								className={`w-full px-6 py-3 ${isSubmitting ? 'bg-orange-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'} text-white font-semibold rounded-lg transition-all duration-300 shadow-md ${isSubmitting ? '' : 'hover:shadow-lg hover:scale-105'} flex items-center justify-center gap-2`}
 							>
-								<Send size={18} />
-								{t(language, 'reviewForm.submit')}
+								<Send size={18} className={isSubmitting ? 'animate-spin' : ''} />
+								{isSubmitting ? 'Submitting Review...' : t(language, 'reviewForm.submit')}
 							</button>
 						</form>
 					)}

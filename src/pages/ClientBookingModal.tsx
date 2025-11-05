@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, User, Mail, Phone, Building2, Briefcase, Calendar, DollarSign, Clock, MessageSquare, FileText, CheckCircle } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
 import { submitBooking } from '../services/bookingService';
-import ResendServiceUnavailableModal from '../components/ResendServiceUnavailableModal';
+import EmailServiceUnavailableModal from '../components/EmailServiceUnavailableModal';
 import BookingServiceUnavailableModal from '../components/BookingServiceUnavailableModal';
 
 type Props = {
@@ -423,7 +423,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
       </div>
 
       {/* Email Service Unavailable Modal */}
-      <ResendServiceUnavailableModal
+      <EmailServiceUnavailableModal
         isOpen={showEmailUnavailableModal}
         onClose={() => setShowEmailUnavailableModal(false)}
       />
@@ -431,7 +431,49 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
       {/* Booking Service Unavailable Modal */}
       <BookingServiceUnavailableModal
         isOpen={showServiceUnavailableModal}
-        onClose={() => setShowServiceUnavailableModal(false)}
+        onClose={() => {
+          setShowServiceUnavailableModal(false);
+          // Reset form if user closes without sending email
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            company: '',
+            projectType: '',
+            projectDescription: '',
+            timeline: '',
+            budget: '',
+            preferredContact: 'email',
+            preferredDate: '',
+            preferredTime: '',
+            additionalNotes: ''
+          });
+        }}
+        bookingData={formData}
+        onEmailSent={() => {
+          setShowServiceUnavailableModal(false);
+          setStatusType('success');
+          setStatusText("Booking sent via email! We'll contact you soon.");
+          // Reset form after email sent
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            company: '',
+            projectType: '',
+            projectDescription: '',
+            timeline: '',
+            budget: '',
+            preferredContact: 'email',
+            preferredDate: '',
+            preferredTime: '',
+            additionalNotes: ''
+          });
+          // Close modal after 3 seconds
+          setTimeout(() => {
+            onClose();
+          }, 3000);
+        }}
       />
     </div>
   );

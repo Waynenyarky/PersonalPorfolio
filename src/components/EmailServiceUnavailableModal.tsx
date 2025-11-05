@@ -7,7 +7,7 @@ type Props = {
   onClose: () => void;
 };
 
-export default function ResendServiceUnavailableModal({ isOpen, onClose }: Props) {
+export default function EmailServiceUnavailableModal({ isOpen, onClose }: Props) {
   const { theme } = useTheme();
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +35,7 @@ export default function ResendServiceUnavailableModal({ isOpen, onClose }: Props
       className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="resend-unavailable-title"
+      aria-labelledby="email-unavailable-title"
       onClick={onClose}
     >
       {/* Backdrop */}
@@ -73,7 +73,7 @@ export default function ResendServiceUnavailableModal({ isOpen, onClose }: Props
           </div>
 
           {/* Title */}
-          <h2 id="resend-unavailable-title" className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3 ${textPrimary}`}>
+          <h2 id="email-unavailable-title" className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3 ${textPrimary}`}>
             Email Service Unavailable
           </h2>
 

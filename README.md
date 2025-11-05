@@ -48,7 +48,10 @@ Create a `.env` file in the project root:
 
 ```env
 VITE_API_BASE_URL=http://localhost:8000
+VITE_WEB3FORMS_ACCESS_KEY=your-web3forms-access-key
 ```
+
+**Note:** `VITE_WEB3FORMS_ACCESS_KEY` is optional but recommended. If provided, reviews can still be sent via email even when the backend server is down.
 
 #### Start Development Servers
 
@@ -105,7 +108,7 @@ PGPORT=5432
 PGDATABASE=personal_portfolio
 PGUSER=postgres
 PGPASSWORD=your-postgres-password
-RESEND_API_KEY=your-resend-api-key
+WEB3FORMS_ACCESS_KEY=your-web3forms-access-key
 ADMIN_API_KEY=Pass_123
 ```
 
@@ -118,7 +121,7 @@ ADMIN_API_KEY=Pass_123
 - `PGDATABASE`: Database name
 - `PGUSER`: PostgreSQL username
 - `PGPASSWORD`: PostgreSQL password
-- `RESEND_API_KEY`: API key from Resend.com for email notifications
+- `WEB3FORMS_ACCESS_KEY`: Access key from Web3Forms.com for email notifications
 - `ADMIN_API_KEY`: Admin authentication key (use in admin panel)
 
 #### Database Setup
@@ -319,11 +322,11 @@ PersonalPorfolio/
 
 ## 📧 Email Configuration
 
-The application uses Resend for email notifications. To set up:
+The application uses Web3Forms for email notifications. To set up:
 
-1. Sign up at [Resend.com](https://resend.com)
-2. Get your API key
-3. Add it to `backend/.env` as `RESEND_API_KEY`
+1. Sign up at [Web3Forms.com](https://web3forms.com)
+2. Enter your email address (`joma.enrique.up@phinmaed.com`) to get your access key
+3. Add it to `backend/.env` as `WEB3FORMS_ACCESS_KEY`
 4. Emails are sent to: `joma.enrique.up@phinmaed.com`
 
 ## 🌐 API Endpoints

@@ -76,7 +76,7 @@ export default function ProjectModal({ project, onClose }: Props) {
         </div>
 
         {/* Body */}
-        <div className="p-4 sm:p-6 lg:p-8 overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-160px)]">
+        <div className="p-4 sm:p-6 lg:p-8 overflow-y-auto overscroll-contain max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-160px)]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
             <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase}`}>
               <h3 className={`text-sm sm:text-base font-semibold mb-2 ${textPrimary}`}>Description</h3>

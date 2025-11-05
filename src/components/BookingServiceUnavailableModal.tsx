@@ -1,15 +1,35 @@
-import { useEffect, useRef } from 'react';
-import { AlertTriangle, X, Server } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { AlertTriangle, X, Server, Mail, CheckCircle } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
+
+type BookingFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  company?: string;
+  projectType: string;
+  projectDescription: string;
+  timeline: string;
+  budget?: string;
+  preferredContact: string;
+  preferredDate?: string;
+  preferredTime?: string;
+  additionalNotes?: string;
+};
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
+  bookingData?: BookingFormData;
+  onEmailSent?: () => void;
 };
 
-export default function BookingServiceUnavailableModal({ isOpen, onClose }: Props) {
+export default function BookingServiceUnavailableModal({ isOpen, onClose, bookingData, onEmailSent }: Props) {
   const { theme } = useTheme();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailError, setEmailError] = useState(false);
 
   const textPrimary = theme === 'dark' ? 'text-white' : 'text-black';
   const textSecondary = theme === 'dark' ? 'text-gray-300' : 'text-gray-600';
@@ -17,7 +37,13 @@ export default function BookingServiceUnavailableModal({ isOpen, onClose }: Prop
   const borderBase = theme === 'dark' ? 'border-gray-800' : 'border-gray-200';
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      // Reset state when modal closes
+      setEmailSent(false);
+      setEmailError(false);
+      setIsSendingEmail(false);
+      return;
+    }
     dialogRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -25,6 +51,125 @@ export default function BookingServiceUnavailableModal({ isOpen, onClose }: Prop
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, onClose]);
+
+  const handleSendEmail = async () => {
+    if (!bookingData) return;
+    
+    setIsSendingEmail(true);
+    setEmailError(false);
+    
+    try {
+      const web3formsKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
+      console.log('Web3Forms Key check:', web3formsKey ? 'Key found (length: ' + web3formsKey.length + ')' : 'Key NOT FOUND');
+      
+      if (!web3formsKey) {
+        console.error('VITE_WEB3FORMS_ACCESS_KEY is not set in .env file');
+        setEmailError(true);
+        setIsSendingEmail(false);
+        return;
+      }
+
+      const projectTypeMap: Record<string, string> = {
+        'web-app': 'Web Application',
+        'mobile-app': 'Mobile Application',
+        'e-commerce': 'E-Commerce Platform',
+        'landing-page': 'Landing Page',
+        'api-development': 'API Development',
+        'database-design': 'Database Design',
+        'ui-ux-design': 'UI/UX Design',
+        'full-stack': 'Full-Stack Development',
+        'maintenance': 'Maintenance & Support',
+        'consulting': 'Consulting',
+        'other': 'Other'
+      };
+
+      const emailSubject = `New Client Booking: ${projectTypeMap[bookingData.projectType] || bookingData.projectType}`;
+      let preferredDateStr = 'Not specified';
+      if (bookingData.preferredDate) {
+        try {
+          preferredDateStr = new Date(bookingData.preferredDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        } catch {
+          preferredDateStr = bookingData.preferredDate;
+        }
+      }
+      let preferredTimeStr = 'Not specified';
+      if (bookingData.preferredTime) {
+        try {
+          const timeStr = bookingData.preferredTime.includes('T') 
+            ? bookingData.preferredTime.split('T')[1] 
+            : bookingData.preferredTime;
+          preferredTimeStr = new Date(`2000-01-01T${timeStr}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        } catch {
+          preferredTimeStr = bookingData.preferredTime;
+        }
+      }
+      const emailHtml = `
+      New Booking Request (Server Down)
+      Name: ${bookingData.name}
+      Email: ${bookingData.email}
+      Phone: ${bookingData.phone}
+      Company: ${bookingData.company || 'Not specified'}
+      Project Type: ${projectTypeMap[bookingData.projectType] || bookingData.projectType}
+      Timeline: ${bookingData.timeline}
+      Budget: ${bookingData.budget || 'Not specified'}
+      Preferred Contact: ${bookingData.preferredContact}
+      Preferred Date: ${preferredDateStr}
+      Preferred Time: ${preferredTimeStr}
+      Project Description: ${bookingData.projectDescription.replace(/\n/g, '<br>')}
+      ${bookingData.additionalNotes ? `Additional Notes: ${bookingData.additionalNotes.replace(/\n/g, '<br>')}` : ''}
+      Note: Server is down. This was sent via email fallback and should be added to the database when online.
+      `;
+      
+      const formData = new FormData();
+      formData.append('access_key', web3formsKey);
+      formData.append('subject', emailSubject);
+      formData.append('from_name', 'Portfolio Bookings');
+      formData.append('email', bookingData.email || 'noreply@portfolio.com');
+      formData.append('message', emailHtml);
+      // Sending as plain text to avoid Web3Forms showing "Html: true" in notification
+      
+      console.log('Sending booking email to Web3Forms...');
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      });
+
+      console.log('Web3Forms response status:', response.status);
+      const responseData = await response.json().catch(async () => {
+        const text = await response.text().catch(() => '');
+        console.error('Failed to parse response:', text);
+        return { error: 'Failed to parse response', text };
+      });
+      
+      console.log('Web3Forms response data:', responseData);
+      
+      // Web3Forms returns { success: true } on success or { success: false, message: "..." } on error
+      if (response.ok && responseData.success === true) {
+        console.log('Booking email sent successfully!');
+        setEmailSent(true);
+        setIsSendingEmail(false);
+        if (onEmailSent) {
+          setTimeout(() => {
+            onEmailSent();
+          }, 3100);
+        }
+      } else {
+        // Check if it's a rate limit or specific error
+        const errorMessage = responseData.message || responseData.error || 'Email sending failed';
+        console.error('Web3Forms error:', errorMessage, responseData);
+        throw new Error(errorMessage);
+      }
+    } catch (error: any) {
+      console.error('Email sending error:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        name: error?.name,
+        stack: error?.stack
+      });
+      setEmailError(true);
+      setIsSendingEmail(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -74,39 +219,108 @@ export default function BookingServiceUnavailableModal({ isOpen, onClose }: Prop
 
           {/* Title */}
           <h2 id="booking-unavailable-title" className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3 ${textPrimary}`}>
-            Service Not Available
+            {emailSent ? 'Booking Sent Successfully!' : 'Service Not Available'}
           </h2>
 
           {/* Message */}
-          <div className={`${textSecondary} text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 leading-relaxed space-y-2 sm:space-y-3`}>
-            <p>
-              We're sorry, but the booking service is <span className="font-semibold text-red-500">currently unavailable</span>.
-            </p>
-            <div className={`mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900/30`}>
-              <div className="flex items-start gap-2 sm:gap-3">
-                <AlertTriangle className="text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" size={18} style={{ width: 'clamp(16px, 4vw, 20px)', height: 'clamp(16px, 4vw, 20px)' }} />
-                <div className="text-left">
-                  <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>What happened:</p>
-                  <ul className={`text-xs sm:text-sm ${textSecondary} space-y-1 list-disc list-inside`}>
-                    <li>The server is not responding</li>
-                    <li>Your booking could not be saved</li>
-                    <li>Please try again later</li>
-                  </ul>
+          {emailSent ? (
+            <div className={`${textSecondary} text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 leading-relaxed space-y-2 sm:space-y-3`}>
+              <p>
+                Your booking request has been <span className="font-semibold text-green-500">sent to the owner via email</span>, but it won't be saved in the system until the server is back online.
+              </p>
+              <div className={`mt-3 sm:mt-4 p-3 sm:p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-900/30`}>
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <CheckCircle className="text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" size={18} style={{ width: 'clamp(16px, 4vw, 20px)', height: 'clamp(16px, 4vw, 20px)' }} />
+                  <div className="text-left">
+                    <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>What this means:</p>
+                    <ul className={`text-xs sm:text-sm ${textSecondary} space-y-1 list-disc list-inside`}>
+                      <li>Your booking was emailed to the owner</li>
+                      <li>It won't be saved in the system yet</li>
+                      <li>The server needs to be running to save it</li>
+                      <li>Your request is safe and will be processed once the server is online</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-            <p className="text-xs sm:text-sm mt-3 sm:mt-4">
-              We apologize for the inconvenience. Please check your internet connection and try again in a few moments.
-            </p>
-          </div>
+          ) : (
+            <div className={`${textSecondary} text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 leading-relaxed space-y-2 sm:space-y-3`}>
+              <p>
+                We're sorry, but the booking service is <span className="font-semibold text-red-500">currently unavailable</span>.
+              </p>
+              <div className={`mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900/30`}>
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <AlertTriangle className="text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" size={18} style={{ width: 'clamp(16px, 4vw, 20px)', height: 'clamp(16px, 4vw, 20px)' }} />
+                  <div className="text-left">
+                    <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>What happened:</p>
+                    <ul className={`text-xs sm:text-sm ${textSecondary} space-y-1 list-disc list-inside`}>
+                      <li>The server is not responding</li>
+                      <li>Your booking could not be saved</li>
+                      {bookingData && (
+                        <li>We can send it via email instead</li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              {emailError && (
+                <div className={`mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900/30`}>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <AlertTriangle className="text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" size={18} style={{ width: 'clamp(16px, 4vw, 20px)', height: 'clamp(16px, 4vw, 20px)' }} />
+                    <div className="text-left">
+                      <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>Email Failed</p>
+                      <p className={`text-xs sm:text-sm ${textSecondary}`}>
+                        {!import.meta.env.VITE_WEB3FORMS_ACCESS_KEY 
+                          ? 'Web3Forms access key is not configured. Please contact us directly at joma.enrique.up@phinmaed.com'
+                          : 'Email sending failed. Please try again later or contact us directly at joma.enrique.up@phinmaed.com'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
-          {/* Action Button */}
-          <button
-            onClick={onClose}
-            className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
-          >
-            Understood
-          </button>
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-2">
+            {emailSent ? (
+              <button
+                onClick={onClose}
+                className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
+              >
+                <CheckCircle size={18} />
+                Understood
+              </button>
+            ) : (
+              <>
+                {bookingData && (
+                  <button
+                    onClick={handleSendEmail}
+                    disabled={isSendingEmail}
+                    className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSendingEmail ? (
+                      <>
+                        <Server className="animate-spin" size={18} />
+                        Sending Email...
+                      </>
+                    ) : (
+                      <>
+                        <Mail size={18} />
+                        Send Booking via Email Instead
+                      </>
+                    )}
+                  </button>
+                )}
+                <button
+                  onClick={onClose}
+                  className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
+                >
+                  Close
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

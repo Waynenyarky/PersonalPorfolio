@@ -102,7 +102,7 @@ export default function ContactSupport({ visibleSections }: Props) {
             </div>
 
             <div className={`flex gap-3 sm:gap-4 ${visibleSections.has('contact') ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s' }}>
-              <a href="#" className={`w-10 h-10 sm:w-12 sm:h-12 ${bgCard} border ${borderBase} rounded-xl flex items-center justify-center hover:scale-110 transition-all duration-300`}>
+              <a href="https://web.facebook.com/jowne.enrique.11" className={`w-10 h-10 sm:w-12 sm:h-12 ${bgCard} border ${borderBase} rounded-xl flex items-center justify-center hover:scale-110 transition-all duration-300`}>
                 <Facebook size={18} className={`${textPrimary}`} />
               </a>
               <a href="#" className={`w-10 h-10 sm:w-12 sm:h-12 ${bgCard} border ${borderBase} rounded-xl flex items-center justify-center hover:scale-110 transition-all duration-300`}>

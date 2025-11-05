@@ -87,6 +87,53 @@
   animation: pulse-slow 3s ease-in-out infinite;
 }
 
+/* Professional subtle wave animations */
+@keyframes wave-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-2px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(2px) rotate(-1deg);
+  }
+}
+
+.animate-wave-float {
+  animation: wave-float 2.6s ease-in-out infinite;
+}
+
+@keyframes wave-dot {
+  0% {
+    top: 0;
+    transform: translateX(-50%) translateY(0);
+  }
+  20% {
+    transform: translateX(calc(-50% - 1px)) translateY(20%);
+  }
+  40% {
+    transform: translateX(calc(-50% + 1px)) translateY(40%);
+  }
+  60% {
+    transform: translateX(calc(-50% - 1px)) translateY(60%);
+  }
+  80% {
+    transform: translateX(calc(-50% + 1px)) translateY(80%);
+  }
+  100% {
+    top: calc(100% - 6px);
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.animate-wave-dot {
+  animation: wave-dot 1.8s linear infinite;
+}
+
 
 /* Rating stars */
 .rating-star {

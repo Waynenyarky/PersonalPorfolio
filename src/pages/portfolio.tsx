@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './portfolio.css';
-import { Facebook, Twitter, Linkedin, Github, MessageSquare, ChevronDown, Award, CheckCircle, Users, Code, GitBranch, ArrowUp, Terminal, Package, FileCode, Figma, Paintbrush, Palette, Database, Server, Smartphone, Layout, Box, Zap, Shield, Calendar, Mail } from 'lucide-react';
+import { Facebook, Twitter, Linkedin, Github, MessageSquare, ChevronDown, Award, CheckCircle, Users, Code, GitBranch, ArrowUp, Terminal, Package, FileCode, Figma, Paintbrush, Palette, Database, Server, Smartphone, Layout, Box, Zap, Shield, Calendar, Mail, Menu, X } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import ProjectModal from '../components/ProjectModal';
 import ResumeModal from '../components/ResumeModal';
@@ -197,14 +197,14 @@ const Portfolio = () => {
             {/* Mobile menu button */}
             <button
               className={`md:hidden group w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800`}
-              aria-label="Toggle navigation menu"
+              aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
               onClick={() => setMobileOpen((v) => !v)}
             >
-              <div className="relative w-5 h-5">
-                <span className={`absolute top-0 left-0 w-5 h-0.5 ${theme === 'dark' ? 'bg-white' : 'bg-black'} transition-all duration-300 ${mobileOpen ? 'rotate-45 top-2' : ''}`}></span>
-                <span className={`absolute top-2 left-0 w-5 h-0.5 ${theme === 'dark' ? 'bg-white' : 'bg-black'} transition-all duration-300 ${mobileOpen ? 'opacity-0' : ''}`}></span>
-                <span className={`absolute top-4 left-0 w-5 h-0.5 ${theme === 'dark' ? 'bg-white' : 'bg-black'} transition-all duration-300 ${mobileOpen ? '-rotate-45 top-2' : ''}`}></span>
-              </div>
+              {mobileOpen ? (
+                <X className={theme === 'dark' ? 'text-white' : 'text-black'} size={22} />
+              ) : (
+                <Menu className={theme === 'dark' ? 'text-white' : 'text-black'} size={22} />
+              )}
             </button>
           </div>
         </div>
@@ -263,49 +263,52 @@ const Portfolio = () => {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
         
-        {/* Professional Social Media Links with Staggered Animations */}
-        <div className="absolute left-4 sm:left-8 top-1/2 transform -translate-y-1/2 hidden lg:flex flex-col items-center space-y-3 z-10">
+        {/* Professional Social Media Links with Staggered Animations - Left Rail (Hero only with smooth fade) */}
+        <div
+          className={`fixed left-2 sm:left-8 top-1/2 -translate-y-1/2 flex flex-col items-center space-y-2 sm:space-y-3 z-20 pointer-events-none transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'}`}
+          aria-hidden={activeSection !== 'home'}
+        >
           <a 
             href="https://web.facebook.com/jowne.enrique.11" 
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="Facebook" 
-            className={`group ${bgCard} border ${borderBase} rounded-lg p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-fade-in-left`}
             style={{ animationDelay: '0.1s' }}
-          >
-            <Facebook size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300`} />
+            >
+            <Facebook size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
           <a 
             href="https://twitter.com" 
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="Twitter" 
-            className={`group ${bgCard} border ${borderBase} rounded-lg p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-fade-in-left`}
             style={{ animationDelay: '0.2s' }}
-          >
-            <Twitter size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300`} />
+            >
+            <Twitter size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
           <a 
             href="https://linkedin.com" 
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="LinkedIn" 
-            className={`group ${bgCard} border ${borderBase} rounded-lg p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-fade-in-left`}
             style={{ animationDelay: '0.3s' }}
-          >
-            <Linkedin size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300`} />
+            >
+            <Linkedin size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
           <a 
             href="https://github.com/Waynenyarky" 
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="GitHub" 
-            className={`group ${bgCard} border ${borderBase} rounded-lg p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-fade-in-left`}
             style={{ animationDelay: '0.4s' }}
-          >
-            <Github size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300`} />
+            >
+            <Github size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
-          <div className="w-px h-16 bg-gray-300 dark:bg-gray-700 opacity-0 animate-fade-in-left" style={{ animationDelay: '0.5s' }}></div>
+          <div className="w-px h-12 sm:h-16 bg-gray-300 dark:bg-gray-700 opacity-0 animate-fade-in-left" style={{ animationDelay: '0.5s' }}></div>
         </div>
 
         {/* Hero Content with Staggered Animations */}
@@ -351,13 +354,19 @@ const Portfolio = () => {
           </div>
         </div>
 
-        {/* Scroll Indicator with Animation */}
-        <div className="absolute right-4 sm:right-8 top-1/2 transform -translate-y-1/2 hidden lg:flex flex-col items-center opacity-0 animate-fade-in-right" style={{ animationDelay: '0.6s' }}>
-          <div className={`writing-vertical text-xs tracking-wider ${textSecondary} font-medium mb-4`}>
+        {/* Scroll Indicator with Animation - Right Rail (Hero only with smooth fade) */}
+        <div
+          className={`fixed right-2 sm:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center z-20 transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-3'}`}
+          aria-hidden={activeSection !== 'home'}
+          style={{ animationDelay: '0.6s' }}
+        >
+          <div className={`writing-vertical text-xs tracking-wider ${textSecondary} font-medium mb-3 sm:mb-4`}>
             SCROLL
           </div>
-          <div className="w-px h-24 bg-gray-300 dark:bg-gray-700"></div>
-          <ChevronDown className="text-orange-500 mt-3 animate-bounce" size={20} />
+          <div className="relative w-px h-24 bg-gray-300 dark:bg-gray-700 overflow-hidden">
+            <span className="absolute left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-orange-500 animate-wave-dot"></span>
+          </div>
+          <ChevronDown className="text-orange-500 mt-2 sm:mt-3 animate-wave-float" size={20} />
         </div>
       </section>
 
@@ -839,7 +848,7 @@ const Portfolio = () => {
             <h3 className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-center ${textPrimary}`}>{t(language, 'contact.connectOnSocial')}</h3>
             <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
               <a
-                href="https://facebook.com"
+                href="https://web.facebook.com/jowne.enrique.11"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}
@@ -872,7 +881,7 @@ const Portfolio = () => {
                 <span className="text-xs font-medium">LinkedIn</span>
               </a>
               <a
-                href="https://github.com/your-github"
+                href="https://github.com/Waynenyarky"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}
@@ -974,7 +983,7 @@ const Portfolio = () => {
               <h3 className={`font-semibold mb-3 sm:mb-4 text-sm sm:text-base ${textPrimary}`}>{t(language, 'footer.connect')}</h3>
               <div className="flex space-x-4">
                 <a
-                  href="https://facebook.com"
+                  href="https://web.facebook.com/jowne.enrique.11"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`}

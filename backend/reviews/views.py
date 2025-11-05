@@ -1,10 +1,10 @@
 import os
 import logging
+import requests
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from .models import Review, Booking
 from .serializers import ReviewSerializer, BookingSerializer
-import resend
 from django.utils import timezone
 from .permissions import IsAdminApiKey
 
@@ -17,17 +17,19 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
+        # Always save the review first - email failure should not prevent saving
         review = serializer.save()
         email_sent = False
-        api_key = os.getenv('RESEND_API_KEY')
-        if not api_key:
-            logger.warning(f'Resend API key not configured. Review {review.id} created but email not sent.')
+        access_key = os.getenv('WEB3FORMS_ACCESS_KEY')
+        if not access_key:
+            logger.warning(f'Web3Forms access key not configured. Review {review.id} created but email not sent.')
+            # Store email status even if key is missing
+            self.request._email_sent = email_sent
             return
         
         try:
-            resend.api_key = api_key
-            from_sender = os.getenv('RESEND_FROM', 'Portfolio Reviews <noreply@resend.dev>')
             subject = f'New Client Review - Rating: {review.rating}/5'
+            timestamp = (review.created_at or timezone.now()).strftime('%Y%m%d%H%M%S')
             text = (
                 f'New review submitted\n\n'
                 f'Name: {review.name}\n'
@@ -37,7 +39,6 @@ class ReviewListCreateView(generics.ListCreateAPIView):
                 f'Rating: {review.rating}/5\n\n'
                 f'Review:\n{review.review}'
             )
-            timestamp = (review.created_at or timezone.now()).strftime('%Y%m%d%H%M%S')
 
             html = f"""
         <!DOCTYPE html>
@@ -262,25 +263,29 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         </html>
         """
 
-            resend.Emails.send({
-                'from': from_sender,
-                'to': 'joma.enrique.up@phinmaed.com',
+            web3forms_payload = {
+                'access_key': access_key,
                 'subject': subject,
-                'text': text,
-                'html': html,
-            })
+                'from_name': 'Portfolio Reviews',
+                'email': 'noreply@portfolio.com',
+                'message': html,
+                'to': 'joma.enrique.up@phinmaed.com'
+            }
+            
+            response = requests.post(
+                'https://api.web3forms.com/submit',
+                json=web3forms_payload,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            response.raise_for_status()
+            
             email_sent = True
             logger.info(f'Email notification sent successfully for review {review.id} (REF #REV-{timestamp})')
         
-        except resend.exceptions.ResendError as e:
+        except requests.exceptions.RequestException as e:
             logger.error(
-                f'Resend API error for review {review.id}: {str(e)}. '
-                f'Review was saved successfully but email notification failed.',
-                exc_info=True
-            )
-        except (ConnectionError, TimeoutError) as e:
-            logger.error(
-                f'Network error sending email for review {review.id}: {str(e)}. '
+                f'Web3Forms API error for review {review.id}: {str(e)}. '
                 f'Review was saved successfully but email notification failed.',
                 exc_info=True
             )
@@ -315,16 +320,17 @@ class BookingListCreateView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
+        # Always save the booking first - email failure should not prevent saving
         booking = serializer.save()
         email_sent = False
-        api_key = os.getenv('RESEND_API_KEY')
-        if not api_key:
-            logger.warning(f'Resend API key not configured. Booking {booking.id} created but email not sent.')
+        access_key = os.getenv('WEB3FORMS_ACCESS_KEY')
+        if not access_key:
+            logger.warning(f'Web3Forms access key not configured. Booking {booking.id} created but email not sent.')
+            # Store email status even if key is missing
+            self.request._email_sent = email_sent
             return
         
         try:
-            resend.api_key = api_key
-            from_sender = os.getenv('RESEND_FROM', 'Portfolio Bookings <noreply@resend.dev>')
             subject = f'New Client Booking: {booking.project_type}'
             timestamp = (booking.created_at or timezone.now()).strftime('%Y%m%d%H%M%S')
             
@@ -672,25 +678,29 @@ Preferred Time: {preferred_time_str}
 {booking.additional_notes and f'Additional Notes:\n{booking.additional_notes}' or ''}
         """
 
-            resend.Emails.send({
-                'from': from_sender,
-                'to': 'joma.enrique.up@phinmaed.com',
+            web3forms_payload = {
+                'access_key': access_key,
                 'subject': subject,
-                'text': text,
-                'html': html,
-            })
+                'from_name': 'Portfolio Bookings',
+                'email': 'noreply@portfolio.com',
+                'message': html,
+                'to': 'joma.enrique.up@phinmaed.com'
+            }
+            
+            response = requests.post(
+                'https://api.web3forms.com/submit',
+                json=web3forms_payload,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            response.raise_for_status()
+            
             email_sent = True
             logger.info(f'Email notification sent successfully for booking {booking.id} (REF #BK-{timestamp})')
         
-        except resend.exceptions.ResendError as e:
+        except requests.exceptions.RequestException as e:
             logger.error(
-                f'Resend API error for booking {booking.id}: {str(e)}. '
-                f'Booking was saved successfully but email notification failed.',
-                exc_info=True
-            )
-        except (ConnectionError, TimeoutError) as e:
-            logger.error(
-                f'Network error sending email for booking {booking.id}: {str(e)}. '
+                f'Web3Forms API error for booking {booking.id}: {str(e)}. '
                 f'Booking was saved successfully but email notification failed.',
                 exc_info=True
             )

@@ -3,8 +3,9 @@ import { Star, Quote, Send } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
 import { t, type Language } from '../i18n/translations';
 import ReviewSuccessModal from '../components/ReviewSuccessModal';
-import ResendServiceUnavailableModal from '../components/ResendServiceUnavailableModal';
+import EmailServiceUnavailableModal from '../components/EmailServiceUnavailableModal';
 import ReviewServiceUnavailableModal from '../components/ReviewServiceUnavailableModal';
+import ReviewSentButNotDisplayedModal from '../components/ReviewSentButNotDisplayedModal';
 
 type Review = {
 	id: number;
@@ -30,6 +31,7 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 	const [showSuccessModal, setShowSuccessModal] = useState(false);
 	const [showEmailUnavailableModal, setShowEmailUnavailableModal] = useState(false);
 	const [showServiceUnavailableModal, setShowServiceUnavailableModal] = useState(false);
+	const [showReviewSentModal, setShowReviewSentModal] = useState(false);
 	const [submittedReviewerName, setSubmittedReviewerName] = useState<string>('');
 	const [submittedRating, setSubmittedRating] = useState<number>(5);
 	const [reviewData, setReviewData] = useState({
@@ -164,15 +166,32 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 										setReviewData({ name: '', role: '', company: '', email: '', rating: 5, review: '' });
 										setShowReviewForm(false);
 										
-										// Check if email was sent successfully
+										// Check if email was sent successfully - email failure doesn't prevent saving
 										if (json.email_sent === false) {
 											setShowEmailUnavailableModal(true);
 										} else {
 											setShowSuccessModal(true);
 										}
 									}
-								} catch (error) {
-									setShowServiceUnavailableModal(true);
+								} catch (error: any) {
+									// Check if it's a network/server error (server is down)
+									const isNetworkError = 
+										error?.message?.toLowerCase().includes('failed to fetch') ||
+										error?.message?.toLowerCase().includes('networkerror') ||
+										error?.message?.toLowerCase().includes('network error') ||
+										error?.message?.toLowerCase().includes('load failed') ||
+										error?.name === 'TypeError' ||
+										error?.name === 'NetworkError' ||
+										error?.code === 'ERR_NETWORK' ||
+										error?.code === 'ECONNABORTED';
+									
+									if (isNetworkError) {
+										// Server is down - show modal with option to send email
+										setShowServiceUnavailableModal(true);
+									} else {
+										// Other error - show service unavailable
+										setShowServiceUnavailableModal(true);
+									}
 								}
 							}}
 							className="space-y-3 sm:space-y-4"
@@ -264,7 +283,7 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 			/>
 
 			{/* Email Service Unavailable Modal */}
-			<ResendServiceUnavailableModal
+			<EmailServiceUnavailableModal
 				isOpen={showEmailUnavailableModal}
 				onClose={() => setShowEmailUnavailableModal(false)}
 			/>
@@ -272,7 +291,28 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 			{/* Review Service Unavailable Modal */}
 			<ReviewServiceUnavailableModal
 				isOpen={showServiceUnavailableModal}
-				onClose={() => setShowServiceUnavailableModal(false)}
+				onClose={() => {
+					setShowServiceUnavailableModal(false);
+					setReviewData({ name: '', role: '', company: '', email: '', rating: 5, review: '' });
+					setShowReviewForm(false);
+				}}
+				reviewData={reviewData}
+				onEmailSent={() => {
+					setSubmittedReviewerName(reviewData.name);
+					setSubmittedRating(reviewData.rating);
+					setReviewData({ name: '', role: '', company: '', email: '', rating: 5, review: '' });
+					setShowReviewForm(false);
+					setShowServiceUnavailableModal(false);
+					setShowReviewSentModal(true);
+				}}
+			/>
+
+			{/* Review Sent But Not Displayed Modal (Server Down) */}
+			<ReviewSentButNotDisplayedModal
+				isOpen={showReviewSentModal}
+				onClose={() => setShowReviewSentModal(false)}
+				reviewerName={submittedReviewerName}
+				rating={submittedRating}
 			/>
 		</section>
 	);

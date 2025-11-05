@@ -89,8 +89,8 @@ CORS_ALLOW_METHODS = list(default_methods) + [
     'DELETE',
 ]
 
-# Email via Resend (we'll call SDK directly in view)
-RESEND_API_KEY = os.getenv('RESEND_API_KEY', '')
+# Email via Web3Forms (we'll call API directly in view)
+WEB3FORMS_ACCESS_KEY = os.getenv('WEB3FORMS_ACCESS_KEY', '')
 
 # Logging configuration
 LOGGING = {

@@ -265,15 +265,14 @@ const Portfolio = () => {
         
         {/* Professional Social Media Links with Staggered Animations - Left Rail (Hero only with smooth fade) */}
         <div
-          className={`fixed left-2 sm:left-8 top-1/2 -translate-y-1/2 flex flex-col items-center space-y-2 sm:space-y-3 z-20 pointer-events-none transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'}`}
-          aria-hidden={activeSection !== 'home'}
+          className={`fixed left-2 sm:left-8 top-1/2 -translate-y-1/2 flex flex-col items-center space-y-2 sm:space-y-3 z-20 pointer-events-none transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${activeSection === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'}`}
         >
           <a 
             href="https://web.facebook.com/jowne.enrique.11" 
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="Facebook" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-wavy-fade-left`}
             style={{ animationDelay: '0.1s' }}
             >
             <Facebook size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
@@ -283,7 +282,7 @@ const Portfolio = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="Twitter" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-wavy-fade-left`}
             style={{ animationDelay: '0.2s' }}
             >
             <Twitter size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
@@ -293,7 +292,7 @@ const Portfolio = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="LinkedIn" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-wavy-fade-left`}
             style={{ animationDelay: '0.3s' }}
             >
             <Linkedin size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
@@ -303,7 +302,7 @@ const Portfolio = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="GitHub" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-wavy-fade-left`}
             style={{ animationDelay: '0.4s' }}
             >
             <Github size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
@@ -356,8 +355,7 @@ const Portfolio = () => {
 
         {/* Scroll Indicator with Animation - Right Rail (Hero only with smooth fade) */}
         <div
-          className={`fixed right-2 sm:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center z-20 transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-3'}`}
-          aria-hidden={activeSection !== 'home'}
+          className={`fixed right-2 sm:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center z-20 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${activeSection === 'home' ? 'opacity-100 translate-x-0 animate-wavy-fade-right' : 'opacity-0 translate-x-3'}`}
           style={{ animationDelay: '0.6s' }}
         >
           <div className={`writing-vertical text-xs tracking-wider ${textSecondary} font-medium mb-3 sm:mb-4`}>

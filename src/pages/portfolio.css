@@ -134,6 +134,53 @@
   animation: wave-dot 1.8s linear infinite;
 }
 
+/* Wavy fade-in animations (with gentle vertical drift) */
+@keyframes wavyFadeInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-24px) translateY(0);
+  }
+  40% {
+    opacity: 0.8;
+    transform: translateX(-8px) translateY(-3px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-4px) translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes wavyFadeInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(24px) translateY(0);
+  }
+  40% {
+    opacity: 0.8;
+    transform: translateX(8px) translateY(-3px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(4px) translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+}
+
+.animate-wavy-fade-left {
+  animation: wavyFadeInLeft 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-wavy-fade-right {
+  animation: wavyFadeInRight 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 
 /* Rating stars */
 .rating-star {

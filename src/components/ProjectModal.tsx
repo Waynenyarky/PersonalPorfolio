@@ -52,7 +52,7 @@ export default function ProjectModal({ project, onClose }: Props) {
         ref={dialogRef}
         tabIndex={-1}
         role="document"
-        className={`relative max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] ${bgCard} border ${borderBase} rounded-xl sm:rounded-2xl shadow-xl overflow-hidden focus:outline-none ${focusRing}`}
+        className={`relative max-w-5xl xl:max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] ${bgCard} border ${borderBase} rounded-xl sm:rounded-2xl shadow-xl overflow-hidden focus:outline-none ${focusRing}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Clean Header */}
@@ -76,20 +76,20 @@ export default function ProjectModal({ project, onClose }: Props) {
         </div>
 
         {/* Body */}
-        <div className="p-4 sm:p-6 lg:p-8 overflow-y-auto overscroll-contain max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-160px)] min-h-0">
+        <div className="p-4 sm:p-6 lg:p-8 overflow-y-auto overscroll-contain max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-160px)] lg:max-h-[calc(90vh-140px)] min-h-0">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 min-h-0">
-            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-80 overflow-y-auto`}>
+            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-none overflow-y-auto`}>
               <h3 className={`text-sm sm:text-base font-semibold mb-2 ${textPrimary}`}>Description</h3>
               <p className={`${textSecondary} leading-relaxed text-xs sm:text-sm lg:text-base wrap-break-word hyphens-auto`}>{project.description}</p>
             </section>
-            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-80 overflow-y-auto`}>
+            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-none overflow-y-auto`}>
               <h3 className={`text-sm sm:text-base font-semibold mb-2 ${textPrimary}`}>Our Mission</h3>
               <p className={`${textSecondary} leading-relaxed text-xs sm:text-sm lg:text-base wrap-break-word hyphens-auto`}>{project.mission}</p>
             </section>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 min-h-0">
-            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-80 overflow-y-auto`}>
+            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-none overflow-y-auto`}>
               <h3 className={`text-sm sm:text-base font-semibold mb-2 sm:mb-3 ${textPrimary}`}>Team Members</h3>
               <ul className="space-y-1 sm:space-y-2">
                 {project.members?.map((m, idx) => (
@@ -97,7 +97,7 @@ export default function ProjectModal({ project, onClose }: Props) {
                 ))}
               </ul>
             </section>
-            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-80 overflow-y-auto`}>
+            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-none overflow-y-auto`}>
               <h3 className={`text-sm sm:text-base font-semibold mb-2 sm:mb-3 ${textPrimary}`}>Tech Stack</h3>
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {project.stack?.map((t, idx) => (

@@ -259,21 +259,20 @@ const Portfolio = () => {
       {/* Hero Section */}
       <section id="home" className={`min-h-screen flex items-center justify-center relative pt-20 sm:pt-24 overflow-hidden ${bgSection}`}>
         {/* Subtle Background Effects with Animation */}
-        <div className="absolute inset-0 bg-gradient-to-b from-orange-500/5 to-transparent pointer-events-none"></div>
+        <div className="absolute inset-0 bg-linear-to-b from-orange-500/5 to-transparent pointer-events-none"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
         
         {/* Professional Social Media Links with Staggered Animations - Left Rail (Hero only with smooth fade) */}
         <div
-          className={`fixed left-2 sm:left-8 top-1/2 -translate-y-1/2 flex flex-col items-center space-y-2 sm:space-y-3 z-20 pointer-events-none transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${activeSection === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'}`}
+          className={`fixed left-2 sm:left-8 top-1/2 -translate-y-1/2 hidden sm:flex flex-col items-center space-y-2 sm:space-y-3 z-20 pointer-events-none transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'}`}
         >
           <a 
             href="https://web.facebook.com/jowne.enrique.11" 
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="Facebook" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-wavy-fade-left`}
-            style={{ animationDelay: '0.1s' }}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-md will-change-transform opacity-0 animate-fade-in-left`}
             >
             <Facebook size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
@@ -282,8 +281,7 @@ const Portfolio = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="Twitter" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-wavy-fade-left`}
-            style={{ animationDelay: '0.2s' }}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-md will-change-transform opacity-0 animate-fade-in-left`}
             >
             <Twitter size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
@@ -292,8 +290,7 @@ const Portfolio = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="LinkedIn" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-wavy-fade-left`}
-            style={{ animationDelay: '0.3s' }}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-md will-change-transform opacity-0 animate-fade-in-left`}
             >
             <Linkedin size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
@@ -302,12 +299,11 @@ const Portfolio = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="GitHub" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 hover:rotate-2 will-change-transform opacity-0 animate-wavy-fade-left`}
-            style={{ animationDelay: '0.4s' }}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-md will-change-transform opacity-0 animate-fade-in-left`}
             >
             <Github size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
-          <div className="w-px h-12 sm:h-16 bg-gray-300 dark:bg-gray-700 opacity-0 animate-fade-in-left" style={{ animationDelay: '0.5s' }}></div>
+          <div className="w-px h-12 sm:h-16 bg-gray-300 dark:bg-gray-700 opacity-0 animate-fade-in-left"></div>
         </div>
 
         {/* Hero Content with Staggered Animations */}
@@ -324,7 +320,7 @@ const Portfolio = () => {
             <br />
             <span className="text-orange-500 inline-block relative transition-all duration-300 hover:scale-105">
               Enrique
-              <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
+              <span className="absolute -bottom-2 left-0 right-0 h-1 bg-linear-to-r from-transparent via-orange-500/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
             </span>
           </h1>
           
@@ -341,7 +337,7 @@ const Portfolio = () => {
               className="group relative px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-orange-500/50 hover:scale-105 overflow-hidden"
             >
               <span className="relative z-10">{t(language, 'cta.getInTouch')}</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-linear-to-r from-orange-600 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
             <button
               onClick={() => setShowResumeModal(true)}
@@ -355,8 +351,7 @@ const Portfolio = () => {
 
         {/* Scroll Indicator with Animation - Right Rail (Hero only with smooth fade) */}
         <div
-          className={`fixed right-2 sm:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center z-20 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${activeSection === 'home' ? 'opacity-100 translate-x-0 animate-wavy-fade-right' : 'opacity-0 translate-x-3'}`}
-          style={{ animationDelay: '0.6s' }}
+          className={`fixed right-2 sm:right-8 top-1/2 -translate-y-1/2 hidden sm:flex flex-col items-center z-20 transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0 animate-fade-in-right' : 'opacity-0 translate-x-3'}`}
         >
           <div className={`writing-vertical text-xs tracking-wider ${textSecondary} font-medium mb-3 sm:mb-4`}>
             SCROLL
@@ -519,7 +514,7 @@ const Portfolio = () => {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Image Header */}
-                <div className={`aspect-[16/10] bg-gradient-to-br ${project.gradient} flex items-center justify-center relative overflow-hidden`}>
+                <div className={`aspect-16/10 bg-linear-to-br ${project.gradient} flex items-center justify-center relative overflow-hidden`}>
                   <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300"></div>
                   <Code className="text-white/80 group-hover:text-white transition-all duration-300 group-hover:scale-110" size={48} />
                   
@@ -531,14 +526,14 @@ const Portfolio = () => {
                   </div>
                   
                   {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                     <div className="w-full p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <h4 className="text-white text-base font-bold mb-1 truncate">{project.title}</h4>
                           <p className="text-white/70 text-xs line-clamp-1">{project.tech.split(',').slice(0, 3).join(', ')}</p>
                         </div>
-                        <div className="flex-shrink-0 bg-white/20 backdrop-blur-sm rounded-lg p-2">
+                        <div className="shrink-0 bg-white/20 backdrop-blur-sm rounded-lg p-2">
                           <ArrowUp className="text-white rotate-45" size={16} />
                         </div>
                       </div>
@@ -665,7 +660,7 @@ const Portfolio = () => {
 
       {/* CTA Section */}
       <section id="cta" className={`py-12 sm:py-16 lg:py-20 ${bgSection} relative overflow-hidden ${visibleSections.has('cta') ? 'animate-fade-in-up' : 'opacity-0'}`}>
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-orange-600/10"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-orange-500/10 to-orange-600/10"></div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 ${textPrimary}`}>
             {t(language, 'cta.big.title')}
@@ -821,7 +816,7 @@ const Portfolio = () => {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="flex items-start gap-3 mb-3">
-                  <div className={`w-12 h-12 shrink-0 bg-gradient-to-br ${method.color} rounded-lg flex items-center justify-center`}> 
+                  <div className={`w-12 h-12 shrink-0 bg-linear-to-br ${method.color} rounded-lg flex items-center justify-center`}> 
                     <method.icon className="text-white" size={22} />
                   </div>
                   <div>

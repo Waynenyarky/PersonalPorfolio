@@ -61,14 +61,14 @@ export default function ProjectModal({ project, onClose }: Props) {
             <div className={`text-xs sm:text-sm font-semibold uppercase tracking-wider ${textSecondary} mb-1 sm:mb-2`}>
               {project.category}
             </div>
-            <h2 id="project-title" className={`text-xl sm:text-2xl lg:text-3xl font-bold leading-tight ${textPrimary} break-words`}>
+            <h2 id="project-title" className={`text-xl sm:text-2xl lg:text-3xl font-bold leading-tight ${textPrimary} wrap-break-word`}>
               {project.title}
             </h2>
             <p id="project-tech" className={`${textSecondary} text-xs sm:text-sm lg:text-base mt-1 sm:mt-2 leading-relaxed`}>{project.tech}</p>
           </div>
           <button
             aria-label="Close modal"
-            className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-md border ${borderBase} hover:border-orange-500 flex items-center justify-center transition-colors ${textPrimary} ${focusRing}`}
+            className={`shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-md border ${borderBase} hover:border-orange-500 flex items-center justify-center transition-colors ${textPrimary} ${focusRing}`}
             onClick={onClose}
           >
             <X size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -76,34 +76,34 @@ export default function ProjectModal({ project, onClose }: Props) {
         </div>
 
         {/* Body */}
-        <div className="p-4 sm:p-6 lg:p-8 overflow-y-auto overscroll-contain max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-160px)]">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
-            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase}`}>
+        <div className="p-4 sm:p-6 lg:p-8 overflow-y-auto overscroll-contain max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-160px)] min-h-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 min-h-0">
+            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-80 overflow-y-auto`}>
               <h3 className={`text-sm sm:text-base font-semibold mb-2 ${textPrimary}`}>Description</h3>
-              <p className={`${textSecondary} leading-relaxed text-xs sm:text-sm lg:text-base`}>{project.description}</p>
+              <p className={`${textSecondary} leading-relaxed text-xs sm:text-sm lg:text-base wrap-break-word hyphens-auto`}>{project.description}</p>
             </section>
-            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase}`}>
+            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-80 overflow-y-auto`}>
               <h3 className={`text-sm sm:text-base font-semibold mb-2 ${textPrimary}`}>Our Mission</h3>
-              <p className={`${textSecondary} leading-relaxed text-xs sm:text-sm lg:text-base`}>{project.mission}</p>
+              <p className={`${textSecondary} leading-relaxed text-xs sm:text-sm lg:text-base wrap-break-word hyphens-auto`}>{project.mission}</p>
             </section>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase}`}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 min-h-0">
+            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-80 overflow-y-auto`}>
               <h3 className={`text-sm sm:text-base font-semibold mb-2 sm:mb-3 ${textPrimary}`}>Team Members</h3>
               <ul className="space-y-1 sm:space-y-2">
                 {project.members?.map((m, idx) => (
-                  <li key={idx} className={`${textSecondary} text-xs sm:text-sm lg:text-base`}>{m}</li>
+                  <li key={idx} className={`${textSecondary} text-xs sm:text-sm lg:text-base wrap-break-word hyphens-auto`}>{m}</li>
                 ))}
               </ul>
             </section>
-            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase}`}>
+            <section className={`${bgSection} rounded-lg p-4 sm:p-5 border ${borderBase} min-h-0 max-h-60 sm:max-h-72 lg:max-h-80 overflow-y-auto`}>
               <h3 className={`text-sm sm:text-base font-semibold mb-2 sm:mb-3 ${textPrimary}`}>Tech Stack</h3>
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {project.stack?.map((t, idx) => (
                   <span
                     key={idx}
-                    className={`px-2 sm:px-3 py-1 rounded-md text-xs border ${borderBase} ${textSecondary}`}
+                    className={`px-2 sm:px-3 py-1 rounded-md text-xs border ${borderBase} ${textSecondary} wrap-break-word`}
                   >
                     {t}
                   </span>

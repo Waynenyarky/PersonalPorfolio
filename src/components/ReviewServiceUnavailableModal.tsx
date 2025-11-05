@@ -69,12 +69,12 @@ export default function ReviewServiceUnavailableModal({ isOpen, onClose, reviewD
       Name: ${reviewData.name}
       Role: ${reviewData.role}
       Company: ${reviewData.company}
-      Email:${reviewData.email || 'N/A'}
+      Email: ${reviewData.email || 'N/A'}
       Rating: ${reviewData.rating} / 5
       Review:
       ${reviewData.review.replace(/\n/g, '<br>')}
       Note: Server is down. This was sent via email fallback and should be added to the database when online.
-        `;
+      `;
       
       const formData = new FormData();
       formData.append('access_key', web3formsKey);

@@ -80,14 +80,19 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
     setStatusText('');
 
     // Validate PH mobile format: exactly 11 digits starting with 09
-    if (!/^09\d{9}$/.test(formData.phone)) {
+    // Trim whitespace and ensure it's exactly 11 digits
+    const trimmedPhone = formData.phone.trim();
+    if (!/^09\d{9}$/.test(trimmedPhone)) {
       setStatusType('error');
       setStatusText('Please enter a valid PH mobile number (11 digits, starts with 09).');
       setIsSubmitting(false);
       return;
     }
 
-    const result = await submitBooking(formData);
+    // Update formData with trimmed phone
+    const validatedFormData = { ...formData, phone: trimmedPhone };
+
+    const result = await submitBooking(validatedFormData);
     setIsSubmitting(false);
 
     if (result.type === 'success') {
@@ -116,6 +121,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (name === 'phone') {
+      // Remove all non-digit characters and limit to 11 digits
       const digits = value.replace(/\D/g, '').slice(0, 11);
       setFormData(prev => ({ ...prev, phone: digits }));
       return;
@@ -210,9 +216,9 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
                       type="tel"
                       name="phone"
                       inputMode="numeric"
-                      pattern="^09\\d{9}$"
+                      pattern="09[0-9]{9}"
                       maxLength={11}
-                      placeholder="Enter your phone number"
+                      placeholder="Enter your phone number (e.g., 09123456789)"
                       className={`w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 placeholder-gray-500 dark:placeholder-gray-400`}
                       value={formData.phone}
                       onChange={handleChange}

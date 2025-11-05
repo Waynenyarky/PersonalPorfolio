@@ -31,7 +31,9 @@ export default function ContactSupport({ visibleSections }: Props) {
     setStatusType('');
     setStatusText('');
     // Validate PH mobile format: exactly 11 digits starting with 09
-    if (!/^09\d{9}$/.test(phone)) {
+    // Trim whitespace and ensure it's exactly 11 digits
+    const trimmedPhone = phone.trim();
+    if (!/^09\d{9}$/.test(trimmedPhone)) {
       setStatusType('error');
       setStatusText('Please enter a valid PH mobile number (11 digits, starts with 09).');
       setIsSubmitting(false);
@@ -42,7 +44,7 @@ export default function ContactSupport({ visibleSections }: Props) {
       email,
       subject,
       message,
-      phone,
+      phone: trimmedPhone,
     });
     setStatusType(result.type);
     setStatusText(result.message);
@@ -163,12 +165,13 @@ export default function ContactSupport({ visibleSections }: Props) {
                   <input
                     type="tel"
                     inputMode="numeric"
-                    pattern="^09\\d{9}$"
+                    pattern="09[0-9]{9}"
                     maxLength={11}
-                    placeholder="Enter your phone number"
+                    placeholder="Enter your phone number (e.g., 09123456789)"
                     className={`w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-xl pl-10 sm:pl-12 pr-4 py-3 sm:py-4 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 placeholder-gray-500 dark:placeholder-gray-400`}
                     value={phone}
                     onChange={(e) => {
+                      // Remove all non-digit characters and limit to 11 digits
                       const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
                       setPhone(digits);
                     }}

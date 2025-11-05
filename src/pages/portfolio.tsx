@@ -265,7 +265,7 @@ const Portfolio = () => {
         
         {/* Professional Social Media Links with Staggered Animations - Left Rail (Hero only with smooth fade) */}
         <div
-          className={`fixed left-2 sm:left-8 top-1/2 -translate-y-1/2 hidden sm:flex flex-col items-center space-y-2 sm:space-y-3 z-20 pointer-events-none transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'}`}
+          className={`fixed left-2 sm:left-8 top-1/2 -translate-y-1/2 flex flex-col items-center space-y-2 sm:space-y-3 z-20 pointer-events-none transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'}`}
         >
           <a 
             href="https://web.facebook.com/jowne.enrique.11" 
@@ -351,7 +351,7 @@ const Portfolio = () => {
 
         {/* Scroll Indicator with Animation - Right Rail (Hero only with smooth fade) */}
         <div
-          className={`fixed right-2 sm:right-8 top-1/2 -translate-y-1/2 hidden sm:flex flex-col items-center z-20 transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0 animate-fade-in-right' : 'opacity-0 translate-x-3'}`}
+          className={`fixed right-2 sm:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center z-20 transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0 animate-fade-in-right' : 'opacity-0 translate-x-3'}`}
         >
           <div className={`writing-vertical text-xs tracking-wider ${textSecondary} font-medium mb-3 sm:mb-4`}>
             SCROLL

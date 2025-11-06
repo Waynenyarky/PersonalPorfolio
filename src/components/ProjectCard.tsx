@@ -23,7 +23,7 @@ export default function ProjectCard({ project, index, bgCardClass, borderBaseCla
 			bgCardClass={`${bgCardClass} cursor-pointer`}
 			borderBaseClass={borderBaseClass}
 			className={`${visible ? 'animate-fade-in-up' : 'opacity-0'} relative overflow-hidden`}
-			style={{ animationDelay: `${index * 0.1}s` }}
+			style={{ animationDelay: `${index * 0.08}s` }}
 			interactive
 		>
 			<div className={`aspect-16/10 bg-linear-to-br ${project.gradient} flex items-center justify-center relative overflow-hidden`}>

@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import './portfolio.css';
 import { Facebook, Twitter, Linkedin, Github, MessageSquare, ChevronDown, Award, CheckCircle, Users, Code, GitBranch, ArrowUp, Terminal, Package, FileCode, Figma, Paintbrush, Palette, Database, Server, Smartphone, Layout, Box, Zap, Shield, Calendar, Mail, Menu, X } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
@@ -27,31 +27,64 @@ const Portfolio = () => {
   const [activeTab, setActiveTab] = useState<'skills' | 'tools'>('skills');
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set(['home']));
   const [activeSection, setActiveSection] = useState<string>('home');
+  const [animatingSection, setAnimatingSection] = useState<string | null>(null);
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [filterTech, setFilterTech] = useState<string>('');
+  
+  // Ref to track programmatic scrolling to prevent conflicts
+  const isScrollingRef = useRef(false);
+  const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
       
-      // Update active section based on scroll position
-      const sections = ['home', 'about', 'skills', 'portfolio', 'services', 'reviews', 'contact'];
-      const current = sections.find(section => {
-        const el = document.getElementById(section);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
-        }
-        return false;
-      });
-      if (current) setActiveSection(current);
+      // Don't update activeSection during programmatic scroll
+      if (isScrollingRef.current) return;
+      
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          // Update active section based on scroll position - no delay
+          const sections = ['home', 'about', 'skills', 'portfolio', 'services', 'reviews', 'contact'];
+          const current = sections.find(section => {
+            const el = document.getElementById(section);
+            if (el) {
+              const rect = el.getBoundingClientRect();
+              // Check if section is in viewport with proper offset for header
+              return rect.top <= 120 && rect.bottom >= 120;
+            }
+            return false;
+          });
+          if (current && !isScrollingRef.current) {
+            setActiveSection(current);
+            setAnimatingSection(null);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Initial check on mount
+    handleScroll();
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      // Cleanup any pending highlight animations
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+      }
+    };
   }, []);
+
+  
+
+  
 
   // Sync filters with URL
   useEffect(() => {
@@ -113,14 +146,15 @@ const Portfolio = () => {
      { name: 'JavaScript', icon: Code, color: 'from-yellow-400 to-yellow-500' },
      { name: 'TypeScript', icon: Code, color: 'from-blue-600 to-blue-700' },
      { name: 'React', icon: Box, color: 'from-cyan-400 to-cyan-600' },
-     { name: 'Angular', icon: Box, color: 'from-red-600 to-red-700' },
-     { name: 'Vue.js', icon: Box, color: 'from-green-500 to-green-600' },
+     { name: 'Python', icon: Code, color: 'from-yellow-500 to-yellow-600' },
+     { name: 'Flutter', icon: Smartphone, color: 'from-cyan-500 to-cyan-600' },
+     { name: 'Kotlin', icon: Code, color: 'from-purple-600 to-purple-700' },
      { name: 'Node.js', icon: Server, color: 'from-green-600 to-green-700' },
      { name: 'Database', icon: Database, color: 'from-purple-500 to-purple-600' },
-     { name: 'Git', icon: GitBranch, color: 'from-gray-700 to-gray-800' },
      { name: 'Responsive', icon: Smartphone, color: 'from-pink-500 to-pink-600' },
      { name: 'UI/UX', icon: Layout, color: 'from-indigo-500 to-indigo-600' },
    ];
+  
 
   const stats = [
     { icon: Award, value: '3+', label: 'Years of Experience', color: 'text-orange-500' },
@@ -131,7 +165,54 @@ const Portfolio = () => {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      
+      // Clear any pending highlight animations
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+        highlightTimeoutRef.current = null;
+      }
+      
+      // Mark that we're programmatically scrolling
+      isScrollingRef.current = true;
+      
+      // Sequential highlight animation from current to target
+      const navOrder = ['home', 'about', 'skills', 'portfolio', 'services', 'reviews', 'contact'];
+      const currentIndex = navOrder.indexOf(activeSection);
+      const targetIndex = navOrder.indexOf(sectionId);
+
+      if (currentIndex !== -1 && targetIndex !== -1 && currentIndex !== targetIndex) {
+        const direction = targetIndex > currentIndex ? 1 : -1;
+        let index = currentIndex;
+        const stepDuration = 150; // 150ms per item
+
+        const step = () => {
+          index += direction;
+          const inBounds = index >= 0 && index < navOrder.length;
+          const reached = direction > 0 ? index >= targetIndex : index <= targetIndex;
+          if (inBounds && !reached) {
+            setAnimatingSection(navOrder[index]);
+            highlightTimeoutRef.current = setTimeout(() => {
+              requestAnimationFrame(step);
+            }, stepDuration);
+          } else {
+            setActiveSection(sectionId);
+            setAnimatingSection(null);
+            highlightTimeoutRef.current = null;
+          }
+        };
+
+        // Start on next frame for smoothness
+        requestAnimationFrame(() => requestAnimationFrame(step));
+      } else {
+        setActiveSection(sectionId);
+        setAnimatingSection(null);
+      }
+
+      // Smooth scroll using native behavior
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Cleanup after scroll completes (fallback timeout)
+      setTimeout(() => { isScrollingRef.current = false; }, 1000);
     }
   };
 
@@ -176,12 +257,14 @@ const Portfolio = () => {
             <div className="hidden md:flex space-x-6 lg:space-x-8">
               {navItems.map(({ labelKey, id }) => {
                 const isActive = activeSection === id;
+                const isAnimating = animatingSection === id;
+                const showHighlight = isActive || isAnimating;
                 return (
                   <a
                     key={labelKey}
                     href={`#${id}`}
-                    className={`group relative text-sm font-semibold transition-all duration-300 ${
-                      isActive ? 'text-orange-500' : navText + ' hover:text-orange-500'
+                    className={`group relative text-sm font-semibold transition-all duration-300 ease-in-out ${
+                      showHighlight ? 'text-orange-500' : navText + ' hover:text-orange-500'
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
@@ -192,11 +275,11 @@ const Portfolio = () => {
                     aria-label={`Go to ${t(language, labelKey)}`}
                   >
                     {t(language, labelKey)}
-                    <span className={`absolute -bottom-1.5 left-0 h-0.5 bg-orange-500 transition-all duration-300 ${
-                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                    <span className={`absolute -bottom-1.5 left-0 h-0.5 bg-orange-500 transition-all duration-300 ease-in-out ${
+                      showHighlight ? 'w-full opacity-100' : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-100'
                     }`}></span>
-                    {isActive && (
-                      <span className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-orange-500/30 blur-sm"></span>
+                    {showHighlight && (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-orange-500/30 blur-sm transition-opacity duration-300 ease-in-out"></span>
                     )}
                   </a>
                 );
@@ -241,14 +324,16 @@ const Portfolio = () => {
           <div className={`md:hidden ${bgCard} border-t ${borderBase} animate-fade-in-up`}>
             <div className="px-6 pb-6 space-y-4">
               <div className="pt-2 grid grid-cols-1 gap-2">
-                {navItems.map(({ labelKey, id }, index) => {
+                {navItems.map(({ labelKey, id }) => {
                   const isActive = activeSection === id;
+                  const isAnimating = animatingSection === id;
+                  const showHighlight = isActive || isAnimating;
                   return (
                     <a
                       key={labelKey}
                       href={`#${id}`}
-                      className={`relative block py-2.5 px-3 text-sm font-semibold tracking-wide transition-all duration-300 rounded-lg ${
-                        isActive ? 'text-orange-500 bg-orange-500/10' : navText + ' hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-orange-500'
+                      className={`relative block py-2.5 px-3 text-sm font-semibold tracking-wide transition-all duration-300 ease-in-out rounded-lg ${
+                        showHighlight ? 'text-orange-500 bg-orange-500/10' : navText + ' hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-orange-500'
                       }`}
                       onClick={(e) => {
                         e.preventDefault();
@@ -257,11 +342,10 @@ const Portfolio = () => {
                       }}
                       aria-current={isActive ? 'page' : undefined}
                       aria-label={`Go to ${t(language, labelKey)}`}
-                      style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       {t(language, labelKey)}
-                      {isActive && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-orange-500 rounded-r"></span>
+                      {showHighlight && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-orange-500 rounded-r transition-all duration-300 ease-in-out"></span>
                       )}
                     </a>
                   );
@@ -290,7 +374,7 @@ const Portfolio = () => {
       </nav>
 
       {/* Hero Section */}
-      <section id="home" className={`min-h-screen flex items-center justify-center relative pt-16 sm:pt-20 overflow-hidden ${bgSection}`}>
+      <section id="home" className={`min-h-screen flex items-center justify-center relative pt-10 sm:pt-12 overflow-hidden ${bgSection}`}>
         {/* Subtle Background Effects with Animation */}
         <div className="absolute inset-0 bg-linear-to-b from-orange-500/5 to-transparent pointer-events-none"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
@@ -391,7 +475,7 @@ const Portfolio = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className={`py-12 sm:py-16 lg:py-20 ${bgSection} ${visibleSections.has('about') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="about" className={`pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 ${bgSection} ${visibleSections.has('about') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10 lg:mb-12">
@@ -399,7 +483,7 @@ const Portfolio = () => {
               <div
                 key={index}
                 className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 ${visibleSections.has('about') ? 'animate-fade-in-up' : 'opacity-0'}`}
-                style={{ animationDelay: `${index * 0.1}s` }}
+                style={{ animationDelay: `${index * 0.08}s` }}
               >
                 <div className="flex items-center space-x-4">
                   <div className={`w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center transition-transform duration-300 hover:scale-110`}>
@@ -459,7 +543,7 @@ const Portfolio = () => {
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className={`py-12 sm:py-16 lg:py-20 ${bgSkillsSection} ${visibleSections.has('skills') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="skills" className={`pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 ${bgSkillsSection} ${visibleSections.has('skills') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12 items-start">
             <div className={`lg:col-span-2 mb-8 lg:mb-0 ${visibleSections.has('skills') ? 'animate-fade-in-left' : 'opacity-0'}`}>
@@ -504,7 +588,7 @@ const Portfolio = () => {
                 <div
                   key={index}
                   className={`${bgCard} rounded-lg p-4 border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 aspect-square flex flex-col items-center justify-center ${visibleSections.has('skills') ? 'animate-fade-in-up' : 'opacity-0'}`}
-                  style={{ animationDelay: `${index * 0.05}s` }}
+                  style={{ animationDelay: `${index * 0.04}s` }}
                 >
                   <item.icon className={`${textPrimary} mb-2 transition-transform duration-300 group-hover:scale-110`} size={28} />
                   <span className={`text-xs font-medium ${textPrimary} text-center leading-tight`}>{item.name}</span>
@@ -517,7 +601,7 @@ const Portfolio = () => {
       </section>
 
       {/* Portfolio Section */}
-      <section id="portfolio" className={`py-12 sm:py-16 lg:py-20 ${bgSection} ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'} overflow-visible`}>
+      <section id="portfolio" className={`pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 ${bgSection} ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'} overflow-visible`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 overflow-visible">
           <div className={`${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'}`}>
             <SectionHeader
@@ -533,8 +617,8 @@ const Portfolio = () => {
           {/* Filters */}
           <div className={`mb-6 ${bgCard} border ${borderBase} rounded-lg p-3 sm:p-4 transition-all duration-300 ${visibleSections.has('portfolio') ? 'animate-fade-in-up' : 'opacity-0'} overflow-visible`}>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
-              <div className="flex items-center gap-2 relative">
-                <label className={`text-xs ${textSecondary}`}>{t(language, 'portfolio.filter.category')}</label>
+              <div className="flex items-center gap-2 relative flex-1 sm:flex-none">
+                <label className={`text-xs whitespace-nowrap ${textSecondary}`}>{t(language, 'portfolio.filter.category')}</label>
                 <ProfessionalDropdown
                   value={filterCategory}
                   onChange={setFilterCategory}
@@ -553,19 +637,19 @@ const Portfolio = () => {
                   aria-label="Filter projects by category"
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <label className={`text-xs ${textSecondary}`}>{t(language, 'portfolio.filter.tech')}</label>
+              <div className="flex items-center gap-2 flex-1 sm:flex-none">
+                <label className={`text-xs whitespace-nowrap ${textSecondary}`}>{t(language, 'portfolio.filter.tech')}</label>
                 <input
                   type="text"
                   value={filterTech}
                   onChange={(e) => setFilterTech(e.target.value)}
                   placeholder={t(language, 'portfolio.filter.placeholder')}
-                  className={`w-full sm:w-[220px] ${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200 hover:border-orange-500/60`}
+                  className={`flex-1 sm:w-[220px] ${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200 hover:border-orange-500/60`}
                 />
                 {(filterCategory || filterTech) && (
                   <button
                     onClick={() => { setFilterCategory(''); setFilterTech(''); }}
-                    className="px-3 py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-800 hover:border-orange-500 transition-all duration-200 hover:scale-[1.02]"
+                    className={`shrink-0 px-3 py-2 text-xs sm:text-sm font-medium rounded-lg border ${borderBase} hover:border-orange-500 ${textPrimary} bg-transparent hover:bg-orange-500/10 transition-all duration-200 active:scale-[0.98] whitespace-nowrap`}
                     aria-label="Clear filters"
                   >
                     Clear
@@ -631,7 +715,7 @@ const Portfolio = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className={`py-12 sm:py-16 lg:py-20 ${bgSkillsSection} ${visibleSections.has('services') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="services" className={`pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 ${bgSkillsSection} ${visibleSections.has('services') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className={`text-center mb-10 sm:mb-12 lg:mb-16 ${visibleSections.has('services') ? 'animate-fade-in-up' : 'opacity-0'}`}>
             <div className="inline-block mb-4">
@@ -688,7 +772,7 @@ const Portfolio = () => {
               <div
                 key={index}
                 className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-xl hover:-translate-y-1 ${visibleSections.has('services') ? 'animate-fade-in-up' : 'opacity-0'}`}
-                style={{ animationDelay: `${index * 0.1}s` }}
+                style={{ animationDelay: `${index * 0.08}s` }}
               >
                 <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center mb-4 transition-transform duration-300 hover:scale-110">
                   <service.icon className="text-orange-500" size={24} />
@@ -714,7 +798,7 @@ const Portfolio = () => {
       </Suspense>
 
       {/* CTA Section */}
-      <section id="cta" className={`py-10 sm:py-12 lg:py-16 ${bgSection} relative overflow-hidden ${visibleSections.has('cta') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="cta" className={`pt-8 sm:pt-10 lg:pt-12 pb-10 sm:pb-12 lg:pb-16 ${bgSection} relative overflow-hidden ${visibleSections.has('cta') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="absolute inset-0 bg-linear-to-r from-orange-500/10 to-orange-600/10"></div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 ${textPrimary}`}>
@@ -742,7 +826,7 @@ const Portfolio = () => {
       </section>
 
       {/* Engagement Section */}
-      <section id="engagement" className={`py-12 sm:py-16 lg:py-20 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section id="engagement" className={`pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 items-start">
             {/* How We Work */}
@@ -813,7 +897,7 @@ const Portfolio = () => {
       </section>
 
       {/* Interactive Engagement Section */}
-      <section className={`py-12 sm:py-16 lg:py-20 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <section className={`pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 ${bgSkillsSection} ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className={`text-center mb-8 sm:mb-10 lg:mb-12 ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
             <div className="inline-block mb-4">
@@ -868,7 +952,7 @@ const Portfolio = () => {
               <div
                 key={index}
                 className={`${bgCard} border ${borderBase} rounded-xl p-5 sm:p-6 transition-all duration-300 hover:border-orange-500 hover:shadow-xl hover:-translate-y-1 ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'} h-full flex flex-col`}
-                style={{ animationDelay: `${index * 0.1}s` }}
+                style={{ animationDelay: `${index * 0.08}s` }}
               >
                 <div className="flex items-start gap-3 mb-3">
                   <div className={`w-12 h-12 shrink-0 bg-linear-to-br ${method.color} rounded-lg flex items-center justify-center`}> 

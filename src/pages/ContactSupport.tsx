@@ -78,20 +78,20 @@ export default function ContactSupport({ visibleSections }: Props) {
 
             <div className="space-y-4 sm:space-y-6 mb-6 sm:mb-8">
               <div className={`flex items-start space-x-4 sm:space-x-5 group transition-all duration-300 hover:translate-x-2 ${visibleSections.has('contact') ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.1s' }}>
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 transform-gpu group-hover:scale-110">
                   <MapPin size={18} />
                 </div>
-                <div>
+                <div className="transform-gpu" style={{ willChange: 'transform', backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
                   <div className={`font-semibold mb-1 sm:mb-2 text-base sm:text-lg ${textPrimary}`}>Address</div>
                   <div className={`${textSecondary} text-sm sm:text-base leading-relaxed`}>Zone 5, Seselangen, Sual,<br />Pangasinan, Philippines</div>
                 </div>
               </div>
 
               <div className={`flex items-start space-x-4 sm:space-x-5 group transition-all duration-300 hover:translate-x-2 ${visibleSections.has('contact') ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 transform-gpu group-hover:scale-110">
                   <Phone size={18} />
                 </div>
-                <div>
+                <div className="transform-gpu" style={{ willChange: 'transform', backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
                   <div className={`font-semibold mb-1 sm:mb-2 text-base sm:text-lg ${textPrimary}`}>Phone</div>
                   <div className={`${textSecondary} text-sm sm:text-base`}>(+63) 905 228 1368</div>
                   <div className={`${textSecondary} text-sm sm:text-base`}>(+63) 915 736 6455</div>
@@ -99,10 +99,10 @@ export default function ContactSupport({ visibleSections }: Props) {
               </div>
 
               <div className={`flex items-start space-x-4 sm:space-x-5 group transition-all duration-300 hover:translate-x-2 ${visibleSections.has('contact') ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 transform-gpu group-hover:scale-110">
                   <Mail size={18} />
                 </div>
-                <div>
+                <div className="transform-gpu" style={{ willChange: 'transform', backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
                   <div className={`font-semibold mb-1 sm:mb-2 text-base sm:text-lg ${textPrimary}`}>Email</div>
                   <div className={`${textSecondary} text-sm sm:text-base`}>enriquejohnwayne@gmail.com</div>
                   <div className={`${textSecondary} text-sm sm:text-base`}>joma.enrique.up@phinmaed.com</div>

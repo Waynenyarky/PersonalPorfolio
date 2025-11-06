@@ -31,6 +31,8 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const bcRef = useRef<BroadcastChannel | null>(null);
+	const sectionRef = useRef<HTMLElement | null>(null);
+	const [sectionVisible, setSectionVisible] = useState(false);
 	const [showSuccessModal, setShowSuccessModal] = useState(false);
 	const [showEmailUnavailableModal, setShowEmailUnavailableModal] = useState(false);
 	const [showServiceUnavailableModal, setShowServiceUnavailableModal] = useState(false);
@@ -88,6 +90,24 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 		};
 	}, []);
 
+	// Local visibility observer to ensure animations run even if parent didn't observe yet
+	useEffect(() => {
+		if (!sectionRef.current) return;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						setSectionVisible(true);
+						observer.disconnect();
+					}
+				});
+			},
+			{ root: null, rootMargin: '0px', threshold: 0.1 }
+		);
+		observer.observe(sectionRef.current);
+		return () => observer.disconnect();
+	}, []);
+
 	const textPrimary = theme === 'dark' ? 'text-white' : 'text-black';
 	const textSecondary = theme === 'dark' ? 'text-gray-300' : 'text-gray-600';
 	const bgSection = theme === 'dark' ? 'bg-gray-950' : 'bg-gray-50';
@@ -96,9 +116,10 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 	const inputBg = theme === 'dark' ? 'bg-gray-900/50' : 'bg-white';
 
 	return (
-		<section id="reviews" data-section="reviews" className={`py-12 sm:py-16 lg:py-20 ${bgSection}`}>
+		<section id="reviews" data-section="reviews" ref={sectionRef} className={`py-12 sm:py-16 lg:py-20 ${bgSection}`}>
 			<div className="max-w-7xl mx-auto px-4 sm:px-6">
-				{/* Header Section - Always Visible */}
+			{/* Header Section - Fade in when visible */}
+			<div className={`${sectionVisible ? 'animate-fade-in-up' : ''}`} style={{ animationDelay: '0.05s' }}>
 				<SectionHeader
 					label={t(language, 'reviews.section')}
 					title={<><span className={`${textPrimary}`}>{t(language, 'reviews.heading1')} </span><span className="text-orange-500">{t(language, 'reviews.heading2')}</span></>}
@@ -107,7 +128,8 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 					textPrimaryClass={textPrimary}
 					textSecondaryClass={textSecondary}
 				/>
-                <Card className={`mt-4 sm:mt-6 max-w-4xl mx-auto text-left mb-8 sm:mb-10 p-5 sm:p-6 lg:p-8`} bgCardClass={bgCard} borderBaseClass={borderBase}>
+			</div>
+				<Card className={`mt-4 sm:mt-6 max-w-4xl mx-auto text-left mb-8 sm:mb-10 p-5 sm:p-6 lg:p-8 ${sectionVisible ? 'animate-fade-in-up' : ''}`} bgCardClass={bgCard} borderBaseClass={borderBase}>
                     <h3 className={`text-sm font-semibold mb-4 sm:mb-5 ${textPrimary}`}>{t(language, 'reviews.howItWorks')}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
                         <div className={`flex items-start gap-3 p-5 sm:p-6 rounded-lg border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-md`}>
@@ -137,10 +159,10 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 						</Card>
 					)}
 					{!isLoading && reviews.map((testimonial, index) => (
-						<div
+					<div
 							key={`review-${testimonial.id || index}`}
-							className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${visibleSections.has('reviews') ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`}
-							style={{ animationDelay: `${0.3 + index * 0.1}s` }}
+						className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${sectionVisible ? 'animate-fade-in-up' : ''}`}
+							style={{ animationDelay: `${0.1 + index * 0.08}s` }}
 						>
 							<div className="flex items-center gap-1 mb-4">
 								{[...Array(testimonial.rating)].map((_, i) => (
@@ -157,7 +179,7 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 					))}
 				</div>
 
-				<div className={`max-w-2xl mx-auto ${bgCard} border ${borderBase} rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg`}>
+			<div className={`max-w-2xl mx-auto ${bgCard} border ${borderBase} rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg ${sectionVisible ? 'animate-fade-in-up' : ''}`} style={{ animationDelay: '0.12s' }}>
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4">
 						<h3 className={`text-lg sm:text-xl font-bold ${textPrimary}`}>{t(language, 'reviewForm.title')}</h3>
 						<button

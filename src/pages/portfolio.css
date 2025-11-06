@@ -19,7 +19,7 @@
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -30,7 +30,7 @@
 @keyframes fadeInLeft {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(-20px);
   }
   to {
     opacity: 1;
@@ -41,7 +41,7 @@
 @keyframes fadeInRight {
   from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(20px);
   }
   to {
     opacity: 1;
@@ -68,15 +68,18 @@
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
+  animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: opacity, transform;
 }
 
 .animate-fade-in-left {
-  animation: fadeInLeft 0.8s ease-out forwards;
+  animation: fadeInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: opacity, transform;
 }
 
 .animate-fade-in-right {
-  animation: fadeInRight 0.8s ease-out forwards;
+  animation: fadeInRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: opacity, transform;
 }
 
 .animate-float {
@@ -85,6 +88,49 @@
 
 .animate-pulse-slow {
   animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Optimize animations for performance */
+.animate-fade-in-up,
+.animate-fade-in-left,
+.animate-fade-in-right {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Simple navigation transitions - oldest behavior */
+nav a {
+  transition: color 0.3s ease-in-out, 
+              transform 0.2s ease-in-out;
+}
+
+nav a:hover {
+  transform: translateY(-1px);
+}
+
+/* Simple underline animation - oldest behavior */
+nav a span {
+  transition: width 0.3s ease-in-out, 
+              opacity 0.3s ease-in-out;
+}
+
+/* Add scroll margin to all sections for proper spacing with fixed header */
+section[id] {
+  scroll-margin-top: 40px;
+}
+
+/* Responsive scroll margin */
+@media (max-width: 640px) {
+  section[id] {
+    scroll-margin-top: 32px;
+  }
 }
 
 /* Professional subtle wave animations */

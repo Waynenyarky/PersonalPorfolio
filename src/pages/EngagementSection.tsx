@@ -1,5 +1,4 @@
 import { t, type Language } from '../i18n/translations';
-import { CheckCircle } from 'lucide-react';
 
 type Props = {
   language: Language;

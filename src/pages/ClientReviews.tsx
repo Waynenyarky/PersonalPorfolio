@@ -21,11 +21,12 @@ type Review = {
 };
 
 type Props = {
-	language: Language;
-	visibleSections: Set<string>;
+    language: Language;
+    // Keeping prop for compatibility with parent, but not used locally anymore
+    visibleSections?: Set<string>;
 };
 
-export default function ClientReviews({ language, visibleSections }: Props) {
+export default function ClientReviews({ language, visibleSections: _visibleSections }: Props) {
 	const { theme } = useTheme();
 	const [showReviewForm, setShowReviewForm] = useState(false);
 	const [reviews, setReviews] = useState<Review[]>([]);

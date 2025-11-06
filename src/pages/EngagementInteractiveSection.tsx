@@ -30,7 +30,7 @@ export default function EngagementInteractiveSection({
   textPrimary,
   textSecondary,
   bgSkillsSection,
-  bgPage,
+  bgPage: _bgPage,
   bgCard,
   borderBase,
   scrollToSection,

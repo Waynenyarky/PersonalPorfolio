@@ -2,6 +2,8 @@ import SectionHeader from '../components/SectionHeader';
 import { t, type Language } from '../i18n/translations';
 import { projects as allProjects } from '../data/projects';
 import ProjectCard from '../components/ProjectCard';
+import ProfessionalDropdown from '../components/ProfessionalDropdown';
+import { Briefcase } from 'lucide-react';
 
 type Props = {
   language: Language;
@@ -62,18 +64,22 @@ export default function PortfolioSection({
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-center gap-2 relative flex-1 sm:flex-none">
               <label className={`text-xs whitespace-nowrap ${textSecondary}`}>{t(language, 'portfolio.filter.category')}</label>
-              {/* Simple select replacement kept as external dropdown previously; keeping minimal */}
-              <select
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-                className={`min-w-[160px] max-w-[160px] ${inputBg} border ${borderBase} ${textPrimary} rounded-lg px-2 py-2 text-sm`}
-                aria-label="Filter projects by category"
-              >
-                <option value="">{t(language, 'portfolio.filter.all')}</option>
-                {[...new Set(projects.map(p => p.category))].map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+              <div className="min-w-[180px]">
+                <ProfessionalDropdown
+                  name="portfolioCategory"
+                  value={filterCategory}
+                  onChange={(val) => setFilterCategory(val)}
+                  options={[
+                    { value: '', label: t(language, 'portfolio.filter.all') },
+                    ...[...new Set(projects.map(p => p.category))].map((cat) => ({ value: cat, label: cat }))
+                  ]}
+                  inputBg={inputBg}
+                  borderBase={borderBase}
+                  textPrimary={textPrimary}
+                  textSecondary={textSecondary}
+                  leftIcon={filterCategory ? <Briefcase className={textSecondary} size={18} /> : undefined}
+                />
+              </div>
             </div>
             <div className="flex items-center gap-2 flex-1 sm:flex-none">
               <label className={`text-xs whitespace-nowrap ${textSecondary}`}>{t(language, 'portfolio.filter.tech')}</label>

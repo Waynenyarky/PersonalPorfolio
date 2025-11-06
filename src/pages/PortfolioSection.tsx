@@ -3,7 +3,6 @@ import { t, type Language } from '../i18n/translations';
 import { projects as allProjects } from '../data/projects';
 import ProjectCard from '../components/ProjectCard';
 import ProfessionalDropdown from '../components/ProfessionalDropdown';
-import { Briefcase } from 'lucide-react';
 
 type Props = {
   language: Language;

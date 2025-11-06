@@ -77,7 +77,6 @@ export default function PortfolioSection({
                   borderBase={borderBase}
                   textPrimary={textPrimary}
                   textSecondary={textSecondary}
-                  leftIcon={filterCategory ? <Briefcase className={textSecondary} size={18} /> : undefined}
                 />
               </div>
             </div>

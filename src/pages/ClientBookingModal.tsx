@@ -19,20 +19,23 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
   const borderBase = theme === 'dark' ? 'border-gray-800' : 'border-gray-200';
   const inputBg = theme === 'dark' ? 'bg-gray-900/50' : 'bg-white';
 
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     name: '',
     email: '',
     phone: '',
     company: '',
     projectType: '',
+    projectTypeOther: '',
     projectDescription: '',
     timeline: '',
     budget: '',
     preferredContact: 'email',
     preferredDate: '',
     preferredTime: '',
-    additionalNotes: ''
-  });
+    additionalNotes: '',
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusText, setStatusText] = useState<string>('');
@@ -54,20 +57,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
   useEffect(() => {
     if (!isOpen) {
       // Reset form when modal closes
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        projectType: '',
-        projectDescription: '',
-        timeline: '',
-        budget: '',
-        preferredContact: 'email',
-        preferredDate: '',
-        preferredTime: '',
-        additionalNotes: ''
-      });
+      setFormData(initialFormData);
       setStatusText('');
       setStatusType('');
     }
@@ -91,6 +81,14 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
 
     // Update formData with trimmed phone
     const validatedFormData = { ...formData, phone: trimmedPhone };
+
+    // Validate other project type when selected
+    if (validatedFormData.projectType === 'other' && !validatedFormData.projectTypeOther.trim()) {
+      setStatusType('error');
+      setStatusText('Please enter the other project type.');
+      setIsSubmitting(false);
+      return;
+    }
 
     const result = await submitBooking(validatedFormData);
     setIsSubmitting(false);
@@ -284,6 +282,17 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
                     leftIcon={<FileText className={textSecondary} size={18} />}
                     required
                   />
+                  {formData.projectType === 'other' && (
+                    <input
+                      type="text"
+                      name="projectTypeOther"
+                      placeholder="Enter other project type"
+                      className={`mt-2 w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 placeholder-gray-500 dark:placeholder-gray-400`}
+                      value={formData.projectTypeOther}
+                      onChange={handleChange}
+                      required
+                    />
+                  )}
                 </div>
 
                 <div>
@@ -391,6 +400,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
                       value={formData.preferredDate}
                       onChange={handleChange}
                       min={new Date().toISOString().split('T')[0]}
+                      required
                     />
                   </div>
                 </div>
@@ -405,6 +415,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
                       className={`w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300`}
                       value={formData.preferredTime}
                       onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -475,20 +486,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
         onClose={() => {
           setShowServiceUnavailableModal(false);
           // Reset form if user closes without sending email
-          setFormData({
-            name: '',
-            email: '',
-            phone: '',
-            company: '',
-            projectType: '',
-            projectDescription: '',
-            timeline: '',
-            budget: '',
-            preferredContact: 'email',
-            preferredDate: '',
-            preferredTime: '',
-            additionalNotes: ''
-          });
+          setFormData(initialFormData);
         }}
         bookingData={formData}
         onEmailSent={() => {
@@ -496,20 +494,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
           setStatusType('success');
           setStatusText("Booking sent via email! We'll contact you soon.");
           // Reset form after email sent
-          setFormData({
-            name: '',
-            email: '',
-            phone: '',
-            company: '',
-            projectType: '',
-            projectDescription: '',
-            timeline: '',
-            budget: '',
-            preferredContact: 'email',
-            preferredDate: '',
-            preferredTime: '',
-            additionalNotes: ''
-          });
+          setFormData(initialFormData);
           // Close modal after 3 seconds
           setTimeout(() => {
             onClose();

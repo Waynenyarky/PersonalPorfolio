@@ -209,7 +209,7 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 									});
 									const json = await resp.json();
 									if (!resp.ok) throw new Error(json?.error || 'Failed to submit');
-									if (json) {
+                                    if (json) {
 										setReviews((prev) => [json as Review, ...prev]);
 										setSubmittedReviewerName(reviewData.name);
 										setSubmittedRating(reviewData.rating);
@@ -217,10 +217,15 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 										setShowReviewForm(false);
 										
 										// Check if email was sent successfully - email failure doesn't prevent saving
-										if (json.email_sent === false) {
+                                        if (json.email_sent === false) {
 											setShowEmailUnavailableModal(true);
 										} else {
 											setShowSuccessModal(true);
+                                            try {
+                                                const bc = new BroadcastChannel('reviews');
+                                                bc.postMessage({ type: 'submitted', rating: reviewData.rating });
+                                                bc.close();
+                                            } catch {}
 										}
 									}
 								} catch (error: any) {
@@ -357,6 +362,11 @@ export default function ClientReviews({ language, visibleSections }: Props) {
 					setShowReviewForm(false);
 					setShowServiceUnavailableModal(false);
 					setShowReviewSentModal(true);
+                    try {
+                        const bc = new BroadcastChannel('reviews');
+                        bc.postMessage({ type: 'submitted', rating: reviewData.rating });
+                        bc.close();
+                    } catch {}
 				}}
 			/>
 

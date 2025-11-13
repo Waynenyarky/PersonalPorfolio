@@ -4,6 +4,7 @@ import { arbitragePro } from './arbitragePro';
 import { nazarethSystem } from './nazarethSystem';
 import { cupfeExpresso } from './cupfeExpresso';
 import { socialMediaApp } from './socialMediaApp';
+import { smartAttendance } from './smartattendance';
 
 export const projects = [
   myCrewManager,
@@ -12,5 +13,6 @@ export const projects = [
   nazarethSystem,
   cupfeExpresso,
   socialMediaApp,
+  smartAttendance,
 ];
 

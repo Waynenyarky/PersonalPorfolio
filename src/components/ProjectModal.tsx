@@ -95,10 +95,16 @@ export default function ProjectModal({ project, onClose }: Props) {
                 </div>
                 <h3 className={`text-base sm:text-lg font-bold ${textPrimary}`}>Description</h3>
               </div>
-              <div className={`${textSecondary} leading-relaxed text-sm sm:text-base lg:text-[15px] wrap-break-word`}>
-                <p className="indent-4 sm:indent-6 lg:indent-8 mb-0">
-                  {project.description}
-                </p>
+              <div className={`${textSecondary} leading-relaxed text-sm sm:text-base lg:text-[15px] wrap-break-word space-y-3 sm:space-y-4`}>
+                {project.description.split('\n\n').map((paragraph, idx) => {
+                  const trimmed = paragraph.trim().replace(/\n/g, ' ');
+                  if (!trimmed) return null;
+                  return (
+                    <p key={idx} className="indent-4 sm:indent-6 lg:indent-8 mb-0">
+                      {trimmed}
+                    </p>
+                  );
+                })}
               </div>
             </section>
 
@@ -110,10 +116,40 @@ export default function ProjectModal({ project, onClose }: Props) {
                 </div>
                 <h3 className={`text-base sm:text-lg font-bold ${textPrimary}`}>Our Mission</h3>
               </div>
-              <div className={`${textSecondary} leading-relaxed text-sm sm:text-base lg:text-[15px] wrap-break-word`}>
-                <p className="indent-4 sm:indent-6 lg:indent-8 mb-0">
-                  {project.mission}
-                </p>
+              <div className={`${textSecondary} leading-relaxed text-sm sm:text-base lg:text-[15px] wrap-break-word space-y-3 sm:space-y-4`}>
+                {project.mission.split('\n\n').map((paragraph, idx) => {
+                  const trimmed = paragraph.trim().replace(/\n/g, ' ');
+                  if (!trimmed) return null;
+                  
+                  // Check if paragraph contains bold markdown (**text**)
+                  const hasBold = trimmed.includes('**');
+                  
+                  if (hasBold) {
+                    // Split by ** and render bold parts
+                    const parts = trimmed.split(/(\*\*.*?\*\*)/g);
+                    return (
+                      <p key={idx} className="indent-4 sm:indent-6 lg:indent-8 mb-0">
+                        {parts.map((part, partIdx) => {
+                          if (part.startsWith('**') && part.endsWith('**')) {
+                            const boldText = part.slice(2, -2);
+                            return (
+                              <strong key={partIdx} className="font-bold text-orange-500">
+                                {boldText}
+                              </strong>
+                            );
+                          }
+                          return <span key={partIdx}>{part}</span>;
+                        })}
+                      </p>
+                    );
+                  }
+                  
+                  return (
+                    <p key={idx} className="indent-4 sm:indent-6 lg:indent-8 mb-0">
+                      {trimmed}
+                    </p>
+                  );
+                })}
               </div>
             </section>
           </div>

@@ -11,7 +11,13 @@ const basePath = import.meta.env.BASE_URL || '/'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
-      <BrowserRouter basename={basePath}>
+      <BrowserRouter 
+        basename={basePath}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <App />
       </BrowserRouter>
     </ThemeProvider>

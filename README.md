@@ -49,9 +49,16 @@ Create a `.env` file in the project root:
 ```env
 VITE_API_BASE_URL=http://localhost:8000
 VITE_WEB3FORMS_ACCESS_KEY=your-web3forms-access-key
+VITE_EMAILJS_SERVICE_ID=your-emailjs-service-id
+VITE_EMAILJS_TEMPLATE_ID=your-emailjs-template-id
+VITE_EMAILJS_USER_ID=your-emailjs-user-id
+VITE_CONTACT_EMAIL=joma.enrique.up@phinmaed.com
 ```
 
-**Note:** `VITE_WEB3FORMS_ACCESS_KEY` is optional but recommended. If provided, reviews can still be sent via email even when the backend server is down.
+**Note:** 
+- `VITE_WEB3FORMS_ACCESS_KEY` is optional but recommended. If provided, reviews can still be sent via email even when the backend server is down.
+- `VITE_EMAILJS_*` variables are optional. If not provided, the service will use default values. Get these from your [EmailJS Dashboard](https://dashboard.emailjs.com/).
+- `VITE_CONTACT_EMAIL` is the email address where contact form messages will be sent (defaults to `joma.enrique.up@phinmaed.com`).
 
 #### Start Development Servers
 

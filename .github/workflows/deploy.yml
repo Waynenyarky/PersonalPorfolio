@@ -54,8 +54,7 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        with:
-          enablement: true
+        continue-on-error: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -65,4 +64,15 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Check deployment status
+        if: failure()
+        run: |
+          echo "::error::GitHub Pages deployment failed!"
+          echo "::error::Please enable GitHub Pages in repository settings:"
+          echo "::error::1. Go to Settings → Pages"
+          echo "::error::2. Select 'GitHub Actions' as source"
+          echo "::error::3. Save and re-run this workflow"
+          exit 1
 

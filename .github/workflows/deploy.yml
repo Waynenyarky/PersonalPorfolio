@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -18,9 +18,6 @@ concurrency:
 
 jobs:
   build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -52,27 +49,11 @@ jobs:
           echo "Checking for assets:"
           ls -la dist/assets/ 2>/dev/null || echo "No assets folder found"
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-        continue-on-error: true
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         with:
-          path: './dist'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-        continue-on-error: true
-
-      - name: Check deployment status
-        if: failure()
-        run: |
-          echo "::error::GitHub Pages deployment failed!"
-          echo "::error::Please enable GitHub Pages in repository settings:"
-          echo "::error::1. Go to Settings → Pages"
-          echo "::error::2. Select 'GitHub Actions' as source"
-          echo "::error::3. Save and re-run this workflow"
-          exit 1
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          cname: false
 

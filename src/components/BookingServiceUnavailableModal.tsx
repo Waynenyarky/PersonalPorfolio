@@ -38,18 +38,29 @@ export default function BookingServiceUnavailableModal({ isOpen, onClose, bookin
 
   useEffect(() => {
     if (!isOpen) {
-      // Reset state when modal closes
       setEmailSent(false);
       setEmailError(false);
       setIsSendingEmail(false);
       return;
     }
-    dialogRef.current?.focus();
+    const prevOverflow = document.body.style.overflow;
+    const prevPaddingRight = document.body.style.paddingRight;
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = scrollBarWidth ? `${scrollBarWidth}px` : '';
+    const id = requestAnimationFrame(() => {
+      dialogRef.current?.focus({ preventScroll: true });
+    });
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+      document.body.style.paddingRight = prevPaddingRight;
+    };
   }, [isOpen, onClose]);
 
   const handleSendEmail = async () => {

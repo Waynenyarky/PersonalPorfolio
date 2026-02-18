@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, User, Mail, Phone, Building2, Briefcase, Calendar, DollarSign, Clock, MessageSquare, FileText, CheckCircle } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
 import { submitBooking } from '../services/bookingService';
@@ -43,15 +44,29 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
   const [showEmailUnavailableModal, setShowEmailUnavailableModal] = useState(false);
   const [showServiceUnavailableModal, setShowServiceUnavailableModal] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
-    dialogRef.current?.focus();
+    const prevOverflow = document.body.style.overflow;
+    const prevPaddingRight = document.body.style.paddingRight;
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = scrollBarWidth ? `${scrollBarWidth}px` : '';
+    overlayRef.current?.scrollTo(0, 0);
+    const id = requestAnimationFrame(() => {
+      dialogRef.current?.focus({ preventScroll: true });
+    });
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+      document.body.style.paddingRight = prevPaddingRight;
+    };
   }, [isOpen, onClose]);
 
   useEffect(() => {
@@ -131,9 +146,10 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
 
   const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900';
 
-  return (
+  const modal = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto"
+      ref={overlayRef}
+      className="fixed inset-0 z-[100] flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto overflow-x-hidden"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-title"
@@ -503,5 +519,8 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
       />
     </div>
   );
+
+  if (typeof document === 'undefined') return null;
+  return createPortal(modal, document.body);
 }
 

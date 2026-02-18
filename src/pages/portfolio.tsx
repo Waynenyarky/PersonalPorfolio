@@ -3,7 +3,7 @@ import './portfolio.css';
 import { Facebook, Twitter, Linkedin, Github, MessageSquare, ChevronDown, Award, CheckCircle, Users, Code, GitBranch, ArrowUp, Terminal, Package, FileCode, Figma, Paintbrush, Palette, Database, Server, Smartphone, Layout, Box, Menu, X } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 const ProjectModal = lazy(() => import('../components/ProjectModal'));
-const ResumeModal = lazy(() => import('../components/ResumeModal'));
+import ResumeModal from '../components/ResumeModal';
 import { useTheme } from '../theme/useTheme';
 import AboutSection from './AboutSection';
 import SkillsSection from './SkillsSection';
@@ -670,6 +670,7 @@ const Portfolio = () => {
         <ResumeModal
           isOpen={showResumeModal}
           onClose={() => setShowResumeModal(false)}
+          resumeUrl={myCv}
         />
       </Suspense>
 

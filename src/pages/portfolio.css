@@ -90,6 +90,104 @@
   animation: pulse-slow 3s ease-in-out infinite;
 }
 
+/* Top bar — revealed with main so it’s clearly visible after intro (not inside wrapper opacity) */
+.nav-bar-reveal {
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              visibility 0s linear 0.45s,
+              background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+.nav-bar-reveal--hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.nav-bar-reveal--visible {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s, 0s, 0s, 0s, 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-bar-reveal { transition-duration: 0.2s; }
+}
+
+/* Main wrapper — travels up into view; handoff timed so main is fully visible when intro unmounts */
+.main-reveal-wrapper {
+  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+              visibility 0s linear 0.65s,
+              color 0.3s, background-color 0.3s;
+}
+
+.main-reveal-wrapper--hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(24px);
+}
+
+.main-reveal-wrapper--visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition-delay: 0s, 0s, 0s, 0s, 0s;
+}
+
+/* Hero reveal — text travels up into place (continuation of intro travel) */
+.hero-reveal-item {
+  opacity: 0;
+  transform: translateY(48px);
+}
+
+.main-reveal .hero-reveal-item {
+  animation: heroRevealTravelUp 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.main-reveal .hero-reveal-delay-1 { animation-delay: 0.08s; }
+.main-reveal .hero-reveal-delay-2 { animation-delay: 0.2s; }
+.main-reveal .hero-reveal-delay-3 { animation-delay: 0.34s; }
+.main-reveal .hero-reveal-delay-4 { animation-delay: 0.48s; }
+.main-reveal .hero-reveal-delay-5 { animation-delay: 0.62s; }
+
+@keyframes heroRevealTravelUp {
+  from {
+    opacity: 0;
+    transform: translateY(48px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-reveal-wrapper {
+    transition-duration: 0.25s;
+  }
+  .main-reveal-wrapper--hidden {
+    transform: translateY(8px);
+  }
+  .main-reveal .hero-reveal-item {
+    animation: heroRevealTravelUpReduced 0.28s ease-out forwards;
+  }
+  .main-reveal .hero-reveal-delay-1 { animation-delay: 0.04s; }
+  .main-reveal .hero-reveal-delay-2 { animation-delay: 0.08s; }
+  .main-reveal .hero-reveal-delay-3 { animation-delay: 0.12s; }
+  .main-reveal .hero-reveal-delay-4 { animation-delay: 0.16s; }
+  .main-reveal .hero-reveal-delay-5 { animation-delay: 0.2s; }
+}
+
+@keyframes heroRevealTravelUpReduced {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Optimize animations for performance */
 .animate-fade-in-up,
 .animate-fade-in-left,
@@ -228,6 +326,33 @@ section[id] {
 }
 
 
+/* Reviews section — animation delays (no inline styles) */
+.reviews-animate-delay-05 { animation-delay: 0.05s; }
+.reviews-animate-delay-12 { animation-delay: 0.12s; }
+.reviews-card-delay-0 { animation-delay: 0.1s; }
+.reviews-card-delay-1 { animation-delay: 0.18s; }
+.reviews-card-delay-2 { animation-delay: 0.26s; }
+.reviews-card-delay-3 { animation-delay: 0.34s; }
+.reviews-card-delay-4 { animation-delay: 0.42s; }
+.reviews-card-delay-5 { animation-delay: 0.5s; }
+.reviews-card-delay-6 { animation-delay: 0.58s; }
+.reviews-card-delay-7 { animation-delay: 0.66s; }
+.reviews-card-delay-8 { animation-delay: 0.74s; }
+.reviews-card-delay-9 { animation-delay: 0.82s; }
+.reviews-card-delay-10 { animation-delay: 0.9s; }
+.reviews-card-delay-11 { animation-delay: 0.98s; }
+.reviews-card-delay-12 { animation-delay: 1.06s; }
+.reviews-card-delay-13 { animation-delay: 1.14s; }
+.reviews-card-delay-14 { animation-delay: 1.22s; }
+.reviews-card-delay-15 { animation-delay: 1.3s; }
+.reviews-card-delay-16 { animation-delay: 1.38s; }
+.reviews-card-delay-17 { animation-delay: 1.46s; }
+.reviews-card-delay-18 { animation-delay: 1.54s; }
+.reviews-card-delay-19 { animation-delay: 1.62s; }
+
+/* Hero background blob delay */
+.hero-blob-delay-1s { animation-delay: 1s; }
+
 /* Rating stars */
 .rating-star {
   color: inherit;
@@ -236,14 +361,15 @@ section[id] {
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
 }
 
-/* Professional scrollbar styling */
-.projects-scrollable {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(229, 231, 235, 0.3);
-}
-
-.dark .projects-scrollable {
-  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(17, 24, 39, 0.5);
+/* Professional scrollbar styling — WebKit below; scrollbar-width/scrollbar-color for Firefox (optional) */
+@supports (scrollbar-width: thin) {
+  .projects-scrollable {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(249, 115, 22, 0.4) rgba(229, 231, 235, 0.3);
+  }
+  .dark .projects-scrollable {
+    scrollbar-color: rgba(249, 115, 22, 0.4) rgba(17, 24, 39, 0.5);
+  }
 }
 
 .projects-scrollable::-webkit-scrollbar {
@@ -301,9 +427,9 @@ section[id] {
 }
 
 .professional-dropdown select {
-  appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  appearance: none;
   background-image: none;
   cursor: pointer;
   padding-right: 2.75rem;
@@ -415,9 +541,13 @@ section[id] {
   overflow-y: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
-  /* Hide scrollbar initially */
-  scrollbar-width: none; /* Firefox */
+  /* Hide scrollbar initially — Firefox uses scrollbar-width; WebKit uses ::-webkit-scrollbar below */
   -ms-overflow-style: none; /* IE and Edge */
+}
+@supports (scrollbar-width: none) {
+  .dropdown-options-container {
+    scrollbar-width: none;
+  }
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera initially */
@@ -449,23 +579,21 @@ section[id] {
 }
 
 /* Show scrollbar in Firefox when scrolling */
-.dropdown-options-container.has-scroll:hover,
-.dropdown-options-container.has-scroll.is-scrolling {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(0, 0, 0, 0.1);
-}
-
-.dropdown-options-container.has-scroll:active {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(0, 0, 0, 0.1);
-}
-
-/* Dark mode scrollbar */
-.dark .dropdown-options-container.has-scroll:hover,
-.dark .dropdown-options-container.has-scroll.is-scrolling {
-  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(17, 24, 39, 0.5);
-}
-
-.dark .dropdown-options-container.has-scroll:active {
-  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(17, 24, 39, 0.5);
+@supports (scrollbar-width: thin) {
+  .dropdown-options-container.has-scroll:hover,
+  .dropdown-options-container.has-scroll.is-scrolling {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(249, 115, 22, 0.4) rgba(0, 0, 0, 0.1);
+  }
+  .dropdown-options-container.has-scroll:active {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(249, 115, 22, 0.4) rgba(0, 0, 0, 0.1);
+  }
+  .dark .dropdown-options-container.has-scroll:hover,
+  .dark .dropdown-options-container.has-scroll.is-scrolling {
+    scrollbar-color: rgba(249, 115, 22, 0.4) rgba(17, 24, 39, 0.5);
+  }
+  .dark .dropdown-options-container.has-scroll:active {
+    scrollbar-color: rgba(249, 115, 22, 0.4) rgba(17, 24, 39, 0.5);
+  }
 }

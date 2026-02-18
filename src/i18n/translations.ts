@@ -17,6 +17,16 @@ const translations: LocaleMap = {
   'nav.reviews': { en: 'Client Reviews', fil: 'Mga Review ng Kliyente' },
   'nav.contact': { en: 'Contact', fil: 'Kontak' },
 
+  // Intro overlay
+  'intro.welcomeToMy': { en: 'Welcome to My', fil: 'Maligayang Pagdating sa Aking' },
+  'intro.webPortfolio': { en: 'Web Portfolio', fil: 'Web Portfolio' },
+  'intro.imJohnWayne': { en: "I'm John Wayne", fil: "Ako si John Wayne" },
+  'intro.fullStackDeveloper': { en: 'Full Stack Developer', fil: 'Full Stack Developer' },
+  'intro.tagline': { en: 'Building modern web experiences', fil: 'Pagbuo ng modernong web na karanasan' },
+  'intro.badge': { en: '3+ Years Experience', fil: '3+ Taong Karanasan' },
+  'intro.viewPortfolio': { en: 'Scroll or tap to continue', fil: 'I-scroll o i-tap para magpatuloy' },
+  'intro.availability': { en: 'Available for projects', fil: 'Available para sa mga proyekto' },
+
   // Hero
   'hero.role': { en: 'Full Stack Developer', fil: 'Full Stack Developer' },
   'hero.title.line1': { en: 'I Design & Build', fil: 'Nagdidisenyo at Gumagawa Ako' },
@@ -134,10 +144,10 @@ const translations: LocaleMap = {
   'footer.rights': { en: 'All rights reserved', fil: 'Lahat ng karapatan ay nakalaan' },
 };
 
-export function t(language: Language, key: string): string {
+function t(language: Language, key: string): string {
   const entry = translations[key];
   if (!entry) return key;
   return language === 'fil' ? entry.fil : entry.en;
 }
 
-
+export { t };

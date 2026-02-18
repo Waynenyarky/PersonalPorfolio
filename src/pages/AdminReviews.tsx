@@ -222,11 +222,11 @@ export default function AdminReviews() {
         {activeTab === 'reviews' && (
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm">
             {/* Professional Header */}
-            <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50 dark:from-orange-950/30 dark:via-amber-950/30 dark:to-yellow-950/30">
+            <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800 bg-linear-to-r from-orange-50 via-amber-50 to-yellow-50 dark:from-orange-950/30 dark:via-amber-950/30 dark:to-yellow-950/30">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+                    <div className="w-12 h-12 bg-linear-to-br from-orange-500 via-amber-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
                       <Star className="text-white" size={22} />
                     </div>
                     <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
@@ -255,9 +255,9 @@ export default function AdminReviews() {
                         <div className="bg-white dark:bg-gray-900 px-4">
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 bg-orange-400 dark:bg-orange-500 rounded-full"></div>
-                            <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-orange-400 dark:via-orange-500 to-transparent"></div>
+                            <div className="w-8 h-0.5 bg-linear-to-r from-transparent via-orange-400 dark:via-orange-500 to-transparent"></div>
                             <Star size={12} className="text-orange-400 dark:text-orange-500" />
-                            <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-orange-400 dark:via-orange-500 to-transparent"></div>
+                            <div className="w-8 h-0.5 bg-linear-to-r from-transparent via-orange-400 dark:via-orange-500 to-transparent"></div>
                             <div className="w-2 h-2 bg-orange-400 dark:bg-orange-500 rounded-full"></div>
                           </div>
                         </div>
@@ -270,7 +270,7 @@ export default function AdminReviews() {
                     <div className="flex-1">
                       <div className="flex items-center gap-4 mb-3">
                         <div className="relative">
-                          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center shadow-md">
+                          <div className="w-12 h-12 bg-linear-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center shadow-md">
                             <User className="text-white" size={20} />
                           </div>
                           <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-orange-500 border-2 border-white dark:border-gray-900 rounded-full flex items-center justify-center">
@@ -281,7 +281,7 @@ export default function AdminReviews() {
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white">{r.name}</h3>
                             {/* Rating Badge */}
-                            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-lg shadow-sm">
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-linear-to-r from-orange-500 to-amber-600 text-white rounded-lg shadow-sm">
                               <Star size={14} className="fill-white" />
                               <span className="text-sm font-bold">{r.rating}</span>
                               <span className="text-xs opacity-90">/ 5</span>
@@ -323,9 +323,9 @@ export default function AdminReviews() {
 
                   {/* Client Information Cards */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
-                    <div className="group relative overflow-hidden p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 rounded-xl border border-blue-200/50 dark:border-blue-900/30 hover:border-blue-300 dark:hover:border-blue-800 transition-all">
+                    <div className="group relative overflow-hidden p-4 bg-linear-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 rounded-xl border border-blue-200/50 dark:border-blue-900/30 hover:border-blue-300 dark:hover:border-blue-800 transition-all">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                        <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm shrink-0">
                           <User className="text-white" size={16} />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -334,9 +334,9 @@ export default function AdminReviews() {
                         </div>
                       </div>
                     </div>
-                    <div className="group relative overflow-hidden p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10 rounded-xl border border-purple-200/50 dark:border-purple-900/30 hover:border-purple-300 dark:hover:border-purple-800 transition-all">
+                    <div className="group relative overflow-hidden p-4 bg-linear-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10 rounded-xl border border-purple-200/50 dark:border-purple-900/30 hover:border-purple-300 dark:hover:border-purple-800 transition-all">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                        <div className="w-10 h-10 bg-linear-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm shrink-0">
                           <Briefcase className="text-white" size={16} />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -345,9 +345,9 @@ export default function AdminReviews() {
                         </div>
                       </div>
                     </div>
-                    <div className="group relative overflow-hidden p-4 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/20 dark:to-orange-900/10 rounded-xl border border-orange-200/50 dark:border-orange-900/30 hover:border-orange-300 dark:hover:border-orange-800 transition-all">
+                    <div className="group relative overflow-hidden p-4 bg-linear-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/20 dark:to-orange-900/10 rounded-xl border border-orange-200/50 dark:border-orange-900/30 hover:border-orange-300 dark:hover:border-orange-800 transition-all">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                        <div className="w-10 h-10 bg-linear-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-sm shrink-0">
                           <Building2 className="text-white" size={16} />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -359,10 +359,10 @@ export default function AdminReviews() {
                   </div>
 
                   {/* Rating Display */}
-                  <div className="mb-5 p-4 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/30 dark:via-yellow-950/20 dark:to-orange-950/30 rounded-xl border-2 border-amber-200/60 dark:border-amber-900/40 shadow-sm">
+                  <div className="mb-5 p-4 bg-linear-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/30 dark:via-yellow-950/20 dark:to-orange-950/30 rounded-xl border-2 border-amber-200/60 dark:border-amber-900/40 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
+                        <div className="w-10 h-10 bg-linear-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
                           <Star className="text-white fill-white" size={18} />
                         </div>
                         <div>
@@ -403,9 +403,9 @@ export default function AdminReviews() {
                       </div>
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Client Testimonial</span>
                     </div>
-                    <div className="p-5 bg-gradient-to-br from-gray-50 via-slate-50 to-gray-50 dark:from-gray-800/50 dark:via-slate-900/30 dark:to-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm">
+                    <div className="p-5 bg-linear-to-br from-gray-50 via-slate-50 to-gray-50 dark:from-gray-800/50 dark:via-slate-900/30 dark:to-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm">
                       <div className="relative">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-orange-500 to-amber-600 rounded-full"></div>
+                        <div className="absolute top-0 left-0 w-1 h-full bg-linear-to-b from-orange-500 to-amber-600 rounded-full"></div>
                         <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-medium pl-4 italic">
                           "{r.review}"
                         </p>
@@ -417,7 +417,7 @@ export default function AdminReviews() {
               ))}
               {!loading && reviews.length === 0 && (
                 <div className="p-16 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
+                  <div className="w-20 h-20 bg-linear-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
                     <Star className="text-gray-400 dark:text-gray-500" size={28} />
                   </div>
                   <h3 className="text-base font-bold text-gray-700 dark:text-gray-300 mb-2">No Reviews Found</h3>
@@ -439,11 +439,11 @@ export default function AdminReviews() {
         {activeTab === 'bookings' && (
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm">
             {/* Professional Header */}
-            <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-emerald-50 via-green-50 to-teal-50 dark:from-emerald-950/30 dark:via-green-950/30 dark:to-teal-950/30">
+            <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800 bg-linear-to-r from-emerald-50 via-green-50 to-teal-50 dark:from-emerald-950/30 dark:via-green-950/30 dark:to-teal-950/30">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <div className="w-12 h-12 bg-linear-to-br from-emerald-500 via-green-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
                       <CalendarDays className="text-white" size={22} />
                     </div>
                     <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
@@ -472,9 +472,9 @@ export default function AdminReviews() {
                         <div className="bg-white dark:bg-gray-900 px-4">
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 bg-emerald-400 dark:bg-emerald-500 rounded-full"></div>
-                            <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 dark:via-emerald-500 to-transparent"></div>
+                            <div className="w-8 h-0.5 bg-linear-to-r from-transparent via-emerald-400 dark:via-emerald-500 to-transparent"></div>
                             <CalendarDays size={12} className="text-emerald-400 dark:text-emerald-500" />
-                            <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 dark:via-emerald-500 to-transparent"></div>
+                            <div className="w-8 h-0.5 bg-linear-to-r from-transparent via-emerald-400 dark:via-emerald-500 to-transparent"></div>
                             <div className="w-2 h-2 bg-emerald-400 dark:bg-emerald-500 rounded-full"></div>
                           </div>
                         </div>
@@ -487,7 +487,7 @@ export default function AdminReviews() {
                     <div className="flex-1">
                       <div className="flex items-center gap-4 mb-3">
                         <div className="relative">
-                          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
+                          <div className="w-12 h-12 bg-linear-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
                             <User className="text-white" size={20} />
                           </div>
                           <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-2 border-white dark:border-gray-900 rounded-full flex items-center justify-center">
@@ -525,9 +525,9 @@ export default function AdminReviews() {
 
                   {/* Contact Information Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-                    <div className="group relative overflow-hidden p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 rounded-xl border border-blue-200/50 dark:border-blue-900/30 hover:border-blue-300 dark:hover:border-blue-800 transition-all">
+                    <div className="group relative overflow-hidden p-4 bg-linear-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 rounded-xl border border-blue-200/50 dark:border-blue-900/30 hover:border-blue-300 dark:hover:border-blue-800 transition-all">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                        <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm shrink-0">
                           <Mail className="text-white" size={16} />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -536,9 +536,9 @@ export default function AdminReviews() {
                         </div>
                       </div>
                     </div>
-                    <div className="group relative overflow-hidden p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10 rounded-xl border border-purple-200/50 dark:border-purple-900/30 hover:border-purple-300 dark:hover:border-purple-800 transition-all">
+                    <div className="group relative overflow-hidden p-4 bg-linear-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10 rounded-xl border border-purple-200/50 dark:border-purple-900/30 hover:border-purple-300 dark:hover:border-purple-800 transition-all">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                        <div className="w-10 h-10 bg-linear-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm shrink-0">
                           <Phone className="text-white" size={16} />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -548,9 +548,9 @@ export default function AdminReviews() {
                       </div>
                     </div>
                     {b.company ? (
-                      <div className="group relative overflow-hidden p-4 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/20 dark:to-orange-900/10 rounded-xl border border-orange-200/50 dark:border-orange-900/30 hover:border-orange-300 dark:hover:border-orange-800 transition-all">
+                      <div className="group relative overflow-hidden p-4 bg-linear-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/20 dark:to-orange-900/10 rounded-xl border border-orange-200/50 dark:border-orange-900/30 hover:border-orange-300 dark:hover:border-orange-800 transition-all">
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                          <div className="w-10 h-10 bg-linear-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-sm shrink-0">
                             <Building2 className="text-white" size={16} />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -565,9 +565,9 @@ export default function AdminReviews() {
                         <div className="text-sm text-gray-400 dark:text-gray-600 italic">Not provided</div>
                       </div>
                     )}
-                    <div className="group relative overflow-hidden p-4 bg-gradient-to-br from-teal-50 to-teal-100/50 dark:from-teal-950/20 dark:to-teal-900/10 rounded-xl border border-teal-200/50 dark:border-teal-900/30 hover:border-teal-300 dark:hover:border-teal-800 transition-all">
+                    <div className="group relative overflow-hidden p-4 bg-linear-to-br from-teal-50 to-teal-100/50 dark:from-teal-950/20 dark:to-teal-900/10 rounded-xl border border-teal-200/50 dark:border-teal-900/30 hover:border-teal-300 dark:hover:border-teal-800 transition-all">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                        <div className="w-10 h-10 bg-linear-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center shadow-sm shrink-0">
                           <Calendar className="text-white" size={16} />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -579,9 +579,9 @@ export default function AdminReviews() {
                   </div>
 
                   {/* Project Details Section */}
-                  <div className="mb-5 p-5 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900/50 dark:via-blue-950/30 dark:to-indigo-950/30 rounded-xl border-2 border-blue-200/60 dark:border-blue-900/40 shadow-sm">
+                  <div className="mb-5 p-5 bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900/50 dark:via-blue-950/30 dark:to-indigo-950/30 rounded-xl border-2 border-blue-200/60 dark:border-blue-900/40 shadow-sm">
                     <div className="flex items-center gap-3 mb-4 pb-3 border-b border-blue-200/50 dark:border-blue-900/30">
-                      <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+                      <div className="w-9 h-9 bg-linear-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
                         <Briefcase className="text-white" size={18} />
                       </div>
                       <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Project Information</h3>
@@ -589,7 +589,7 @@ export default function AdminReviews() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-3 bg-white/60 dark:bg-gray-800/40 rounded-lg border border-blue-200/50 dark:border-blue-900/30">
                         <div className="text-[10px] font-bold text-blue-700 dark:text-blue-300 mb-2 uppercase tracking-wider">Project Type</div>
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg shadow-sm">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-linear-to-r from-blue-500 to-indigo-600 text-white rounded-lg shadow-sm">
                           <span className="text-sm font-bold">{formatProjectType(b.project_type)}</span>
                         </div>
                       </div>
@@ -619,9 +619,9 @@ export default function AdminReviews() {
 
                   {/* Preferred Schedule - Highlighted */}
                   {(b.preferred_date || b.preferred_time) && (
-                    <div className="mb-5 p-4 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 dark:from-amber-950/30 dark:via-yellow-950/20 dark:to-amber-950/30 rounded-xl border-2 border-amber-300/60 dark:border-amber-800/40 shadow-sm">
+                    <div className="mb-5 p-4 bg-linear-to-r from-amber-50 via-yellow-50 to-amber-50 dark:from-amber-950/30 dark:via-yellow-950/20 dark:to-amber-950/30 rounded-xl border-2 border-amber-300/60 dark:border-amber-800/40 shadow-sm">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-lg flex items-center justify-center shadow-md">
+                        <div className="w-8 h-8 bg-linear-to-br from-amber-500 to-yellow-600 rounded-lg flex items-center justify-center shadow-md">
                           <CalendarDays className="text-white" size={16} />
                         </div>
                         <span className="text-xs font-bold text-amber-900 dark:text-amber-200 uppercase tracking-wider">Preferred Consultation Schedule</span>
@@ -671,7 +671,7 @@ export default function AdminReviews() {
               ))}
               {!loadingBookings && bookings.length === 0 && (
                 <div className="p-16 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
+                  <div className="w-20 h-20 bg-linear-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
                     <Calendar className="text-gray-400 dark:text-gray-500" size={28} />
                   </div>
                   <h3 className="text-base font-bold text-gray-700 dark:text-gray-300 mb-2">No Appointments Found</h3>

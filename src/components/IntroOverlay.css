@@ -1,0 +1,786 @@
+/* ========== Intro Overlay — Premium UI/UX, responsive ========== */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  padding: 1rem;
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+  box-sizing: border-box;
+  overflow-y: auto;
+  opacity: 0;
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-overlay--visible {
+  opacity: 1;
+}
+
+.intro-overlay--visible:not(.intro-overlay--exiting) .intro-overlay__content {
+  animation: intro-content-in 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+}
+
+.intro-overlay--visible:not(.intro-overlay--exiting) .intro-overlay__typeblock {
+  animation: intro-typeblock-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
+}
+
+@keyframes intro-content-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes intro-typeblock-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.intro-overlay--reduced-motion {
+  transition-duration: 0.2s;
+}
+
+.intro-overlay--reduced-motion.intro-overlay--visible:not(.intro-overlay--exiting) .intro-overlay__content,
+.intro-overlay--reduced-motion.intro-overlay--visible:not(.intro-overlay--exiting) .intro-overlay__typeblock {
+  animation-duration: 0.2s;
+}
+
+/* Exit — elegant handoff */
+.intro-overlay--exiting {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-overlay--exiting .intro-overlay__top {
+  transform: translateY(-36px);
+  opacity: 0;
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-overlay__typeblock--exiting {
+  transform: translateY(-72px) scale(0.992);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-overlay__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Background — match main page + subtle breathing glow */
+.intro-overlay--light .intro-overlay__bg {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%),
+    radial-gradient(ellipse 70% 50% at 50% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 60%);
+  animation: intro-bg-breathe 4s ease-in-out infinite;
+}
+
+.intro-overlay--dark .intro-overlay__bg {
+  background:
+    linear-gradient(180deg, #030712 0%, #0a0f1a 50%, #111827 100%),
+    radial-gradient(ellipse 70% 50% at 50% 25%, rgba(249, 115, 22, 0.05) 0%, transparent 60%);
+  animation: intro-bg-breathe 4s ease-in-out infinite;
+}
+
+@keyframes intro-bg-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.97; }
+}
+
+.intro-overlay__noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.012;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.intro-overlay--dark .intro-overlay__noise {
+  opacity: 0.016;
+}
+
+/* Progress bar — fills in sync with typewriter */
+.intro-overlay__progress-track {
+  --progress: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.intro-overlay--dark .intro-overlay__progress-track {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.intro-overlay__progress-fill {
+  height: 100%;
+  width: 100%;
+  background: #f97316;
+  transform-origin: left;
+  transform: scaleX(var(--progress, 0));
+  transition: transform 0.15s linear;
+}
+
+.intro-overlay--reduced-motion .intro-overlay__progress-fill {
+  transition: none;
+}
+
+/* Badge — experience above icons */
+.intro-overlay__badge {
+  display: inline-block;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: intro-badge-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+
+.intro-overlay--light .intro-overlay__badge {
+  color: #4b5563;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.intro-overlay--dark .intro-overlay__badge {
+  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #1f2937;
+}
+
+@keyframes intro-badge-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Icon bar — staggered entrance when visible */
+.intro-overlay__top {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-overlay__icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 3vw, 1.125rem);
+}
+
+.intro-overlay__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(2.75rem, 10vw, 3rem);
+  height: clamp(2.75rem, 10vw, 3rem);
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  transition: color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  outline: none;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.intro-overlay--visible:not(.intro-overlay--exiting) .intro-overlay__icon {
+  animation: intro-icon-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.intro-overlay--visible:not(.intro-overlay--exiting) .intro-overlay__icon--delay-0 { animation-delay: 0.45s; }
+.intro-overlay--visible:not(.intro-overlay--exiting) .intro-overlay__icon--delay-1 { animation-delay: 0.55s; }
+.intro-overlay--visible:not(.intro-overlay--exiting) .intro-overlay__icon--delay-2 { animation-delay: 0.65s; }
+
+@keyframes intro-icon-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.intro-overlay__icon:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 4px;
+}
+
+.intro-overlay__icon svg {
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+/* Match main: textSecondary (gray-600/gray-300), hover orange-500 */
+.intro-overlay__icon--light {
+  color: #4b5563;
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: #e5e7eb;
+}
+
+.intro-overlay__icon--light:hover {
+  color: #f97316;
+  background-color: rgba(249, 115, 22, 0.1);
+  border-color: rgba(249, 115, 22, 0.25);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.12);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.intro-overlay__icon--dark {
+  color: #d1d5db;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: #1f2937;
+}
+
+.intro-overlay__icon--dark:hover {
+  color: #f97316;
+  background-color: rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.2);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Content card — responsive width & padding */
+.intro-overlay__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: min(34rem, calc(100vw - 2rem));
+  padding: clamp(1.5rem, 5vw, 3.25rem) clamp(1.25rem, 4vw, 1.875rem);
+  margin: auto;
+}
+
+.intro-overlay__content::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: clamp(-1rem, -4vw, -1.5rem) clamp(-0.75rem, -3vw, -1.25rem);
+  border-radius: clamp(0.75rem, 4vw, 1.25rem);
+  pointer-events: none;
+}
+
+/* Card: match main + subtle lift when visible */
+.intro-overlay__content::before {
+  transition: box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-overlay--light .intro-overlay__content::before {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 1px #e5e7eb,
+    0 1px 0 0 rgba(255, 255, 255, 0.8) inset,
+    0 12px 40px -12px rgba(0, 0, 0, 0.06),
+    0 4px 16px -4px rgba(0, 0, 0, 0.03);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+.intro-overlay--visible.intro-overlay--light .intro-overlay__content::before {
+  box-shadow:
+    0 0 0 1px #e5e7eb,
+    0 1px 0 0 rgba(255, 255, 255, 0.8) inset,
+    0 20px 50px -16px rgba(0, 0, 0, 0.08),
+    0 8px 24px -8px rgba(0, 0, 0, 0.04);
+}
+
+.intro-overlay--dark .intro-overlay__content::before {
+  background: rgba(17, 24, 39, 0.92);
+  box-shadow:
+    0 0 0 1px #1f2937,
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 40px -12px rgba(0, 0, 0, 0.4),
+    0 4px 16px -4px rgba(0, 0, 0, 0.2);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+.intro-overlay--visible.intro-overlay--dark .intro-overlay__content::before {
+  box-shadow:
+    0 0 0 1px #1f2937,
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 20px 50px -16px rgba(0, 0, 0, 0.5),
+    0 8px 24px -8px rgba(0, 0, 0, 0.3);
+}
+
+.intro-overlay__typeblock {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: clamp(10rem, 28vw, 12.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.intro-overlay__line {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
+  -webkit-text-stroke: 0.01em currentColor;
+  paint-order: stroke fill;
+  -webkit-text-fill-color: currentColor;
+}
+
+/* Staggered line reveal — each completed line fades in */
+.intro-overlay__line--revealed {
+  animation: intro-line-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes intro-line-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cursor pulse at start of new line */
+.intro-overlay__line--cursor-pulse .intro-overlay__cursor {
+  animation: intro-cursor-pulse 0.5s ease-out;
+}
+
+@keyframes intro-cursor-pulse {
+  0%, 100% { opacity: 0.92; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.15); }
+}
+
+.intro-overlay--light .intro-overlay__line {
+  -webkit-text-stroke-color: rgba(0, 0, 0, 0.08);
+}
+
+.intro-overlay--dark .intro-overlay__line {
+  -webkit-text-stroke-color: rgba(255, 255, 255, 0.05);
+}
+
+.intro-overlay--light .intro-overlay__line--name,
+.intro-overlay--dark .intro-overlay__line--name {
+  -webkit-text-stroke-color: rgba(249, 115, 22, 0.2);
+}
+
+/* Accent line — draw-in + shine pass */
+.intro-overlay__accent {
+  position: relative;
+  width: 100%;
+  max-width: min(9rem, 70%);
+  height: 2px;
+  margin: 0.5rem 0 0.75rem;
+  border-radius: 1px;
+  background: linear-gradient(90deg, transparent 0%, #f97316 20%, #f97316 80%, transparent 100%);
+  opacity: 0.9;
+  transform-origin: center;
+  animation: intro-accent-draw 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.12s forwards;
+  overflow: hidden;
+}
+
+.intro-overlay__accent::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 40%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.4) 60%,
+    transparent 100%
+  );
+  animation: intro-accent-shine 0.6s ease-out 0.9s forwards;
+  opacity: 0;
+}
+
+@keyframes intro-accent-shine {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes intro-accent-draw {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0.9;
+  }
+}
+
+/* Line 1 — Welcome to My; tighter letter-spacing on small screens */
+.intro-overlay__line--welcome {
+  font-size: clamp(0.6875rem, 2vw, 0.9375rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.intro-overlay--light .intro-overlay__line--welcome {
+  color: #4b5563;
+}
+
+.intro-overlay--dark .intro-overlay__line--welcome {
+  color: #d1d5db;
+}
+
+/* Line 2 — Web Portfolio; scales for small to large screens */
+.intro-overlay__line--title {
+  font-size: clamp(1.75rem, 8vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-top: 0.375rem;
+  line-height: 1.1;
+}
+
+.intro-overlay--light .intro-overlay__line--title {
+  color: #000000;
+}
+
+.intro-overlay--dark .intro-overlay__line--title {
+  color: #ffffff;
+}
+
+/* Line 3 — I'm John Wayne */
+.intro-overlay__line--name {
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  margin-top: 0.25rem;
+  color: #f97316;
+}
+
+/* Line 4 — Full Stack Developer; tighter letter-spacing on small screens */
+.intro-overlay__line--role {
+  font-size: clamp(0.6875rem, 2.5vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 0.375rem;
+  opacity: 1;
+}
+
+.intro-overlay--light .intro-overlay__line--role {
+  color: #4b5563;
+}
+
+.intro-overlay--dark .intro-overlay__line--role {
+  color: #d1d5db;
+}
+
+.intro-overlay__line--tagline {
+  margin: 0.5rem 0 0;
+  font-size: clamp(0.6875rem, 1.8vw, 0.8125rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+
+.intro-overlay--light .intro-overlay__line--tagline {
+  color: #6b7280;
+}
+
+.intro-overlay--dark .intro-overlay__line--tagline {
+  color: #9ca3af;
+}
+
+.intro-overlay__line--availability {
+  margin: 0.25rem 0 0;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.intro-overlay--light .intro-overlay__line--availability {
+  color: #9ca3af;
+}
+
+.intro-overlay--dark .intro-overlay__line--availability {
+  color: #6b7280;
+}
+
+/* Tagline under role (legacy; typed via .intro-overlay__line--tagline) */
+.intro-overlay__tagline {
+  margin: 0.5rem 0 0;
+  font-size: clamp(0.6875rem, 1.8vw, 0.8125rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  opacity: 0;
+  animation: intro-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+
+.intro-overlay--light .intro-overlay__tagline {
+  color: #6b7280;
+}
+
+.intro-overlay--dark .intro-overlay__tagline {
+  color: #9ca3af;
+}
+
+/* Availability */
+.intro-overlay__availability {
+  margin: 0.25rem 0 0;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: intro-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+}
+
+.intro-overlay--light .intro-overlay__availability {
+  color: #9ca3af;
+}
+
+.intro-overlay--dark .intro-overlay__availability {
+  color: #6b7280;
+}
+
+/* Hint — "Scroll or tap to continue" */
+.intro-overlay__hint {
+  margin: 1.25rem 0 0;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: intro-hint-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.intro-overlay--light .intro-overlay__hint {
+  color: #9ca3af;
+}
+
+.intro-overlay--dark .intro-overlay__hint {
+  color: #6b7280;
+}
+
+@keyframes intro-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes intro-hint-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 0.85; transform: translateY(0); }
+}
+
+/* Cursor — premium, subtle blink */
+.intro-overlay__cursor {
+  display: inline-block;
+  width: 1.5px;
+  min-width: 1.5px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.1s ease-out;
+  border-radius: 1px;
+}
+
+.intro-overlay__cursor--on {
+  opacity: 0.92;
+}
+
+.intro-overlay--reduced-motion .intro-overlay__cursor {
+  transition: none;
+}
+
+.intro-overlay--reduced-motion .intro-overlay__accent {
+  animation: none;
+  transform: scaleX(1);
+  opacity: 0.85;
+}
+
+.intro-overlay--reduced-motion .intro-overlay__accent::after {
+  animation: none;
+  display: none;
+}
+
+.intro-overlay--reduced-motion .intro-overlay__bg {
+  animation: none;
+}
+
+.intro-overlay--reduced-motion .intro-overlay__badge {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+.intro-overlay--reduced-motion .intro-overlay__icon {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+.intro-overlay--reduced-motion .intro-overlay__line--revealed {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+.intro-overlay--reduced-motion .intro-overlay__line--cursor-pulse .intro-overlay__cursor {
+  animation: none;
+}
+
+.intro-overlay--reduced-motion .intro-overlay__tagline,
+.intro-overlay--reduced-motion .intro-overlay__availability,
+.intro-overlay--reduced-motion .intro-overlay__line--tagline,
+.intro-overlay--reduced-motion .intro-overlay__line--availability {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+/* Small phones — prevent overflow, reduce spacing */
+@media (max-width: 380px) {
+  .intro-overlay__line--welcome {
+    letter-spacing: 0.12em;
+  }
+
+  .intro-overlay__line--role {
+    letter-spacing: 0.06em;
+  }
+
+  .intro-overlay__accent {
+    max-width: 85%;
+  }
+}
+
+/* Portrait phones — comfortable padding */
+@media (min-width: 400px) {
+  .intro-overlay {
+    padding: 1.25rem;
+  }
+}
+
+/* Tablet and up */
+@media (min-width: 640px) {
+  .intro-overlay {
+    padding: 2rem;
+    padding-top: max(2rem, env(safe-area-inset-top));
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+    padding-left: max(2rem, env(safe-area-inset-left));
+    padding-right: max(2rem, env(safe-area-inset-right));
+  }
+
+  .intro-overlay__content {
+    padding: 3.75rem 2.5rem;
+    max-width: min(36rem, calc(100vw - 4rem));
+  }
+
+  .intro-overlay__content::before {
+    inset: -1.75rem -1.5rem;
+    border-radius: 1.5rem;
+  }
+
+  .intro-overlay__typeblock {
+    min-height: 14rem;
+  }
+
+  .intro-overlay__top {
+    margin-bottom: 2.75rem;
+  }
+}
+
+/* Desktop — cap content width on very large screens */
+@media (min-width: 1280px) {
+  .intro-overlay__content {
+    max-width: 38rem;
+  }
+}
+
+/* Short viewport (e.g. landscape phone) — reduce min-heights so content fits or scrolls */
+@media (max-height: 500px) {
+  .intro-overlay {
+    align-items: center;
+  }
+
+  .intro-overlay__typeblock {
+    min-height: 6rem;
+  }
+
+  .intro-overlay__top {
+    margin-bottom: 0.75rem;
+  }
+
+  .intro-overlay__content {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-overlay__cursor {
+    animation: none;
+  }
+}

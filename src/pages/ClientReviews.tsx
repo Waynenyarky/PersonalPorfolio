@@ -120,7 +120,7 @@ export default function ClientReviews({ language, visibleSections: _visibleSecti
 		<section id="reviews" data-section="reviews" ref={sectionRef} className={`py-12 sm:py-16 lg:py-20 ${bgSection}`}>
 			<div className="max-w-7xl mx-auto px-4 sm:px-6">
 			{/* Header Section - Fade in when visible */}
-			<div className={`${sectionVisible ? 'animate-fade-in-up' : ''}`} style={{ animationDelay: '0.05s' }}>
+			<div className={`${sectionVisible ? 'animate-fade-in-up reviews-animate-delay-05' : ''}`}>
 				<SectionHeader
 					label={t(language, 'reviews.section')}
 					title={<><span className={`${textPrimary}`}>{t(language, 'reviews.heading1')} </span><span className="text-orange-500">{t(language, 'reviews.heading2')}</span></>}
@@ -162,8 +162,7 @@ export default function ClientReviews({ language, visibleSections: _visibleSecti
 					{!isLoading && reviews.map((testimonial, index) => (
 					<div
 							key={`review-${testimonial.id || index}`}
-						className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${sectionVisible ? 'animate-fade-in-up' : ''}`}
-							style={{ animationDelay: `${0.1 + index * 0.08}s` }}
+						className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${sectionVisible ? 'animate-fade-in-up' : ''} ${sectionVisible ? `reviews-card-delay-${Math.min(index, 19)}` : ''}`}
 						>
 							<div className="flex items-center gap-1 mb-4">
 								{[...Array(testimonial.rating)].map((_, i) => (
@@ -180,7 +179,7 @@ export default function ClientReviews({ language, visibleSections: _visibleSecti
 					))}
 				</div>
 
-			<div className={`max-w-2xl mx-auto ${bgCard} border ${borderBase} rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg ${sectionVisible ? 'animate-fade-in-up' : ''}`} style={{ animationDelay: '0.12s' }}>
+			<div className={`max-w-2xl mx-auto ${bgCard} border ${borderBase} rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg ${sectionVisible ? 'animate-fade-in-up reviews-animate-delay-12' : ''}`}>
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4">
 						<h3 className={`text-lg sm:text-xl font-bold ${textPrimary}`}>{t(language, 'reviewForm.title')}</h3>
 						<button

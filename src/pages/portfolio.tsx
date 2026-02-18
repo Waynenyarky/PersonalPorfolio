@@ -17,6 +17,7 @@ import CTASection from './CTASection';
 import ClientBookingModal from './ClientBookingModal';
 import EngagementSection from './EngagementSection';
 import ProfessionalDropdown from '../components/ProfessionalDropdown';
+import IntroOverlay from '../components/IntroOverlay';
 import ServicesSection from './ServicesSection';
 import formalImg from '../assets/formal.png';
 import myCv from '../assets/MyCV.pdf';
@@ -26,6 +27,7 @@ import type { Project } from '../types/project';
 const Portfolio = () => {
   const { theme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
+  const [atBottom, setAtBottom] = useState(false);
   const [language, setLanguage] = useState<Language>('en');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -38,6 +40,12 @@ const Portfolio = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [filterTech, setFilterTech] = useState<string>('');
+
+  const [showIntro, setShowIntro] = useState(true);
+  const [mainRevealed, setMainRevealed] = useState(false);
+
+  const handleRevealMain = () => setMainRevealed(true);
+  const handleIntroClose = () => setShowIntro(false);
   
   // Ref to track programmatic scrolling to prevent conflicts
   const isScrollingRef = useRef(false);
@@ -68,8 +76,11 @@ const Portfolio = () => {
     let ticking = false;
     
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-      
+      const y = window.scrollY;
+      setScrolled(y > 50);
+      const nearBottom = y + window.innerHeight >= document.documentElement.scrollHeight - 60;
+      setAtBottom(nearBottom);
+
       // Don't update activeSection during programmatic scroll
       if (isScrollingRef.current) return;
       
@@ -282,7 +293,9 @@ const Portfolio = () => {
   const bgSkillsSection = theme === 'dark' ? 'bg-gray-950' : 'bg-white';
   const bgCard = theme === 'dark' ? 'bg-gray-900' : 'bg-white';
   const borderBase = theme === 'dark' ? 'border-gray-800' : 'border-gray-200';
-  const navBg = scrolled ? (theme === 'dark' ? 'bg-gray-900/95' : 'bg-white/80') : 'bg-transparent';
+  const navBg = !scrolled ? 'bg-transparent' : atBottom
+    ? (theme === 'dark' ? 'bg-gray-900' : 'bg-white')
+    : (theme === 'dark' ? 'bg-gray-900/98' : 'bg-white/95');
   const inputBg = theme === 'dark' ? 'bg-gray-900/50' : 'bg-white';
   
 
@@ -297,9 +310,20 @@ const Portfolio = () => {
   ];
 
   return (
-    <div className={`min-h-screen ${bgPage} transition-colors duration-300`}>
-      {/* Navigation */}
-       <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${navBg} ${scrolled ? 'backdrop-blur-lg shadow-lg border-b ' + borderBase : 'backdrop-blur-sm'}`}>
+    <>
+      {showIntro && (
+        <IntroOverlay
+          language={language}
+          onRevealMain={handleRevealMain}
+          onClose={handleIntroClose}
+        />
+      )}
+      {/* Top bar: outside main-reveal so it’s clearly visible after intro */}
+      <nav
+        className={`fixed top-0 w-full z-50 transition-all duration-500 nav-bar-reveal ${
+          mainRevealed ? 'nav-bar-reveal--visible' : 'nav-bar-reveal--hidden'
+        } ${navBg} ${scrolled ? 'backdrop-blur-xl shadow-md border-b ' + borderBase : 'backdrop-blur-sm'}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <button
@@ -430,13 +454,17 @@ const Portfolio = () => {
           </div>
         )}
       </nav>
-
+      <div
+        className={`min-h-screen ${bgPage} main-reveal-wrapper ${
+          mainRevealed ? 'main-reveal-wrapper--visible main-reveal' : 'main-reveal-wrapper--hidden'
+        }`}
+      >
       {/* Hero Section */}
       <section id="home" className={`min-h-screen flex items-center justify-center relative pt-10 sm:pt-12 overflow-hidden ${bgSection}`}>
         {/* Subtle Background Effects with Animation */}
         <div className="absolute inset-0 bg-linear-to-b from-orange-500/5 to-transparent pointer-events-none"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow hero-blob-delay-1s"></div>
         
         {/* Professional Social Media Links with Staggered Animations - Left Rail (Hero only with smooth fade) */}
         <div
@@ -481,16 +509,16 @@ const Portfolio = () => {
           <div className="w-px h-12 sm:h-16 bg-gray-300 dark:bg-gray-700 opacity-0 animate-fade-in-left"></div>
         </div>
 
-        {/* Hero Content with Staggered Animations */}
+        {/* Hero Content — staggered reveal when main is visible (intro done or direct load) */}
         <div className="text-center px-4 sm:px-6 z-10 max-w-4xl mx-auto">
-          <div className="mb-4 sm:mb-5 inline-block opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <div className="hero-reveal-item hero-reveal-delay-1 mb-4 sm:mb-5 inline-block">
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${borderBase} bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm transition-all duration-300 hover:shadow-md`}>
               <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
               <span className={`${textSecondary} text-xs sm:text-sm font-semibold tracking-wider uppercase`}>{t(language, 'hero.role')}</span>
             </div>
           </div>
           
-          <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-5 tracking-tight leading-tight ${textPrimary} opacity-0 animate-fade-in-up`} style={{ animationDelay: '0.4s' }}>
+          <h1 className={`hero-reveal-item hero-reveal-delay-2 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-5 tracking-tight leading-tight ${textPrimary}`}>
             <span className="inline-block transition-all duration-300 hover:scale-105">John Wayne</span>
             <br />
             <span className="text-orange-500 inline-block relative transition-all duration-300 hover:scale-105">
@@ -499,14 +527,14 @@ const Portfolio = () => {
             </span>
           </h1>
           
-          <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal mb-2 sm:mb-3 ${textSecondary} opacity-0 animate-fade-in-up`} style={{ animationDelay: '0.6s' }}>
+          <h2 className={`hero-reveal-item hero-reveal-delay-3 text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal mb-2 sm:mb-3 ${textSecondary}`}>
             {t(language, 'hero.title.line1')}
           </h2>
-          <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal mb-8 sm:mb-10 ${textSecondary} opacity-0 animate-fade-in-up`} style={{ animationDelay: '0.7s' }}>
+          <h2 className={`hero-reveal-item hero-reveal-delay-4 text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal mb-8 sm:mb-10 ${textSecondary}`}>
             {t(language, 'hero.title.line2')}
           </h2>
           
-          <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+          <div className="hero-reveal-item hero-reveal-delay-5">
             <CTAButtons
               onPrimary={() => scrollToSection('contact')}
               onSecondary={() => setShowResumeModal(true)}
@@ -678,7 +706,8 @@ const Portfolio = () => {
       </div>
 
       
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -75,12 +75,12 @@ export default function EmailServiceUnavailableModal({ isOpen, onClose }: Props)
           {/* Warning Icon */}
           <div className="mb-4 sm:mb-6 flex justify-center">
             <div className="relative">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-600 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30 animate-scale-in">
-                <AlertTriangle className="text-white" size={32} strokeWidth={2.5} style={{ width: 'clamp(28px, 8vw, 40px)', height: 'clamp(28px, 8vw, 40px)' }} />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-br from-orange-500 via-amber-500 to-yellow-600 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30 animate-scale-in">
+                <AlertTriangle className="text-white w-[clamp(28px,8vw,40px)] h-[clamp(28px,8vw,40px)]" size={32} strokeWidth={2.5} />
               </div>
               {/* Pulse animation rings */}
               <div className="absolute inset-0 rounded-full bg-orange-500/20 animate-ping" />
-              <div className="absolute inset-0 rounded-full bg-orange-500/10 animate-ping" style={{ animationDelay: '0.5s' }} />
+              <div className="absolute inset-0 rounded-full bg-orange-500/10 animate-ping [animation-delay:0.5s]" />
             </div>
           </div>
 
@@ -96,7 +96,7 @@ export default function EmailServiceUnavailableModal({ isOpen, onClose }: Props)
             </p>
             <div className={`mt-3 sm:mt-4 p-3 sm:p-4 bg-orange-50 dark:bg-orange-950/30 rounded-lg border border-orange-200 dark:border-orange-900/30`}>
               <div className="flex items-start gap-2 sm:gap-3">
-                <Mail className="text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" size={18} style={{ width: 'clamp(16px, 4vw, 20px)', height: 'clamp(16px, 4vw, 20px)' }} />
+                <Mail className="text-orange-600 dark:text-orange-400 mt-0.5 shrink-0 w-[clamp(16px,4vw,20px)] h-[clamp(16px,4vw,20px)]" size={18} />
                 <div className="text-left">
                   <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>What this means:</p>
                   <ul className={`text-xs sm:text-sm ${textSecondary} space-y-1 list-disc list-inside`}>
@@ -115,7 +115,7 @@ export default function EmailServiceUnavailableModal({ isOpen, onClose }: Props)
           {/* Action Button */}
           <button
             onClick={onClose}
-            className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
+            className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
           >
             Understood
           </button>

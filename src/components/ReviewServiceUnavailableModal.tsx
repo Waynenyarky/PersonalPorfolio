@@ -175,12 +175,12 @@ export default function ReviewServiceUnavailableModal({ isOpen, onClose, reviewD
           {/* Warning Icon */}
           <div className="mb-4 sm:mb-6 flex justify-center">
             <div className="relative">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-red-500 via-rose-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg shadow-red-500/30 animate-scale-in">
-                <Server className="text-white" size={32} strokeWidth={2.5} style={{ width: 'clamp(28px, 8vw, 40px)', height: 'clamp(28px, 8vw, 40px)' }} />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-br from-red-500 via-rose-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg shadow-red-500/30 animate-scale-in">
+                <Server className="text-white w-[clamp(28px,8vw,40px)] h-[clamp(28px,8vw,40px)]" size={32} strokeWidth={2.5} />
               </div>
               {/* Pulse animation rings */}
               <div className="absolute inset-0 rounded-full bg-red-500/20 animate-ping" />
-              <div className="absolute inset-0 rounded-full bg-red-500/10 animate-ping" style={{ animationDelay: '0.5s' }} />
+              <div className="absolute inset-0 rounded-full bg-red-500/10 animate-ping [animation-delay:0.5s]" />
             </div>
           </div>
 
@@ -197,7 +197,7 @@ export default function ReviewServiceUnavailableModal({ isOpen, onClose, reviewD
               </p>
               <div className={`mt-3 sm:mt-4 p-3 sm:p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-900/30`}>
                 <div className="flex items-start gap-2 sm:gap-3">
-                  <CheckCircle className="text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" size={18} style={{ width: 'clamp(16px, 4vw, 20px)', height: 'clamp(16px, 4vw, 20px)' }} />
+                  <CheckCircle className="text-green-600 dark:text-green-400 mt-0.5 shrink-0 w-[clamp(16px,4vw,20px)] h-[clamp(16px,4vw,20px)]" size={18} />
                   <div className="text-left">
                     <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>What this means:</p>
                     <ul className={`text-xs sm:text-sm ${textSecondary} space-y-1 list-disc list-inside`}>
@@ -217,7 +217,7 @@ export default function ReviewServiceUnavailableModal({ isOpen, onClose, reviewD
               </p>
               <div className={`mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900/30`}>
                 <div className="flex items-start gap-2 sm:gap-3">
-                  <AlertTriangle className="text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" size={18} style={{ width: 'clamp(16px, 4vw, 20px)', height: 'clamp(16px, 4vw, 20px)' }} />
+                  <AlertTriangle className="text-red-600 dark:text-red-400 mt-0.5 shrink-0 w-[clamp(16px,4vw,20px)] h-[clamp(16px,4vw,20px)]" size={18} />
                   <div className="text-left">
                     <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>What happened:</p>
                     <ul className={`text-xs sm:text-sm ${textSecondary} space-y-1 list-disc list-inside`}>
@@ -233,7 +233,7 @@ export default function ReviewServiceUnavailableModal({ isOpen, onClose, reviewD
               {emailError && (
                 <div className={`mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900/30`}>
                   <div className="flex items-start gap-2 sm:gap-3">
-                    <AlertTriangle className="text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" size={18} style={{ width: 'clamp(16px, 4vw, 20px)', height: 'clamp(16px, 4vw, 20px)' }} />
+                    <AlertTriangle className="text-red-600 dark:text-red-400 mt-0.5 shrink-0 w-[clamp(16px,4vw,20px)] h-[clamp(16px,4vw,20px)]" size={18} />
                     <div className="text-left">
                       <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>Email Failed</p>
                       <p className={`text-xs sm:text-sm ${textSecondary}`}>
@@ -253,7 +253,7 @@ export default function ReviewServiceUnavailableModal({ isOpen, onClose, reviewD
             {emailSent ? (
               <button
                 onClick={onClose}
-                className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 <CheckCircle size={18} />
                 Understood
@@ -264,7 +264,7 @@ export default function ReviewServiceUnavailableModal({ isOpen, onClose, reviewD
                   <button
                     onClick={handleSendEmail}
                     disabled={isSendingEmail}
-                    className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSendingEmail ? (
                       <>
@@ -281,7 +281,7 @@ export default function ReviewServiceUnavailableModal({ isOpen, onClose, reviewD
                 )}
                 <button
                   onClick={onClose}
-                  className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
+                  className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-linear-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
                   Close
                 </button>

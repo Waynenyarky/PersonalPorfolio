@@ -57,7 +57,7 @@ export default function ProjectModal({ project, onClose }: Props) {
   const modal = (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[100] flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto overflow-x-hidden"
+      className="fixed inset-0 z-100 flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto overflow-x-hidden"
       role="dialog"
       aria-modal="true"
       aria-labelledby="project-title"
@@ -73,11 +73,11 @@ export default function ProjectModal({ project, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Professional Header */}
-        <div className={`shrink-0 relative px-4 sm:px-6 lg:px-8 py-5 sm:py-6 lg:py-7 border-b ${borderBase} bg-gradient-to-r ${bgGradient}`}>
+        <div className={`shrink-0 relative px-4 sm:px-6 lg:px-8 py-5 sm:py-6 lg:py-7 border-b ${borderBase} bg-linear-to-r ${bgGradient}`}>
           <div className="flex items-start justify-between gap-3 sm:gap-4">
             <div className="min-w-0 flex-1 pr-2 sm:pr-4">
               <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                <div className={`w-1 h-6 bg-gradient-to-b from-orange-500 to-orange-600 rounded-full`}></div>
+                <div className={`w-1 h-6 bg-linear-to-b from-orange-500 to-orange-600 rounded-full`}></div>
                 <span className={`text-xs sm:text-sm font-semibold uppercase tracking-wider ${textSecondary}`}>
                   {project.category}
                 </span>
@@ -201,7 +201,7 @@ export default function ProjectModal({ project, onClose }: Props) {
                 {project.stack?.map((t, idx) => (
                   <span
                     key={idx}
-                    className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium border ${borderBase} ${textSecondary} bg-gradient-to-br ${theme === 'dark' ? 'from-gray-800/50 to-gray-900/50' : 'from-white to-gray-50'} hover:border-orange-500 hover:text-orange-500 transition-all duration-200 cursor-default shadow-sm`}
+                    className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium border ${borderBase} ${textSecondary} bg-linear-to-br ${theme === 'dark' ? 'from-gray-800/50 to-gray-900/50' : 'from-white to-gray-50'} hover:border-orange-500 hover:text-orange-500 transition-all duration-200 cursor-default shadow-sm`}
                   >
                     {t}
                   </span>
@@ -212,7 +212,7 @@ export default function ProjectModal({ project, onClose }: Props) {
         </div>
 
         {/* Professional Footer */}
-        <div className={`shrink-0 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 border-t ${borderBase} bg-gradient-to-r ${bgGradient}`}>
+        <div className={`shrink-0 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 border-t ${borderBase} bg-linear-to-r ${bgGradient}`}>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 w-full sm:w-auto">
               {project.repoUrl && (
@@ -232,7 +232,7 @@ export default function ProjectModal({ project, onClose }: Props) {
             <div className="flex items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <button
                 onClick={goContact}
-                className={`flex-1 sm:flex-none px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold transition-all duration-200 text-sm sm:text-base shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] ${focusRing} whitespace-nowrap`}
+                className={`flex-1 sm:flex-none px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold transition-all duration-200 text-sm sm:text-base shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] ${focusRing} whitespace-nowrap`}
               >
                 Request Demo
               </button>

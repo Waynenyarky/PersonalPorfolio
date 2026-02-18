@@ -46,13 +46,11 @@ export default function ResumeModal({ isOpen, onClose, resumeUrl }: Props) {
   if (!isOpen) return null;
 
   const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900';
-  const iframeStyle = { minHeight: '400px' } as const;
-  const pdfWrapperStyle = { height: 'calc(95vh - 120px)' } as const;
 
   const modal = (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[100] flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto overflow-x-hidden"
+      className="fixed inset-0 z-100 flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto overflow-x-hidden"
       role="dialog"
       aria-modal="true"
       aria-labelledby="resume-title"
@@ -104,13 +102,12 @@ export default function ResumeModal({ isOpen, onClose, resumeUrl }: Props) {
         </div>
 
         <div className="p-3 sm:p-4 lg:p-6">
-          <div className={'w-full border rounded-lg overflow-hidden ' + borderBase} style={pdfWrapperStyle}>
+          <div className={'w-full border rounded-lg overflow-hidden h-[calc(95vh-120px)] ' + borderBase}>
             <iframe
               src={resumeUrl + '#toolbar=1&navpanes=0&scrollbar=1'}
               loading="lazy"
-              className="w-full h-full"
+              className="w-full h-full min-h-[400px]"
               title="Resume PDF"
-              style={iframeStyle}
             />
           </div>
           <div className="mt-3 sm:hidden">

@@ -149,7 +149,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
   const modal = (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[100] flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto overflow-x-hidden"
+      className="fixed inset-0 z-100 flex items-center justify-center px-3 sm:px-4 py-4 sm:py-8 overflow-y-auto overflow-x-hidden"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-title"
@@ -173,7 +173,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
           </div>
           <button
             aria-label="Close modal"
-            className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-md border ${borderBase} hover:border-orange-500 flex items-center justify-center transition-colors ${textPrimary} ${focusRing}`}
+            className={`shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-md border ${borderBase} hover:border-orange-500 flex items-center justify-center transition-colors ${textPrimary} ${focusRing}`}
             onClick={onClose}
           >
             <X size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -193,7 +193,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
                 <div>
                   <label className={`block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 ${textSecondary}`}>Full Name *</label>
                   <div className="relative">
-                    <User className={`absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 ${textSecondary}`} size={16} style={{ width: 'clamp(14px, 4vw, 18px)', height: 'clamp(14px, 4vw, 18px)' }} />
+                    <User className={`absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 w-[clamp(14px,4vw,18px)] h-[clamp(14px,4vw,18px)] ${textSecondary}`} size={16} />
                     <input
                       type="text"
                       name="name"
@@ -406,12 +406,15 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-semibold mb-2 ${textSecondary}`}>Preferred Date</label>
+                  <label id="booking-preferred-date-label" className={`block text-sm font-semibold mb-2 ${textSecondary}`}>Preferred Date</label>
                   <div className="relative">
                     <Calendar className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${textSecondary}`} size={18} />
                     <input
+                      id="booking-preferred-date"
                       type="date"
                       name="preferredDate"
+                      aria-labelledby="booking-preferred-date-label"
+                      title="Preferred consultation date"
                       className={`w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300`}
                       value={formData.preferredDate}
                       onChange={handleChange}
@@ -422,12 +425,15 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-semibold mb-2 ${textSecondary}`}>Preferred Time</label>
+                  <label id="booking-preferred-time-label" className={`block text-sm font-semibold mb-2 ${textSecondary}`}>Preferred Time</label>
                   <div className="relative">
                     <Clock className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${textSecondary}`} size={18} />
                     <input
+                      id="booking-preferred-time"
                       type="time"
                       name="preferredTime"
+                      aria-labelledby="booking-preferred-time-label"
+                      title="Preferred consultation time"
                       className={`w-full ${inputBg} border ${borderBase} ${textPrimary} rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300`}
                       value={formData.preferredTime}
                       onChange={handleChange}
@@ -461,9 +467,9 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
                 aria-live="polite"
               >
                 {statusType === 'success' ? (
-                  <CheckCircle size={20} className="flex-shrink-0 mt-0.5" />
+                  <CheckCircle size={20} className="shrink-0 mt-0.5" />
                 ) : (
-                  <X size={20} className="flex-shrink-0 mt-0.5" />
+                  <X size={20} className="shrink-0 mt-0.5" />
                 )}
                 <p className="text-sm font-medium">{statusText}</p>
               </div>
@@ -481,7 +487,7 @@ export default function ClientBookingModal({ isOpen, onClose }: Props) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/50 disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base ${focusRing}`}
+                className={`flex-1 bg-linear-to-r from-orange-500 to-orange-600 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/50 disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base ${focusRing}`}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Booking'}
               </button>

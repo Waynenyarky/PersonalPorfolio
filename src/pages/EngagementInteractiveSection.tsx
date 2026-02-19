@@ -1,5 +1,7 @@
 import { t, type Language } from '../i18n/translations';
 import { MessageSquare, Mail, Calendar, Github, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { SOCIAL_LINKS } from '../constants/social';
+import { CONTACT_EMAIL } from '../constants/contact';
 
 type Method = {
   icon: any;
@@ -50,7 +52,7 @@ export default function EngagementInteractiveSection({
       icon: Mail,
       title: t(language, 'contact.emailDirectly'),
       description: 'Reach out via email for a more detailed discussion about your project.',
-      action: () => window.open('mailto:joma.enrique.up@phinmaed.com?subject=Project Inquiry', '_blank'),
+      action: () => window.open(`mailto:${CONTACT_EMAIL}?subject=Project Inquiry`, '_blank'),
       buttonText: t(language, 'contact.sendEmail'),
       color: 'from-blue-500 to-blue-600',
     },
@@ -116,31 +118,31 @@ export default function EngagementInteractiveSection({
         <div className={`${bgCard} border ${borderBase} rounded-lg p-4 sm:p-6 ${visibleSections.has('engagement') ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h3 className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-center ${textPrimary}`}>{t(language, 'contact.connectOnSocial')}</h3>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-            <a href="https://web.facebook.com/jowne.enrique.11" target="_blank" rel="noopener noreferrer" className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}>
+            <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}>
               <div className="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
                 <Facebook className="text-blue-500" size={24} />
               </div>
               <span className="text-xs font-medium">Facebook</span>
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}>
+            <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}>
               <div className="w-14 h-14 bg-sky-500/10 rounded-full flex items-center justify-center group-hover:bg-sky-500/20 transition-colors">
                 <Twitter className="text-sky-500" size={24} />
               </div>
               <span className="text-xs font-medium">Twitter</span>
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}>
+            <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}>
               <div className="w-14 h-14 bg-blue-600/10 rounded-full flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
                 <Linkedin className="text-blue-600" size={24} />
               </div>
               <span className="text-xs font-medium">LinkedIn</span>
             </a>
-            <a href="https://github.com/Waynenyarky" target="_blank" rel="noopener noreferrer" className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}>
+            <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}>
               <div className="w-14 h-14 rounded-full flex items-center justify-center transition-colors" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : '#e5e5e5' }}>
                 <Github size={24} color={isDark ? '#ffffff' : '#000000'} stroke={isDark ? '#ffffff' : '#000000'} />
               </div>
               <span className="text-xs font-medium">GitHub</span>
             </a>
-            <a href="mailto:joma.enrique.up@phinmaed.com" className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}>
+            <a href={`mailto:${CONTACT_EMAIL}`} className={`flex flex-col items-center gap-2 ${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110 group`}>
               <div className="w-14 h-14 bg-orange-500/10 rounded-full flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
                 <Mail className="text-orange-500" size={24} />
               </div>

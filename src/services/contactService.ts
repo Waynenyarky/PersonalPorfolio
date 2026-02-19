@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL } from '../constants/contact';
+
 export interface ContactFormData {
     full_name: string;
     email: string;
@@ -19,7 +21,7 @@ export interface ContactFormData {
     }
 
     const currentTime = new Date().toLocaleString();
-    const recipientEmail = import.meta.env.VITE_CONTACT_EMAIL || 'joma.enrique.up@phinmaed.com';
+    const recipientEmail = CONTACT_EMAIL;
 
     // Try EmailJS first
     try {
@@ -38,8 +40,9 @@ export interface ContactFormData {
         throw new Error('EmailJS configuration missing - falling back to Web3Forms');
       }
 
-      // Log the template ID being used (for debugging)
-      console.log('Using EmailJS Template ID:', templateId);
+      if (import.meta.env.DEV) {
+        console.log('Using EmailJS Template ID:', templateId);
+      }
 
       // Prepare template parameters - these should match your EmailJS template variables
       const templateParams = {
@@ -81,22 +84,21 @@ export interface ContactFormData {
         };
       }
 
-      // EmailJS failed - check if it's a 412 (Gmail connection issue)
+      // EmailJS failed - check if it's a 412 (Gmail connection expired)
       const errorText = await response.text();
-      console.warn('EmailJS failed, falling back to Web3Forms:', {
-        status: response.status,
-        error: errorText,
-      });
+      if (import.meta.env.DEV) {
+        console.warn('EmailJS failed, falling back to Web3Forms:', { status: response.status, error: errorText });
+      }
 
-      // If it's a 412 error (Gmail connection expired), fall back to Web3Forms
       if (response.status === 412) {
-        console.log('Gmail connection expired. Using Web3Forms fallback...');
         // Fall through to Web3Forms fallback below
       } else {
         throw new Error(`EmailJS API error: ${response.status}`);
       }
     } catch (error: any) {
-      console.warn('EmailJS error, falling back to Web3Forms:', error);
+      if (import.meta.env.DEV) {
+        console.warn('EmailJS error, falling back to Web3Forms:', error);
+      }
       // Fall through to Web3Forms fallback below
     }
 
@@ -107,7 +109,7 @@ export interface ContactFormData {
       if (!web3formsKey) {
         return {
           type: 'error',
-          message: 'Email service not configured. Please contact us directly at joma.enrique.up@phinmaed.com',
+          message: CONTACT_EMAIL ? `Email service not configured. Please contact us directly at ${CONTACT_EMAIL}` : 'Email service not configured. Please use the contact form or try again later.',
         };
       }
 
@@ -157,10 +159,9 @@ export interface ContactFormData {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error('Web3Forms Error:', {
-          status: response.status,
-          error: errorData,
-        });
+        if (import.meta.env.DEV) {
+          console.error('Web3Forms Error:', { status: response.status, error: errorData });
+        }
         throw new Error(`Web3Forms API error: ${response.status}`);
       }
 
@@ -175,10 +176,12 @@ export interface ContactFormData {
         throw new Error(result.message || 'Failed to send message');
       }
     } catch (error: any) {
-      console.error('Both EmailJS and Web3Forms failed:', error);
+      if (import.meta.env.DEV) {
+        console.error('Both EmailJS and Web3Forms failed:', error);
+      }
       return {
         type: 'error',
-        message: 'Failed to send message. Please try emailing us directly at joma.enrique.up@phinmaed.com',
+        message: CONTACT_EMAIL ? `Failed to send message. Please try emailing us directly at ${CONTACT_EMAIL}` : 'Failed to send message. Please try again later.',
       };
     }
   };

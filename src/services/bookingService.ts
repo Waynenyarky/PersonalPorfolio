@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL } from '../constants/contact';
+
 export interface BookingFormData {
   name: string;
   email: string;
@@ -88,7 +90,7 @@ export const submitBooking = async (
     // For other errors, show user-friendly message
     return {
       type: 'error',
-      message: 'Unable to submit booking at this time. Please try again later or contact us directly at joma.enrique.up@phinmaed.com',
+      message: CONTACT_EMAIL ? `Unable to submit booking at this time. Please try again later or contact us directly at ${CONTACT_EMAIL}` : 'Unable to submit booking at this time. Please try again later.',
       serverError: false,
     };
   }

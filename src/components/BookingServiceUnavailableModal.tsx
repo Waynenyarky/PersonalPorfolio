@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, X, Server, Mail, CheckCircle } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
+import { CONTACT_EMAIL } from '../constants/contact';
 
 type BookingFormData = {
   name: string;
@@ -71,10 +72,11 @@ export default function BookingServiceUnavailableModal({ isOpen, onClose, bookin
     
     try {
       const web3formsKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
-      console.log('Web3Forms Key check:', web3formsKey ? 'Key found (length: ' + web3formsKey.length + ')' : 'Key NOT FOUND');
-      
+      if (import.meta.env.DEV) {
+        console.log('Web3Forms Key check:', web3formsKey ? 'Key found (length: ' + web3formsKey.length + ')' : 'Key NOT FOUND');
+      }
       if (!web3formsKey) {
-        console.error('VITE_WEB3FORMS_ACCESS_KEY is not set in .env file');
+        if (import.meta.env.DEV) console.error('VITE_WEB3FORMS_ACCESS_KEY is not set in .env file');
         setEmailError(true);
         setIsSendingEmail(false);
         return;
@@ -137,26 +139,23 @@ export default function BookingServiceUnavailableModal({ isOpen, onClose, bookin
       formData.append('from_name', 'Portfolio Bookings');
       formData.append('email', bookingData.email || 'noreply@portfolio.com');
       formData.append('message', emailHtml);
-      // Sending as plain text to avoid Web3Forms showing "Html: true" in notification
-      
-      console.log('Sending booking email to Web3Forms...');
+      if (import.meta.env.DEV) console.log('Sending booking email to Web3Forms...');
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         body: formData
       });
 
-      console.log('Web3Forms response status:', response.status);
+      if (import.meta.env.DEV) console.log('Web3Forms response status:', response.status);
       const responseData = await response.json().catch(async () => {
         const text = await response.text().catch(() => '');
-        console.error('Failed to parse response:', text);
+        if (import.meta.env.DEV) console.error('Failed to parse response:', text);
         return { error: 'Failed to parse response', text };
       });
-      
-      console.log('Web3Forms response data:', responseData);
-      
-      // Web3Forms returns { success: true } on success or { success: false, message: "..." } on error
+
+      if (import.meta.env.DEV) console.log('Web3Forms response data:', responseData);
+
       if (response.ok && responseData.success === true) {
-        console.log('Booking email sent successfully!');
+        if (import.meta.env.DEV) console.log('Booking email sent successfully!');
         setEmailSent(true);
         setIsSendingEmail(false);
         if (onEmailSent) {
@@ -165,18 +164,15 @@ export default function BookingServiceUnavailableModal({ isOpen, onClose, bookin
           }, 3100);
         }
       } else {
-        // Check if it's a rate limit or specific error
         const errorMessage = responseData.message || responseData.error || 'Email sending failed';
-        console.error('Web3Forms error:', errorMessage, responseData);
+        if (import.meta.env.DEV) console.error('Web3Forms error:', errorMessage, responseData);
         throw new Error(errorMessage);
       }
     } catch (error: any) {
-      console.error('Email sending error:', error);
-      console.error('Error details:', {
-        message: error?.message,
-        name: error?.name,
-        stack: error?.stack
-      });
+      if (import.meta.env.DEV) {
+        console.error('Email sending error:', error);
+        console.error('Error details:', { message: error?.message, name: error?.name, stack: error?.stack });
+      }
       setEmailError(true);
       setIsSendingEmail(false);
     }
@@ -230,7 +226,7 @@ export default function BookingServiceUnavailableModal({ isOpen, onClose, bookin
 
           {/* Title */}
           <h2 id="booking-unavailable-title" className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3 ${textPrimary}`}>
-            {emailSent ? 'Booking Sent Successfully!' : 'Service Not Available'}
+            {emailSent ? 'Booking Sent Successfully!' : 'Book via Email'}
           </h2>
 
           {/* Message */}
@@ -257,19 +253,19 @@ export default function BookingServiceUnavailableModal({ isOpen, onClose, bookin
           ) : (
             <div className={`${textSecondary} text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 leading-relaxed space-y-2 sm:space-y-3`}>
               <p>
-                We're sorry, but the booking service is <span className="font-semibold text-red-500">currently unavailable</span>.
+                Online booking is <span className="font-semibold text-red-500">not connected on this site</span>. Booking is available on request.
               </p>
               <div className={`mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-200 dark:border-red-900/30`}>
                 <div className="flex items-start gap-2 sm:gap-3">
                   <AlertTriangle className="text-red-600 dark:text-red-400 mt-0.5 shrink-0 w-[clamp(16px,4vw,20px)] h-[clamp(16px,4vw,20px)]" size={18} />
                   <div className="text-left">
-                    <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>What happened:</p>
+                    <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>What you can do:</p>
                     <ul className={`text-xs sm:text-sm ${textSecondary} space-y-1 list-disc list-inside`}>
-                      <li>The server is not responding</li>
-                      <li>Your booking could not be saved</li>
+                      <li>Send your project details via email using the button below</li>
                       {bookingData && (
-                        <li>We can send it via email instead</li>
+                        <li>Your form is ready — I&apos;ll receive it by email and get back to you</li>
                       )}
+                      <li>Or contact me directly at the email in the footer</li>
                     </ul>
                   </div>
                 </div>
@@ -282,8 +278,8 @@ export default function BookingServiceUnavailableModal({ isOpen, onClose, bookin
                       <p className={`text-xs sm:text-sm font-semibold ${textPrimary} mb-1`}>Email Failed</p>
                       <p className={`text-xs sm:text-sm ${textSecondary}`}>
                         {!import.meta.env.VITE_WEB3FORMS_ACCESS_KEY 
-                          ? 'Web3Forms access key is not configured. Please contact us directly at joma.enrique.up@phinmaed.com'
-                          : 'Email sending failed. Please try again later or contact us directly at joma.enrique.up@phinmaed.com'}
+                          ? (CONTACT_EMAIL ? `Web3Forms access key is not configured. Please contact us directly at ${CONTACT_EMAIL}` : 'Web3Forms access key is not configured. Please use the contact section in the footer.')
+                          : (CONTACT_EMAIL ? `Email sending failed. Please try again later or contact us directly at ${CONTACT_EMAIL}` : 'Email sending failed. Please try again later or use the contact section in the footer.')}
                       </p>
                     </div>
                   </div>

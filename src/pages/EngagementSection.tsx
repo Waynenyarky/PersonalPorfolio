@@ -1,4 +1,5 @@
 import { t, type Language } from '../i18n/translations';
+import { CONTACT_EMAIL } from '../constants/contact';
 
 type Props = {
   language: Language;
@@ -45,7 +46,7 @@ export default function EngagementSection({
                 {t(language, 'engagement.bookCall')}
               </button>
               <a
-                href="mailto:joma.enrique.up@phinmaed.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className={`px-6 py-2 border ${borderBase} hover:border-orange-500 ${textPrimary} font-semibold rounded-lg transition-colors`}
               >
                 {t(language, 'engagement.emailMe')}

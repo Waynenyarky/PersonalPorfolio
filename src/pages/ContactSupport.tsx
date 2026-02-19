@@ -2,6 +2,7 @@ import { MapPin, Phone, Mail, User, MessageSquare, Facebook, Twitter, Linkedin, 
 import { useTheme } from '../theme/useTheme';
 import { useState } from 'react';
 import { sendContactMessage } from '../services/contactService';
+import { CONTACT_EMAIL } from '../constants/contact';
 
 type Props = {
 	visibleSections: Set<string>;
@@ -104,8 +105,11 @@ export default function ContactSupport({ visibleSections }: Props) {
                 </div>
                 <div className="transform-gpu" style={{ willChange: 'transform', backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
                   <div className={`font-semibold mb-1 sm:mb-2 text-base sm:text-lg ${textPrimary}`}>Email</div>
-                  <div className={`${textSecondary} text-sm sm:text-base`}>enriquejohnwayne@gmail.com</div>
-                  <div className={`${textSecondary} text-sm sm:text-base`}>joma.enrique.up@phinmaed.com</div>
+                  {CONTACT_EMAIL ? (
+                    <div className={`${textSecondary} text-sm sm:text-base`}>{CONTACT_EMAIL}</div>
+                  ) : (
+                    <div className={`${textSecondary} text-sm sm:text-base`}>enriquejohnwayne@gmail.com</div>
+                  )}
                 </div>
               </div>
             </div>

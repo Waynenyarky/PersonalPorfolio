@@ -1,3 +1,4 @@
+import { useState, useRef, useCallback } from 'react';
 import { ArrowUp, Code } from 'lucide-react';
 import type { Project } from '../types/project';
 import Card from './Card';
@@ -15,17 +16,50 @@ type Props = {
 	onSelect: (project: Project) => void;
 };
 
+const TILT_MAX = 8;
+
 export default function ProjectCard({ project, index, bgCardClass, borderBaseClass, textPrimaryClass, textSecondaryClass, visible, onSelect }: Props) {
+	const [tilt, setTilt] = useState({ x: 0, y: 0 });
+	const cardRef = useRef<HTMLDivElement>(null);
+	const noTilt = useRef<boolean | null>(null);
+	if (noTilt.current === null && typeof window !== 'undefined') noTilt.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	const onMouseMove = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			if (noTilt.current) return;
+			const el = cardRef.current;
+			if (!el) return;
+			const rect = el.getBoundingClientRect();
+			const cx = rect.left + rect.width / 2;
+			const cy = rect.top + rect.height / 2;
+			const x = (e.clientX - cx) / (rect.width / 2);
+			const y = (e.clientY - cy) / (rect.height / 2);
+			setTilt({ x: -y * TILT_MAX, y: x * TILT_MAX });
+		},
+		[]
+	);
+	const onMouseLeave = useCallback(() => setTilt({ x: 0, y: 0 }), []);
+
 	return (
-		<Card
-			key={project.id}
-			onClick={() => onSelect(project)}
-			bgCardClass={`${bgCardClass} cursor-pointer`}
-			borderBaseClass={borderBaseClass}
-			className={`${visible ? 'animate-fade-in-up' : 'opacity-0'} relative overflow-hidden`}
-			style={{ animationDelay: `${index * 0.08}s` }}
-			interactive
+		<div
+			ref={cardRef}
+			className="project-card-3d-wrapper"
+			onMouseMove={onMouseMove}
+			onMouseLeave={onMouseLeave}
+			style={{ perspective: '1000px' }}
 		>
+			<Card
+				key={project.id}
+				onClick={() => onSelect(project)}
+				bgCardClass={`${bgCardClass} cursor-pointer`}
+				borderBaseClass={borderBaseClass}
+				className={`group ${visible ? 'animate-fade-in-up' : 'opacity-0'} relative overflow-hidden project-card-3d`}
+				style={{
+					animationDelay: `${index * 0.08}s`,
+					...(noTilt.current ? {} : { transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }),
+				}}
+				interactive
+			>
 			<div className={`aspect-16/10 bg-linear-to-br ${project.gradient} flex items-center justify-center relative overflow-hidden`}>
 				<div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300"></div>
 				<Code className="text-white/80 group-hover:text-white transition-all duration-300 group-hover:scale-110" size={48} />
@@ -67,9 +101,10 @@ export default function ProjectCard({ project, index, bgCardClass, borderBaseCla
 					<div className="flex items-center gap-2 text-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
 						<ArrowUp className="rotate-45" size={14} />
 					</div>
-				</div>
-			</div>
+</div>
+		</div>
 		</Card>
+		</div>
 	);
 }
 

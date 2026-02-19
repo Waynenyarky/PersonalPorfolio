@@ -1,5 +1,6 @@
 import { Facebook, Twitter, Linkedin, Github } from 'lucide-react';
 import { t, type Language } from '../i18n/translations';
+import { SOCIAL_LINKS } from '../constants/social';
 
 type Props = {
   language: Language;
@@ -65,23 +66,23 @@ export default function SiteFooter({ language, textPrimary, textSecondary, bgSec
           <div>
             <h3 className={`font-semibold mb-3 sm:mb-4 text-sm sm:text-base ${textPrimary}`}>{t(language, 'footer.connect')}</h3>
             <div className="flex space-x-4">
-              <a href="https://web.facebook.com/jowne.enrique.11" target="_blank" rel="noopener noreferrer" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`} aria-label="Facebook">
+              <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`} aria-label="Facebook">
                 <Facebook size={20} />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`} aria-label="Twitter">
+              <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`} aria-label="Twitter">
                 <Twitter size={20} />
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`} aria-label="LinkedIn">
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`} aria-label="LinkedIn">
                 <Linkedin size={20} />
               </a>
-              <a href="https://github.com/Waynenyarky" target="_blank" rel="noopener noreferrer" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`} aria-label="GitHub">
+              <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className={`${textSecondary} hover:text-orange-500 transition-all duration-300 hover:scale-110`} aria-label="GitHub">
                 <Github size={20} />
               </a>
             </div>
           </div>
         </div>
         <div className={`pt-6 sm:pt-8 border-t ${borderBase} text-center ${textSecondary} text-xs sm:text-sm`}>
-          © 2025 <span className="text-orange-500 font-semibold">Wayne Enrique</span>. All rights reserved
+          © {new Date().getFullYear()} <span className="text-orange-500 font-semibold">Wayne Enrique</span>. All rights reserved
         </div>
       </div>
     </footer>

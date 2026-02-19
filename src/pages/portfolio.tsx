@@ -18,6 +18,7 @@ import ClientBookingModal from './ClientBookingModal';
 import EngagementSection from './EngagementSection';
 import ProfessionalDropdown from '../components/ProfessionalDropdown';
 import IntroOverlay from '../components/IntroOverlay';
+import { SOCIAL_LINKS } from '../constants/social';
 import ServicesSection from './ServicesSection';
 import formalImg from '../assets/formal.png';
 import myCv from '../assets/MyCV.pdf';
@@ -43,6 +44,8 @@ const Portfolio = () => {
 
   const [showIntro, setShowIntro] = useState(true);
   const [mainRevealed, setMainRevealed] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [heroParallax, setHeroParallax] = useState(0);
 
   const handleRevealMain = () => setMainRevealed(true);
   const handleIntroClose = () => setShowIntro(false);
@@ -80,6 +83,15 @@ const Portfolio = () => {
       setScrolled(y > 50);
       const nearBottom = y + window.innerHeight >= document.documentElement.scrollHeight - 60;
       setAtBottom(nearBottom);
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(maxScroll > 0 ? Math.min(y / maxScroll, 1) : 0);
+      const homeEl = document.getElementById('home');
+      if (homeEl) {
+        const rect = homeEl.getBoundingClientRect();
+        const heroProgress = rect.height > 0 ? Math.min(Math.max(-rect.top / rect.height, 0), 1) : 0;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        setHeroParallax(reduceMotion ? 0 : heroProgress);
+      }
 
       // Don't update activeSection during programmatic scroll
       if (isScrollingRef.current) return;
@@ -318,6 +330,17 @@ const Portfolio = () => {
           onClose={handleIntroClose}
         />
       )}
+      {/* Scroll progress bar (hidden when reduced motion preferred) */}
+      <div
+        className="scroll-progress-bar fixed top-0 left-0 right-0 z-[60] h-0.5 bg-orange-500/20 pointer-events-none"
+        role="presentation"
+        aria-hidden
+      >
+        <div
+          className="h-full bg-orange-500 transition-transform duration-150 ease-out origin-left"
+          style={{ transform: `scaleX(${scrollProgress})` }}
+        />
+      </div>
       {/* Top bar: outside main-reveal so it’s clearly visible after intro */}
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-500 nav-bar-reveal ${
@@ -463,15 +486,21 @@ const Portfolio = () => {
       <section id="home" className={`min-h-screen flex items-center justify-center relative pt-10 sm:pt-12 overflow-hidden ${bgSection}`}>
         {/* Subtle Background Effects with Animation */}
         <div className="absolute inset-0 bg-linear-to-b from-orange-500/5 to-transparent pointer-events-none"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow hero-blob-delay-1s"></div>
+        <div
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow hero-blob-parallax"
+          style={{ transform: `translate(${heroParallax * 12}px, ${heroParallax * 24}px)` }}
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-pulse-slow hero-blob-delay-1s hero-blob-parallax"
+          style={{ transform: `translate(${heroParallax * -10}px, ${heroParallax * -18}px)` }}
+        />
         
         {/* Professional Social Media Links with Staggered Animations - Left Rail (Hero only with smooth fade) */}
         <div
           className={`fixed left-2 sm:left-8 top-1/2 -translate-y-1/2 flex flex-col items-center space-y-2 sm:space-y-3 z-20 pointer-events-none transition-all duration-700 ease-out ${activeSection === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'}`}
         >
           <a 
-            href="https://web.facebook.com/jowne.enrique.11" 
+            href={SOCIAL_LINKS.facebook} 
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="Facebook" 
@@ -480,7 +509,7 @@ const Portfolio = () => {
             <Facebook size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
           <a 
-            href="https://twitter.com" 
+            href={SOCIAL_LINKS.twitter} 
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="Twitter" 
@@ -489,7 +518,7 @@ const Portfolio = () => {
             <Twitter size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
           <a 
-            href="https://linkedin.com" 
+            href={SOCIAL_LINKS.linkedin} 
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="LinkedIn" 
@@ -498,7 +527,7 @@ const Portfolio = () => {
             <Linkedin size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
           <a 
-            href="https://github.com/Waynenyarky" 
+            href={SOCIAL_LINKS.github} 
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="GitHub" 
@@ -521,7 +550,7 @@ const Portfolio = () => {
           <h1 className={`hero-reveal-item hero-reveal-delay-2 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-5 tracking-tight leading-tight ${textPrimary}`}>
             <span className="inline-block transition-all duration-300 hover:scale-105">John Wayne</span>
             <br />
-            <span className="text-orange-500 inline-block relative transition-all duration-300 hover:scale-105">
+            <span className="hero-name-gradient inline-block relative transition-all duration-300 hover:scale-105">
               Enrique
               <span className="absolute -bottom-2 left-0 right-0 h-1 bg-linear-to-r from-transparent via-orange-500/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
             </span>
@@ -571,7 +600,7 @@ const Portfolio = () => {
         borderBase={borderBase}
         stats={stats}
         formalImg={formalImg}
-        myCv={myCv}
+        onViewResume={() => setShowResumeModal(true)}
         scrollToSection={scrollToSection}
       />
 

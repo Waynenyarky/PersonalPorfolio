@@ -32,7 +32,7 @@ const translations: LocaleMap = {
   'hero.title.line1': { en: 'I Design & Build', fil: 'Nagdidisenyo at Gumagawa Ako' },
   'hero.title.line2': { en: 'Creative Digital Solutions', fil: 'Malikhain na Digital na Solusyon' },
   'cta.getInTouch': { en: 'Get In Touch', fil: 'Makipag-ugnayan' },
-  'cta.viewResume': { en: 'View Resume', fil: 'Tingnan ang Resume' },
+  'cta.viewResume': { en: 'View CV', fil: 'Tingnan ang CV' },
 
   // About
   'about.section': { en: 'About Me', fil: 'Tungkol sa Akin' },

@@ -32,6 +32,8 @@ git clone <repository-url>
 cd PersonalPorfolio
 ```
 
+**Note:** The repository may be named `PersonalPorfolio` (with one "r" in Portfolio). You can rename it to `PersonalPortfolio` on GitHub if you prefer; update any links (e.g. resume, LinkedIn) after renaming.
+
 ### 2. Frontend Setup
 
 #### Install Dependencies
@@ -52,13 +54,13 @@ VITE_WEB3FORMS_ACCESS_KEY=your-web3forms-access-key
 VITE_EMAILJS_SERVICE_ID=your-emailjs-service-id
 VITE_EMAILJS_TEMPLATE_ID=your-emailjs-template-id
 VITE_EMAILJS_USER_ID=your-emailjs-user-id
-VITE_CONTACT_EMAIL=joma.enrique.up@phinmaed.com
+VITE_CONTACT_EMAIL=your-contact-email@example.com
 ```
 
 **Note:** 
 - `VITE_WEB3FORMS_ACCESS_KEY` is optional but recommended. If provided, reviews can still be sent via email even when the backend server is down.
 - `VITE_EMAILJS_*` variables are optional. If not provided, the service will use default values. Get these from your [EmailJS Dashboard](https://dashboard.emailjs.com/).
-- `VITE_CONTACT_EMAIL` is the email address where contact form messages will be sent (defaults to `joma.enrique.up@phinmaed.com`).
+- `VITE_CONTACT_EMAIL` is the email address where contact form messages will be sent.
 
 #### Start Development Servers
 
@@ -116,8 +118,10 @@ PGDATABASE=personal_portfolio
 PGUSER=postgres
 PGPASSWORD=your-postgres-password
 WEB3FORMS_ACCESS_KEY=your-web3forms-access-key
-ADMIN_API_KEY=Pass_123
+ADMIN_API_KEY=your-admin-api-key
 ```
+
+**⚠️ Production security:** Change `ADMIN_API_KEY` and `DJANGO_SECRET_KEY` in production; never use default or example keys.
 
 **Environment Variables Explanation:**
 - `DJANGO_SECRET_KEY`: Django secret key (generate a secure random string)
@@ -257,6 +261,10 @@ npm run preview:admin    # Preview admin panel production build
 
 # Linting
 npm run lint             # Run ESLint
+
+# Tests
+npm run test             # Run Vitest tests
+npm run test:watch       # Run Vitest in watch mode
 ```
 
 ### Backend Commands
@@ -325,16 +333,16 @@ PersonalPorfolio/
 1. Start the admin dev server: `npm run dev:admin`
 2. Navigate to `http://localhost:5174/admin.html`
 3. Enter the admin key (set in `backend/.env` as `ADMIN_API_KEY`)
-4. Default key: `Pass_123` (change in production!)
+4. Use the key set in `backend/.env` as `ADMIN_API_KEY`. **Never use default keys in production.**
 
 ## 📧 Email Configuration
 
 The application uses Web3Forms for email notifications. To set up:
 
 1. Sign up at [Web3Forms.com](https://web3forms.com)
-2. Enter your email address (`joma.enrique.up@phinmaed.com`) to get your access key
+2. Enter your email address to get your access key
 3. Add it to `backend/.env` as `WEB3FORMS_ACCESS_KEY`
-4. Emails are sent to: `joma.enrique.up@phinmaed.com`
+4. Emails are sent to the address you configure (e.g. via `VITE_CONTACT_EMAIL` or your backend config)
 
 ## 🌐 API Endpoints
 

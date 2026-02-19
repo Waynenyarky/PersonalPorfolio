@@ -29,10 +29,10 @@ VITE_API_BASE_URL=http://localhost:8000
 VITE_WEB3FORMS_ACCESS_KEY=your-web3forms-access-key
 
 # EmailJS Configuration (Optional - for contact form)
-VITE_EMAILJS_SERVICE_ID=service_m7ykss8
-VITE_EMAILJS_TEMPLATE_ID=template_fshd90d
-VITE_EMAILJS_USER_ID=v1xoUuWEvGXh6S5GO
-VITE_CONTACT_EMAIL=joma.enrique.up@phinmaed.com
+VITE_EMAILJS_SERVICE_ID=your-emailjs-service-id
+VITE_EMAILJS_TEMPLATE_ID=your-emailjs-template-id
+VITE_EMAILJS_USER_ID=your-emailjs-user-id
+VITE_CONTACT_EMAIL=your-contact-email@example.com
 ```
 
 **Used by:** Vite (React frontend)
@@ -65,11 +65,13 @@ PGPASSWORD=your-postgres-password
 # Email Service (Web3Forms)
 WEB3FORMS_ACCESS_KEY=your-web3forms-access-key
 
-# Admin Panel Authentication
-ADMIN_API_KEY=Pass_123
+# Admin Panel Authentication (use a strong random value in production!)
+ADMIN_API_KEY=your-admin-api-key
 ```
 
 **Used by:** Django (Python backend)
+
+**Security:** Change `ADMIN_API_KEY` and `DJANGO_SECRET_KEY` in production; never use default or example values.
 **Required:** All variables (especially database credentials)
 
 ---

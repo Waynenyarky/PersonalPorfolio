@@ -1,7 +1,14 @@
+import { useState, useEffect, useRef } from 'react';
 import formalImgDefault from '../assets/formal.png';
 import { t, type Language } from '../i18n/translations';
 
 type Stat = { icon: any; value: string; label: string; color: string };
+
+function parseStatValue(value: string): { num: number; suffix: string } {
+  const match = value.match(/^(\d+)(.*)$/);
+  if (match) return { num: parseInt(match[1], 10), suffix: match[2] || '' };
+  return { num: 0, suffix: value };
+}
 
 type Props = {
   language: Language;
@@ -13,7 +20,7 @@ type Props = {
   borderBase: string;
   stats: Stat[];
   formalImg?: string;
-  myCv: string;
+  onViewResume: () => void;
   scrollToSection: (id: string) => void;
 };
 
@@ -27,31 +34,66 @@ export default function AboutSection({
   borderBase,
   stats,
   formalImg,
-  myCv,
+  onViewResume,
   scrollToSection,
 }: Props) {
   const imgSrc = formalImg || formalImgDefault;
+  const [displayedNums, setDisplayedNums] = useState<number[]>(() => stats.map(() => 0));
+  const hasAnimatedRef = useRef(false);
+  const aboutVisible = visibleSections.has('about');
+
+  useEffect(() => {
+    if (!aboutVisible || hasAnimatedRef.current) return;
+    const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const parsed = stats.map((s) => parseStatValue(s.value));
+    const targets = parsed.map((p) => p.num);
+    if (reducedMotion) {
+      setDisplayedNums(targets);
+      hasAnimatedRef.current = true;
+      return;
+    }
+    const duration = 800;
+    const startTime = performance.now();
+
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - (1 - t) * (1 - t);
+      setDisplayedNums(targets.map((target) => Math.round(easeOut * target)));
+      if (t < 1) requestAnimationFrame(tick);
+      else hasAnimatedRef.current = true;
+    };
+    requestAnimationFrame(tick);
+  }, [aboutVisible, stats]);
+
+  const displayValues = stats.map((stat, i) => {
+    const { suffix } = parseStatValue(stat.value);
+    return `${displayedNums[i]}${suffix}`;
+  });
+
   return (
     <section id="about" className={`pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 ${bgSection} ${visibleSections.has('about') ? 'animate-fade-in-up' : 'opacity-0'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10 lg:mb-12">
-          {stats.map((stat, index) => (
+          {stats.map((stat, index) => {
+            const delayClass = ['delay-0', 'delay-75', 'delay-150', 'delay-200', 'delay-300', 'delay-500'][Math.min(index, 5)];
+            return (
             <div
               key={index}
-              className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 ${visibleSections.has('about') ? 'animate-fade-in-up' : 'opacity-0'}`}
-              style={{ animationDelay: `${index * 0.08}s` }}
+              className={`${bgCard} rounded-lg p-6 border ${borderBase} transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 ${visibleSections.has('about') ? `animate-fade-in-up ${delayClass}` : 'opacity-0'}`}
             >
               <div className="flex items-center space-x-4">
                 <div className={`w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center transition-transform duration-300 hover:scale-110`}>
                   <stat.icon size={24} className="text-orange-500" />
                 </div>
                 <div>
-                  <div className={`text-3xl font-bold mb-1 ${textPrimary}`}>{stat.value}</div>
+                  <div className={`text-3xl font-bold mb-1 ${textPrimary}`}>{displayValues[index]}</div>
                   <div className={`${textSecondary} text-sm`}>{stat.label}</div>
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
@@ -84,13 +126,13 @@ export default function AboutSection({
               >
                 {t(language, 'about.hireMe')}
               </button>
-              <a
-                href={myCv}
-                download="MyCV.pdf"
+              <button
+                type="button"
+                onClick={onViewResume}
                 className={`px-6 py-3 border ${borderBase} hover:border-orange-500 ${textPrimary} font-semibold rounded-lg transition-all duration-300 hover:scale-105`}
               >
                 {t(language, 'about.downloadCV')}
-              </a>
+              </button>
             </div>
           </div>
         </div>

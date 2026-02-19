@@ -150,13 +150,35 @@ export default function ClientReviews({ language, visibleSections: _visibleSecti
 
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 mt-8 sm:mt-10">
 					{isLoading && (
-						<Card bgCardClass={bgCard} borderBaseClass={borderBase} className="p-6 col-span-1 sm:col-span-2 lg:col-span-3 text-center">
-							<p className={`${textSecondary} text-sm`}>Loading reviews...</p>
-						</Card>
+						<>
+							{[1, 2, 3].map((i) => (
+								<div
+									key={`skeleton-${i}`}
+									className={`${bgCard} rounded-lg p-6 border ${borderBase} animate-pulse`}
+									aria-hidden
+								>
+									<div className="flex items-center gap-1 mb-4">
+										{[...Array(5)].map((_, j) => (
+											<div key={j} className="h-4 w-4 rounded bg-gray-200 dark:bg-gray-700" />
+										))}
+									</div>
+									<div className="h-6 w-8 mb-4 bg-gray-200 dark:bg-gray-700 rounded" />
+									<div className="space-y-2 mb-4">
+										<div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded" />
+										<div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded" />
+										<div className="h-3 w-11/12 bg-gray-200 dark:bg-gray-700 rounded" />
+									</div>
+									<div className="pt-4 border-t border-gray-200 dark:border-gray-800">
+										<div className="h-4 w-32 mb-2 bg-gray-200 dark:bg-gray-700 rounded" />
+										<div className="h-3 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
+									</div>
+								</div>
+							))}
+						</>
 					)}
 					{!isLoading && reviews.length === 0 && (
 						<Card bgCardClass={bgCard} borderBaseClass={borderBase} className="p-6 col-span-1 sm:col-span-2 lg:col-span-3 text-center">
-							<p className={`${textSecondary} text-sm`}>No reviews yet. Be the first to share your experience.</p>
+							<p className={`${textSecondary} text-sm`}>Reviews will appear here when clients submit feedback. Leave a review below or contact me directly to get in touch.</p>
 						</Card>
 					)}
 					{!isLoading && reviews.map((testimonial, index) => (

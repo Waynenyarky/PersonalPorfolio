@@ -198,6 +198,53 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Hero name gradient / shimmer */
+.hero-name-gradient {
+  background: linear-gradient(
+    90deg,
+    rgb(249 115 22),
+    rgb(234 88 12),
+    rgb(251 146 60),
+    rgb(249 115 22)
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hero-name-shimmer 6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-name-gradient {
+    animation: none;
+    background-size: 100% auto;
+  }
+}
+@keyframes hero-name-shimmer {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+
+/* Project card 3D tilt */
+.project-card-3d-wrapper {
+  perspective: 1000px;
+}
+.project-card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .project-card-3d {
+    transition: none;
+  }
+}
+
+/* Scroll progress bar - hide when user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress-bar {
+    display: none;
+  }
+}
+
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
@@ -352,6 +399,10 @@ section[id] {
 
 /* Hero background blob delay */
 .hero-blob-delay-1s { animation-delay: 1s; }
+.hero-blob-parallax { will-change: transform; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-blob-parallax { will-change: auto; }
+}
 
 /* Rating stars */
 .rating-star {

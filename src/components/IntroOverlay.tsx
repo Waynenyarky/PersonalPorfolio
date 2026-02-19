@@ -3,12 +3,16 @@ import { createPortal } from 'react-dom';
 import { Github, Linkedin, Mail } from 'lucide-react';
 import { t, type Language } from '../i18n/translations';
 import { useTheme } from '../theme/useTheme';
+import { SOCIAL_LINKS } from '../constants/social';
+import { CONTACT_EMAIL } from '../constants/contact';
 import './IntroOverlay.css';
 
 const TYPING_MS_PER_CHAR = 52;
 const PAUSE_BETWEEN_LINES_MS = 480;
 const CURSOR_BLINK_MS = 520;
 const HOLD_AFTER_LAST_LINE_MS = 2000;
+/** Delay after window load before intro overlay appears and typing starts */
+const INTRO_START_DELAY_MS = 500;
 /** Unmount overlay when main reveal transition completes (match portfolio.css main-reveal-wrapper duration) */
 const FADE_OUT_MS = 650;
 /** Start main reveal immediately so it finishes exactly when overlay unmounts */
@@ -25,7 +29,8 @@ type Props = {
 function useTypewriter(
   lines: string[],
   reducedMotion: boolean,
-  onAllDone: () => void
+  onAllDone: () => void,
+  start: boolean
 ) {
   const [lineIndex, setLineIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
@@ -39,7 +44,7 @@ function useTypewriter(
   const isLineComplete = charIndex >= currentLine.length;
 
   useEffect(() => {
-    if (!reducedMotion || lines.length === 0) return;
+    if (!start || !reducedMotion || lines.length === 0) return;
     let step = 0;
     const id = setInterval(() => {
       step++;
@@ -52,19 +57,19 @@ function useTypewriter(
       }
     }, REDUCED_MOTION_LINE_DELAY_MS);
     return () => clearInterval(id);
-  }, [reducedMotion, lines]);
+  }, [start, reducedMotion, lines]);
 
   useEffect(() => {
-    if (!reducedMotion || lines.length === 0) return;
+    if (!start || !reducedMotion || lines.length === 0) return;
     const t = setTimeout(
       () => onAllDoneRef.current(),
       lines.length * REDUCED_MOTION_LINE_DELAY_MS + HOLD_AFTER_LAST_LINE_MS
     );
     return () => clearTimeout(t);
-  }, [reducedMotion, lines]);
+  }, [start, reducedMotion, lines]);
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (!start || reducedMotion) return;
 
     if (lineIndex >= lines.length) return;
 
@@ -83,13 +88,13 @@ function useTypewriter(
       setCharIndex(0);
     }, PAUSE_BETWEEN_LINES_MS);
     return () => clearTimeout(id);
-  }, [lineIndex, charIndex, currentLine.length, isLastLine, reducedMotion, lines.length]);
+  }, [start, lineIndex, charIndex, currentLine.length, isLastLine, reducedMotion, lines.length]);
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (!start || reducedMotion) return;
     const id = setInterval(() => setShowCursor((c) => !c), CURSOR_BLINK_MS);
     return () => clearInterval(id);
-  }, [reducedMotion]);
+  }, [start, reducedMotion]);
 
   return { lineIndex, displayed, showCursor, isLineComplete, isLastLine };
 }
@@ -98,6 +103,7 @@ export default function IntroOverlay({ language, onRevealMain, onClose }: Props)
   const { theme } = useTheme();
   const [exiting, setExiting] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [readyToStart, setReadyToStart] = useState(false);
   const onRevealMainRef = useRef(onRevealMain);
   const onCloseRef = useRef(onClose);
   onRevealMainRef.current = onRevealMain;
@@ -119,7 +125,8 @@ export default function IntroOverlay({ language, onRevealMain, onClose }: Props)
   const { lineIndex, displayed, showCursor } = useTypewriter(
     lines,
     reducedMotion,
-    () => setExiting(true)
+    () => setExiting(true),
+    readyToStart
   );
 
   const totalChars = lines.reduce((sum, line) => sum + line.length, 0);
@@ -132,8 +139,25 @@ export default function IntroOverlay({ language, onRevealMain, onClose }: Props)
   }, [progress]);
 
   useEffect(() => {
-    setMounted(true);
+    if (typeof window === 'undefined') return;
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const scheduleStart = () => {
+      timeoutId = setTimeout(() => setReadyToStart(true), INTRO_START_DELAY_MS);
+    };
+    if (document.readyState === 'complete') {
+      scheduleStart();
+    } else {
+      window.addEventListener('load', scheduleStart);
+    }
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('load', scheduleStart);
+    };
   }, []);
+
+  useEffect(() => {
+    if (readyToStart) setMounted(true);
+  }, [readyToStart]);
 
   useEffect(() => {
     if (!exiting) return;
@@ -151,9 +175,9 @@ export default function IntroOverlay({ language, onRevealMain, onClose }: Props)
   const iconMuted = theme === 'dark' ? 'intro-overlay__icon--dark' : 'intro-overlay__icon--light';
 
   const topLinks = [
-    { href: 'https://github.com/Waynenyarky', label: 'GitHub', Icon: Github },
-    { href: 'https://linkedin.com', label: 'LinkedIn', Icon: Linkedin },
-    { href: 'mailto:joma.enrique.up@phinmaed.com?subject=Portfolio%20Inquiry', label: 'Email', Icon: Mail },
+    { href: SOCIAL_LINKS.github, label: 'GitHub', Icon: Github },
+    { href: SOCIAL_LINKS.linkedin, label: 'LinkedIn', Icon: Linkedin },
+    { href: `mailto:${CONTACT_EMAIL || ''}?subject=Portfolio%20Inquiry`, label: 'Email', Icon: Mail },
   ];
 
   const overlay = (

@@ -10,21 +10,64 @@ type Props = {
   resumeUrl: string;
 };
 
+/** True when we should avoid opening external app (e.g. in-app browser on mobile). */
+function preferInModal(): boolean {
+  if (typeof window === 'undefined') return false;
+  const ua = navigator.userAgent.toLowerCase();
+  const inApp = /messenger|fbav|fban|instagram|line|twitter|tiktok|snapchat|whatsapp|wechat/i.test(ua);
+  const narrow = window.innerWidth < 768;
+  return inApp || narrow;
+}
+
 export default function ResumeModal({ isOpen, onClose, resumeUrl }: Props) {
   const { theme } = useTheme();
   const [pdfLoaded, setPdfLoaded] = useState(false);
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const textPrimary = theme === 'dark' ? 'text-white' : 'text-black';
   const textSecondary = theme === 'dark' ? 'text-gray-400' : 'text-gray-500';
   const bgCard = theme === 'dark' ? 'bg-gray-900' : 'bg-white';
   const borderBase = theme === 'dark' ? 'border-gray-800' : 'border-gray-200';
   const viewerBg = theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-100/80';
+  const showDownload = !preferInModal();
 
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
 
+  const blobUrlRef = useRef<string | null>(null);
+
+  // Load PDF as blob and set blob URL so the iframe stays in-app (no "leaving our app" on mobile)
+  useEffect(() => {
+    if (!isOpen || !resumeUrl) return;
+    setPdfLoaded(false);
+    setBlobUrl(null);
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current);
+      blobUrlRef.current = null;
+    }
+    let cancelled = false;
+    fetch(resumeUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        if (cancelled) return;
+        const url = URL.createObjectURL(blob);
+        blobUrlRef.current = url;
+        setBlobUrl(url);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setBlobUrl(resumeUrl);
+      });
+    return () => {
+      cancelled = true;
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        blobUrlRef.current = null;
+      }
+    };
+  }, [isOpen, resumeUrl]);
+
   useEffect(() => {
     if (!isOpen) return;
-    setPdfLoaded(false);
     const prevOverflow = document.body.style.overflow;
     const prevPaddingRight = document.body.style.paddingRight;
     const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
@@ -100,7 +143,7 @@ export default function ResumeModal({ isOpen, onClose, resumeUrl }: Props) {
             </div>
             <div className="min-w-0">
               <h2 id="resume-modal-title" className={`text-lg sm:text-xl font-bold truncate ${textPrimary}`}>
-                Resume
+                CV
               </h2>
               <p id="resume-modal-desc" className={`text-xs sm:text-sm truncate ${textSecondary}`}>
                 John Wayne Enrique · Full Stack Developer
@@ -108,17 +151,22 @@ export default function ResumeModal({ isOpen, onClose, resumeUrl }: Props) {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {showDownload && (
+              <button
+                type="button"
+                onClick={handleDownload}
+                className={`inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg font-medium text-sm sm:text-base transition-all duration-200 bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-sm hover:shadow-md ${focusRing}`}
+              >
+                <Download size={18} aria-hidden />
+                <span>Download PDF</span>
+              </button>
+            )}
+            {!showDownload && (
+              <p className={`text-xs ${textSecondary} hidden sm:block`}>View CV below</p>
+            )}
             <button
               type="button"
-              onClick={handleDownload}
-              className={`inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg font-medium text-sm sm:text-base transition-all duration-200 bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-sm hover:shadow-md ${focusRing}`}
-            >
-              <Download size={18} aria-hidden />
-              <span>Download PDF</span>
-            </button>
-            <button
-              type="button"
-              aria-label="Close resume viewer"
+              aria-label="Close CV viewer"
               className={`shrink-0 w-9 h-9 rounded-lg border ${borderBase} ${textPrimary} hover:border-orange-500 hover:bg-orange-500/10 flex items-center justify-center transition-colors ${focusRing}`}
               onClick={onClose}
             >
@@ -134,16 +182,16 @@ export default function ResumeModal({ isOpen, onClose, resumeUrl }: Props) {
               <div className={`absolute inset-0 z-10 flex items-center justify-center ${viewerBg} rounded-lg`}>
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-10 h-10 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" aria-hidden />
-                  <p className={`text-sm font-medium ${textSecondary}`}>Loading resume…</p>
+                  <p className={`text-sm font-medium ${textSecondary}`}>Loading CV…</p>
                 </div>
               </div>
             )}
             <iframe
-              key={resumeUrl}
-              src={isOpen ? `${resumeUrl}#toolbar=0&navpanes=0&scrollbar=1` : undefined}
+              key={blobUrl ?? resumeUrl}
+              src={isOpen && (blobUrl || resumeUrl) ? `${blobUrl || resumeUrl}#toolbar=0&navpanes=0&scrollbar=1` : undefined}
               loading="eager"
               className="w-full h-full min-h-[50vh] sm:min-h-[58vh] md:min-h-[65vh] lg:min-h-[72vh] xl:min-h-[78vh] block"
-              title="Resume — John Wayne Enrique"
+              title="CV — John Wayne Enrique"
               onLoad={() => setPdfLoaded(true)}
             />
           </div>

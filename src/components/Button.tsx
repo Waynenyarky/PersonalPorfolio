@@ -9,15 +9,15 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 	block?: boolean;
 };
 
-const base = 'font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500';
+const base = 'font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:focus:ring-offset-gray-950';
 const sizes: Record<Size, string> = {
-	sm: 'px-4 py-2 text-sm',
-	md: 'px-6 py-2.5 text-sm',
-	lg: 'px-8 py-3 text-base',
+	sm: 'px-4 py-2.5 text-sm',
+	md: 'px-6 py-3 text-sm',
+	lg: 'px-8 py-3.5 text-base',
 };
 const variants: Record<Variant, string> = {
-	primary: 'bg-orange-500 hover:bg-orange-600 text-white shadow-md hover:shadow-lg hover:shadow-orange-500/50',
-	secondary: 'border-2 border-gray-200 dark:border-gray-800 hover:border-orange-500 text-black dark:text-white bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm',
+	primary: 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg hover:shadow-xl hover:shadow-orange-500/40 hover:-translate-y-0.5',
+	secondary: 'border-2 border-gray-200 dark:border-gray-700 hover:border-orange-500 text-black dark:text-white bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm hover:shadow-md',
 	ghost: 'text-orange-500 hover:bg-orange-500/10',
 };
 

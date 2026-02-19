@@ -345,7 +345,7 @@ const Portfolio = () => {
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-500 nav-bar-reveal ${
           mainRevealed ? 'nav-bar-reveal--visible' : 'nav-bar-reveal--hidden'
-        } ${navBg} ${scrolled ? 'backdrop-blur-xl shadow-md border-b ' + borderBase : 'backdrop-blur-sm'}`}
+        } ${navBg} ${scrolled ? 'backdrop-blur-xl border-b ' + borderBase + ' nav-bar--scrolled' : 'backdrop-blur-sm'}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
@@ -368,7 +368,7 @@ const Portfolio = () => {
                   <a
                     key={labelKey}
                     href={`#${id}`}
-                    className={`group relative text-sm font-semibold transition-all duration-300 ease-in-out ${
+                    className={`group relative text-sm font-semibold tracking-wide transition-all duration-300 ease-in-out ${
                       showHighlight ? 'text-orange-500' : navText + ' hover:text-orange-500'
                     }`}
                     onClick={(e) => {
@@ -483,7 +483,7 @@ const Portfolio = () => {
         }`}
       >
       {/* Hero Section */}
-      <section id="home" className={`min-h-screen flex items-center justify-center relative pt-10 sm:pt-12 overflow-hidden ${bgSection}`}>
+      <section id="home" className={`min-h-screen flex items-center justify-center relative pt-16 sm:pt-20 pb-20 sm:pb-24 overflow-hidden ${bgSection}`}>
         {/* Subtle Background Effects with Animation */}
         <div className="absolute inset-0 bg-linear-to-b from-orange-500/5 to-transparent pointer-events-none"></div>
         <div
@@ -504,7 +504,7 @@ const Portfolio = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="Facebook" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-md will-change-transform opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-xl p-2.5 sm:p-3 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-0.5 will-change-transform opacity-0 animate-fade-in-left`}
             >
             <Facebook size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
@@ -513,7 +513,7 @@ const Portfolio = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="Twitter" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-md will-change-transform opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-xl p-2.5 sm:p-3 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-0.5 will-change-transform opacity-0 animate-fade-in-left`}
             >
             <Twitter size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
@@ -522,7 +522,7 @@ const Portfolio = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="LinkedIn" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-md will-change-transform opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-xl p-2.5 sm:p-3 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-0.5 will-change-transform opacity-0 animate-fade-in-left`}
             >
             <Linkedin size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
@@ -531,7 +531,7 @@ const Portfolio = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             aria-label="GitHub" 
-            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-lg p-2 sm:p-2.5 transition-all duration-300 hover:border-orange-500 hover:shadow-md will-change-transform opacity-0 animate-fade-in-left`}
+            className={`pointer-events-auto group ${bgCard} border ${borderBase} rounded-xl p-2.5 sm:p-3 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:-translate-y-0.5 will-change-transform opacity-0 animate-fade-in-left`}
             >
             <Github size={18} className={`${textSecondary} group-hover:text-orange-500 transition-colors duration-300 animate-wave-float`} />
           </a>
@@ -540,14 +540,14 @@ const Portfolio = () => {
 
         {/* Hero Content — staggered reveal when main is visible (intro done or direct load) */}
         <div className="text-center px-4 sm:px-6 z-10 max-w-4xl mx-auto">
-          <div className="hero-reveal-item hero-reveal-delay-1 mb-4 sm:mb-5 inline-block">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${borderBase} bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm transition-all duration-300 hover:shadow-md`}>
+          <div className="hero-reveal-item hero-reveal-delay-1 mb-5 sm:mb-6 inline-block">
+            <div className={`inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border ${borderBase} bg-white/60 dark:bg-gray-900/60 backdrop-blur-md shadow-sm transition-all duration-300 hover:shadow-lg hover:border-orange-500/30`}>
               <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-              <span className={`${textSecondary} text-xs sm:text-sm font-semibold tracking-wider uppercase`}>{t(language, 'hero.role')}</span>
+              <span className={`${textSecondary} text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase`}>{t(language, 'hero.role')}</span>
             </div>
           </div>
           
-          <h1 className={`hero-reveal-item hero-reveal-delay-2 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-5 tracking-tight leading-tight ${textPrimary}`}>
+          <h1 className={`hero-reveal-item hero-reveal-delay-2 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-5 sm:mb-6 tracking-tight leading-[1.1] ${textPrimary}`}>
             <span className="inline-block transition-all duration-300 hover:scale-105">John Wayne</span>
             <br />
             <span className="hero-name-gradient inline-block relative transition-all duration-300 hover:scale-105">
@@ -556,14 +556,14 @@ const Portfolio = () => {
             </span>
           </h1>
           
-          <h2 className={`hero-reveal-item hero-reveal-delay-3 text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal mb-2 sm:mb-3 ${textSecondary}`}>
+          <h2 className={`hero-reveal-item hero-reveal-delay-3 text-lg sm:text-xl md:text-2xl lg:text-3xl font-light tracking-wide mb-2 sm:mb-3 ${textSecondary}`}>
             {t(language, 'hero.title.line1')}
           </h2>
-          <h2 className={`hero-reveal-item hero-reveal-delay-4 text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal mb-8 sm:mb-10 ${textSecondary}`}>
+          <h2 className={`hero-reveal-item hero-reveal-delay-4 text-lg sm:text-xl md:text-2xl lg:text-3xl font-light tracking-wide mb-10 sm:mb-12 ${textSecondary}`}>
             {t(language, 'hero.title.line2')}
           </h2>
           
-          <div className="hero-reveal-item hero-reveal-delay-5">
+          <div className="hero-reveal-item hero-reveal-delay-5 flex flex-wrap justify-center gap-4">
             <CTAButtons
               onPrimary={() => scrollToSection('contact')}
               onSecondary={() => setShowResumeModal(true)}
@@ -728,7 +728,7 @@ const Portfolio = () => {
       >
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors duration-200 shadow-lg"
+          className="w-11 h-11 sm:w-12 sm:h-12 bg-orange-500 hover:bg-orange-600 rounded-xl flex items-center justify-center transition-all duration-300 shadow-xl hover:shadow-orange-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-950"
           aria-label="Scroll to top"
         >
           <ArrowUp className="text-white" size={16} />
